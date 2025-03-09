@@ -8,7 +8,8 @@ import javax.swing.*;
  */
 public class SVGIconLabel extends JLabel implements java.io.Serializable {
 
-    private String svgPath; // Store the SVG path
+    private String svgFileName; // Store only the file name
+    private static final String BASE_PATH = "resources/images/"; // Default folder path
     
     /**
      * Default constructor
@@ -18,36 +19,36 @@ public class SVGIconLabel extends JLabel implements java.io.Serializable {
     }
     
     /**
-     * Constructor with SVG path and size
-     * @param svgPath The path to the SVG file (e.g., "/Logic/resources/icon.svg")
+     * Constructor with SVG file name and size
+     * @param svgFileName The name of the SVG file (e.g., "icon.svg")
      * @param width The width of the icon
      * @param height The height of the icon
      */
-    public SVGIconLabel(String svgPath, int width, int height) {
+    public SVGIconLabel(String svgFileName, int width, int height) {
         super();
-        setSVGIcon(svgPath, width, height);
+        setSVGIcon(svgFileName, width, height);
     }
     
     /**
      * Set an SVG icon to the label
-     * @param svgPath The path to the SVG file
+     * @param svgFileName The name of the SVG file (e.g., "icon.svg")
      * @param width The width of the icon
      * @param height The height of the icon
      */
-    public void setSVGIcon(String svgPath, int width, int height) {
-        this.svgPath = svgPath;
-        FlatSVGIcon svgIcon = new FlatSVGIcon(svgPath, width, height);
+    public void setSVGIcon(String svgFileName, int width, int height) {
+        this.svgFileName = svgFileName;
+        FlatSVGIcon svgIcon = new FlatSVGIcon(BASE_PATH + svgFileName, width, height);
         setIcon(svgIcon);
     }
 
-    // Getter and setter to make SVG path editable in NetBeans GUI
-    public String getSvgPath() {
-        return svgPath;
+    // Getter and setter to make SVG file name editable in NetBeans GUI
+    public String getSvgFileName() {
+        return svgFileName;
     }
 
-    public void setSvgPath(String svgPath) {
-        this.svgPath = svgPath;
-        setSVGIcon(svgPath, getWidth(), getHeight());
+    public void setSvgFileName(String svgFileName) {
+        this.svgFileName = svgFileName;
+        setSVGIcon(svgFileName, getWidth(), getHeight());
     }
 
     @Override
