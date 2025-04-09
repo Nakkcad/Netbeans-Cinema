@@ -13,7 +13,11 @@ import java.util.List;
 import dao.FilmDAO;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
+import java.util.Random;
+import javax.imageio.ImageIO;
 import model.Film;
 import model.MovieDetailsDialog;
 
@@ -216,32 +220,24 @@ private Timer searchTimer;
 
     private void setupMoviesContainer() {
         moviesContainer.removeAll();
-        moviesContainer.setLayout(new GridLayout(0, 4, 20, 20)); // 4 columns, 20px gaps
+        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Horizontal flow with 20px gaps
         moviesContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
     }
 
     private void loadMovies() {
         // Clear existing movies
         moviesContainer.removeAll();
-        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Horizontal flow with 20px gaps
+        setupMoviesContainer(); // Use the same layout setup
 
         // Get movies from database
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getAllFilms();
 
-        // Add movie cards with absolute size
+        // Add movie cards
         for (Film film : films) {
-            MovieCard card = new MovieCard(film, () -> {
-                openMovieDetails(film);
-            });
-            card.setPreferredSize(new Dimension(250, 375)); // Absolute size
-            card.setMinimumSize(new Dimension(250, 375));
-            card.setMaximumSize(new Dimension(250, 375));
-            moviesContainer.add(card);
+            addMovieCard(film);
         }
-
-        // Add filler component to prevent centering
-        moviesContainer.add(Box.createHorizontalGlue());
 
         // Refresh layout
         moviesContainer.revalidate();
@@ -254,106 +250,367 @@ private Timer searchTimer;
     }
 
     // MovieCard inner class
-    
+    // <editor-fold defaultstate="collapsed" desc="Moviecard bullshit">   
     class MovieCard extends JPanel {
 
         private static final String PLACEHOLDER_PATH = "D:\\Main Storage\\Dekstop\\LoginSiginForm\\src\\resources\\posters\\poster_placeholder.png";
+        private static final String LOCAL_POSTERS_DIR = "D:\\Main Storage\\Dekstop\\LoginSiginForm\\src\\resources\\posters\\";
+        private static final int CARD_WIDTH = 220;
+        private static final int CARD_HEIGHT = 330;
+        private static final int ANIMATION_DURATION = 150; // milliseconds
+        private static final Color BG_COLOR = new Color(30, 30, 30);
+        private static final Color BORDER_COLOR = new Color(60, 60, 60);
+        private static final Color HOVER_COLOR = new Color(255, 215, 0);
+        private static final Color TEXT_COLOR = Color.WHITE;
+
+        private final Film film;
+        private Timer hoverTimer;
+        private float hoverProgress = 0.0f;
+        private final JPanel posterPanel;
 
         public MovieCard(Film film, Runnable onClick) {
+            this.film = film;
+
+            // Setup panel properties
             setLayout(new BorderLayout());
-            setPreferredSize(new Dimension(220, 330)); // Smaller 2:3 card
-            setBackground(new Color(30, 30, 30));
+            setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
+            setBackground(BG_COLOR);
             setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                    BorderFactory.createLineBorder(new Color(60, 60, 60), 1)));
+                    BorderFactory.createLineBorder(BORDER_COLOR, 1)));
+            setToolTipText(film.getTitle());
 
-            // Poster panel
-            JPanel posterPanel = new JPanel(new BorderLayout());
-            posterPanel.setPreferredSize(new Dimension(210, 290));
-            posterPanel.setBackground(new Color(20, 20, 20));
+            // Create components
+            posterPanel = createPosterPanel();
+            JPanel titlePanel = createTitlePanel();
 
-            JLabel posterLabel = new JLabel();
-            posterLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            loadPosterImage(film.getPosterUrl(), posterLabel);
-            posterPanel.add(posterLabel, BorderLayout.CENTER);
-
-            // Title panel
-            JPanel titlePanel = new JPanel(new BorderLayout());
-            titlePanel.setPreferredSize(new Dimension(210, 40));
-            titlePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-            JLabel titleLabel = new JLabel("<html><center>" + film.getTitle() + "</center></html>");
-            titleLabel.setForeground(Color.WHITE);
-            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-            titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            titlePanel.add(titleLabel, BorderLayout.CENTER);
-
+            // Add components
             add(posterPanel, BorderLayout.CENTER);
             add(titlePanel, BorderLayout.SOUTH);
 
+            // Setup interactions
             setupHoverEffects();
-            addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    onClick.run();
-                }
-            });
+            setupClickHandler(onClick);
+
+            // For screen readers
+            getAccessibleContext().setAccessibleName("Movie: " + film.getTitle());
+            getAccessibleContext().setAccessibleDescription("Click to see details for " + film.getTitle());
         }
 
-        private void loadPosterImage(String imagePath, JLabel posterLabel) {
-            new SwingWorker<ImageIcon, Void>() {
+        private JPanel createPosterPanel() {
+            JPanel panel = new JPanel(new BorderLayout()) {
                 @Override
-                protected ImageIcon doInBackground() throws Exception {
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    // Add subtle gradient overlay
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
+                    g2d.setPaint(new GradientPaint(0, 0, new Color(0, 0, 0, 0),
+                            0, getHeight(), new Color(0, 0, 0, 100)));
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
+                    g2d.dispose();
+                }
+            };
+            panel.setPreferredSize(new Dimension(CARD_WIDTH - 10, CARD_HEIGHT - 50));
+            panel.setBackground(new Color(20, 20, 20));
+
+            // Add loading indicator
+            JLabel loadingLabel = new JLabel("Loading...", SwingConstants.CENTER);
+            loadingLabel.setForeground(new Color(150, 150, 150));
+            panel.add(loadingLabel, BorderLayout.CENTER);
+
+            // Load image asynchronously
+            loadPosterImage(film.getPosterUrl(), panel);
+
+            return panel;
+        }
+
+        private JPanel createTitlePanel() {
+            JPanel titlePanel = new JPanel(new BorderLayout());
+            titlePanel.setBackground(BG_COLOR);
+            titlePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            // Title with ellipsis if too long
+            JLabel titleLabel = new JLabel("<html><center>" + truncateText(film.getTitle(), 30) + "</center></html>");
+            titleLabel.setForeground(TEXT_COLOR);
+            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+            titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            titlePanel.add(titleLabel, BorderLayout.CENTER);
+
+            return titlePanel;
+        }
+
+        private void loadPosterImage(String imagePath, JPanel container) {
+            new SwingWorker<JComponent, Void>() {
+                @Override
+                protected JComponent doInBackground() throws Exception {
                     try {
-                        ImageIcon icon;
+                        URL imageUrl = null;
+                        String localPath = null;
+
+                        // Check if we have a URL or local path
                         if (imagePath != null && !imagePath.isEmpty() && !imagePath.equals("null")) {
                             if (imagePath.startsWith("http")) {
-                                icon = new ImageIcon(new URL(imagePath));
+                                // Generate local filename from URL
+                                String filename = "poster_" + film.getTitle().hashCode() + ".jpg";
+                                filename = filename.replaceAll("[^a-zA-Z0-9.-]", "_");
+                                localPath = LOCAL_POSTERS_DIR + filename;
+
+                                // Check if we already have this file locally
+                                File localFile = new File(localPath);
+                                if (localFile.exists()) {
+                                    imageUrl = localFile.toURI().toURL();
+                                } else {
+                                    // Download the image
+                                    imageUrl = new URL(imagePath);
+                                    BufferedImage image = ImageIO.read(imageUrl);
+                                    if (image != null) {
+                                        // Save to local resources
+                                        File dir = new File(LOCAL_POSTERS_DIR);
+                                        if (!dir.exists()) {
+                                            dir.mkdirs();
+                                        }
+                                        ImageIO.write(image, "jpg", localFile);
+                                        imageUrl = localFile.toURI().toURL();
+                                    }
+                                }
                             } else {
-                                icon = new ImageIcon(imagePath);
+                                // Local file path
+                                File file = new File(imagePath);
+                                if (file.exists()) {
+                                    imageUrl = file.toURI().toURL();
+                                }
                             }
-                        } else {
-                            icon = new ImageIcon(PLACEHOLDER_PATH);
                         }
 
-                        // Resize image to 2:3 ratio (220x330 with padding considered)
-                        Image scaled = icon.getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH);
-                        return new ImageIcon(scaled);
+                        // If no valid URL, use placeholder
+                        if (imageUrl == null) {
+                            File placeholderFile = new File(PLACEHOLDER_PATH);
+                            if (placeholderFile.exists()) {
+                                imageUrl = placeholderFile.toURI().toURL();
+                            } else {
+                                return createTextPlaceholder(film.getTitle());
+                            }
+                        }
+
+                        // Load and scale image with high quality
+                        BufferedImage originalImage = ImageIO.read(imageUrl);
+                        if (originalImage == null) {
+                            return createTextPlaceholder(film.getTitle());
+                        }
+
+                        // Calculate aspect ratio preserving dimensions
+                        int width = 200;
+                        int height = 300;
+                        double aspectRatio = (double) originalImage.getWidth() / originalImage.getHeight();
+
+                        if (aspectRatio > (double) width / height) {
+                            height = (int) (width / aspectRatio);
+                        } else {
+                            width = (int) (height * aspectRatio);
+                        }
+
+                        // Create high quality scaled image
+                        BufferedImage scaledImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g2d = scaledImage.createGraphics();
+                        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+                        g2d.drawImage(originalImage, 0, 0, width, height, null);
+                        g2d.dispose();
+
+                        // Create a centered panel for the image
+                        JPanel imagePanel = new JPanel(new GridBagLayout()) {
+                            @Override
+                            protected void paintComponent(Graphics g) {
+                                super.paintComponent(g);
+                                if (scaledImage != null) {
+                                    int x = (getWidth() - scaledImage.getWidth()) / 2;
+                                    int y = (getHeight() - scaledImage.getHeight()) / 2;
+                                    g.drawImage(scaledImage, x, y, this);
+                                }
+                            }
+                        };
+                        imagePanel.setOpaque(false);
+                        imagePanel.setBackground(new Color(0, 0, 0, 0));
+
+                        return imagePanel;
                     } catch (Exception e) {
-                        return new ImageIcon(PLACEHOLDER_PATH);
+                        System.err.println("Error loading image: " + e.getMessage());
+                        return createErrorPlaceholder();
                     }
                 }
 
                 @Override
                 protected void done() {
                     try {
-                        posterLabel.setIcon(get());
+                        JComponent result = get();
+                        if (result != null) {
+                            container.removeAll();
+                            container.add(result, BorderLayout.CENTER);
+                            container.revalidate();
+                            container.repaint();
+                        }
                     } catch (Exception e) {
-                        posterLabel.setIcon(new ImageIcon(PLACEHOLDER_PATH));
+                        container.removeAll();
+                        container.add(createErrorPlaceholder(), BorderLayout.CENTER);
+                        container.revalidate();
+                        container.repaint();
                     }
                 }
             }.execute();
         }
 
+        private JPanel createTextPlaceholder(String title) {
+            JPanel placeholder = new JPanel(new GridBagLayout());
+            placeholder.setBackground(getRandomDarkColor());
+
+            String letter = title != null && !title.isEmpty()
+                    ? title.substring(0, 1).toUpperCase()
+                    : "?";
+
+            JLabel letterLabel = new JLabel(letter);
+            letterLabel.setFont(new Font("SansSerif", Font.BOLD, 72));
+            letterLabel.setForeground(Color.WHITE);
+            placeholder.add(letterLabel);
+
+            return placeholder;
+        }
+
+        private JPanel createErrorPlaceholder() {
+            JPanel placeholder = new JPanel(new GridBagLayout());
+            placeholder.setBackground(new Color(40, 40, 40));
+
+            JLabel errorLabel = new JLabel("!");
+            errorLabel.setFont(new Font("SansSerif", Font.BOLD, 72));
+            errorLabel.setForeground(new Color(255, 100, 100));
+            placeholder.add(errorLabel);
+
+            return placeholder;
+        }
+
+        private Color getRandomDarkColor() {
+            // Generate aesthetic movie-themed colors
+            Color[] colors = {
+                new Color(41, 128, 185), // Blue
+                new Color(155, 89, 182), // Purple
+                new Color(192, 57, 43), // Red
+                new Color(39, 174, 96), // Green
+                new Color(211, 84, 0), // Orange
+                new Color(52, 73, 94) // Dark Blue
+            };
+            return colors[new Random().nextInt(colors.length)];
+        }
+
+        private String truncateText(String text, int maxLength) {
+            if (text == null) {
+                return "";
+            }
+            return text.length() > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
+        }
+
         private void setupHoverEffects() {
+            // Create animation timer
+            hoverTimer = new Timer(10, e -> {
+                if (isHovered()) {
+                    hoverProgress = Math.min(1.0f, hoverProgress + 0.05f);
+                } else {
+                    hoverProgress = Math.max(0.0f, hoverProgress - 0.05f);
+                }
+
+                // Apply hover effects based on progress
+                float intensity = easeInOut(hoverProgress);
+
+                // Interpolate border color
+                Color currentBorderColor = interpolateColor(BORDER_COLOR, HOVER_COLOR, intensity);
+                setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                        BorderFactory.createLineBorder(currentBorderColor, intensity < 0.5 ? 1 : 2)
+                ));
+
+                // Scale effect (subtle)
+                float scale = 1.0f + (0.02f * intensity);
+                setSize((int) (CARD_WIDTH * scale), (int) (CARD_HEIGHT * scale));
+
+                // Stop timer when animation is complete
+                if ((isHovered() && hoverProgress >= 1.0f) || (!isHovered() && hoverProgress <= 0.0f)) {
+                    ((Timer) e.getSource()).stop();
+                }
+
+                repaint();
+            });
+
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
-                    setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                            BorderFactory.createLineBorder(new Color(255, 215, 0), 2)
-                    ));
                     setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    if (!hoverTimer.isRunning()) {
+                        hoverTimer.start();
+                    }
                 }
 
                 public void mouseExited(MouseEvent e) {
-                    setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                            BorderFactory.createLineBorder(new Color(60, 60, 60), 1)
-                    ));
                     setCursor(Cursor.getDefaultCursor());
+                    if (!hoverTimer.isRunning()) {
+                        hoverTimer.start();
+                    }
                 }
             });
         }
+
+        private boolean isHovered() {
+            Point p = MouseInfo.getPointerInfo().getLocation();
+            SwingUtilities.convertPointFromScreen(p, this);
+            return contains(p);
+        }
+
+        private float easeInOut(float t) {
+            // Cubic ease in-out function for smooth animation
+            return t < 0.5 ? 4 * t * t * t : 1 - (float) Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        private Color interpolateColor(Color c1, Color c2, float ratio) {
+            int r = (int) (c1.getRed() + (c2.getRed() - c1.getRed()) * ratio);
+            int g = (int) (c1.getGreen() + (c2.getGreen() - c1.getGreen()) * ratio);
+            int b = (int) (c1.getBlue() + (c2.getBlue() - c1.getBlue()) * ratio);
+            return new Color(r, g, b);
+        }
+
+        private void setupClickHandler(Runnable onClick) {
+            addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    // Add click effect
+                    JPanel flashPanel = new JPanel();
+                    flashPanel.setBackground(new Color(255, 255, 255, 80));
+                    flashPanel.setBounds(0, 0, getWidth(), getHeight());
+                    add(flashPanel, 0);
+
+                    // Remove the flash panel after a short delay
+                    Timer timer = new Timer(100, event -> {
+                        remove(flashPanel);
+                        repaint();
+                        onClick.run();
+                    });
+                    timer.setRepeats(false);
+                    timer.start();
+                }
+            });
+        }
+
+        // Additional helper methods that can be used if needed
+        public Film getFilm() {
+            return film;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+        }
     }
+// </editor-fold> 
 
     /**
      * @param args the command line arguments
