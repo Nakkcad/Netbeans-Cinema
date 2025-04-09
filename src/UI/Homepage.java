@@ -6,7 +6,7 @@ package UI;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.UnsupportedLookAndFeelException;
-import Logic.UserSession;
+import Utils.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -54,10 +54,15 @@ public class Homepage extends javax.swing.JFrame {
         welcome = new javax.swing.JLabel();
         film_searchbar = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Homepage");
         setLocation(new java.awt.Point(0, 0));
         setPreferredSize(new java.awt.Dimension(1080, 720));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         moviesContainer.setBackground(new java.awt.Color(102, 0, 0));
         moviesContainer.setPreferredSize(new java.awt.Dimension(800, 600));
@@ -75,7 +80,7 @@ public class Homepage extends javax.swing.JFrame {
 
         getContentPane().add(moviesContainer, java.awt.BorderLayout.CENTER);
 
-        Menubar.setBackground(new java.awt.Color(153, 102, 255));
+        Menubar.setBackground(new java.awt.Color(255, 204, 0));
         Menubar.setPreferredSize(new java.awt.Dimension(1080, 50));
 
         welcome.setForeground(new java.awt.Color(0, 0, 0));
@@ -126,6 +131,14 @@ private Timer searchTimer;
         searchTimer.setRepeats(false);
         searchTimer.start();
     }//GEN-LAST:event_film_searchbarKeyTyped
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // close all window too
+        for (Window window : Window.getWindows()) {
+        window.dispose();
+    }
+        new Login().setVisible(true);
+    }//GEN-LAST:event_formWindowClosed
 
     private void performSearch() {
         String searchText = film_searchbar.getText().toLowerCase().trim();

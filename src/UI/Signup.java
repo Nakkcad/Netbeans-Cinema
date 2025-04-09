@@ -6,7 +6,7 @@ package UI;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
-import Logic.PasswordUtils;
+import Utils.PasswordUtils;
 import dao.UserDAO;
 
 /**
@@ -55,7 +55,7 @@ public class Signup extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("SIGNUP");
+        setTitle("CinemaApp - Signup");
         setLocation(new java.awt.Point(0, 0));
         setName("signup"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {

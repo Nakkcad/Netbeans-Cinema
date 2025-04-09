@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
-import Logic.UserSession;
+import Utils.UserSession;
 import dao.UserDAO;
 
 /**
@@ -37,7 +37,7 @@ public class Login extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         left = new javax.swing.JPanel();
-        cinemaicon = new Logic.SVGIconLabel();
+        cinemaicon = new Utils.SVGIconLabel();
         right = new javax.swing.JPanel();
         top = new javax.swing.JLayeredPane();
         LOGIN_title = new javax.swing.JLabel();
@@ -56,7 +56,7 @@ public class Login extends javax.swing.JFrame {
         signupformbutton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("LOGIN");
+        setTitle("CinemaApp - Login");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setResizable(false);
         setSize(new java.awt.Dimension(800, 500));
@@ -323,12 +323,21 @@ public class Login extends javax.swing.JFrame {
 
         UserDAO userDAO = new UserDAO();
         try {
-            if (userDAO.authenticateUser(username, passwordInput)) {
+            String userRole = userDAO.authenticateUser(username, passwordInput);
+
+            if (userRole != null) {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
                 UserSession.setUsername(username);
+                UserSession.setRole(userRole); // Store the user's role in session
 
-                Homepage main = new Homepage();
-                main.setVisible(true);
+                // Open appropriate panel based on role
+                if ("admin".equalsIgnoreCase(userRole)) {
+                    AdminPanel adminPanel = new AdminPanel();
+                    adminPanel.setVisible(true);
+                } 
+                    Homepage main = new Homepage();
+                    main.setVisible(true);
+                
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid Username or Password",
@@ -397,7 +406,7 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LOGIN_title;
     private javax.swing.JLayeredPane bottom;
-    private Logic.SVGIconLabel cinemaicon;
+    private Utils.SVGIconLabel cinemaicon;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel left;

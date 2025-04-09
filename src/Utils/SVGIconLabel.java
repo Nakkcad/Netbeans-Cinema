@@ -1,4 +1,4 @@
-package Logic;
+package Utils;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import javax.swing.*;

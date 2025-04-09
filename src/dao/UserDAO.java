@@ -4,8 +4,8 @@
  */
 package dao;
 
-import Logic.DatabaseConnection;
-import Logic.PasswordUtils;
+import Utils.DatabaseConnection;
+import Utils.PasswordUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class UserDAO {
+
     private Connection connection;
 
     public UserDAO() {
@@ -20,27 +21,31 @@ public class UserDAO {
     }
 
     // Method to authenticate user
-    public boolean authenticateUser(String username, String passwordInput) {
+    public String authenticateUser(String username, String passwordInput) {
         if (connection == null) {
             JOptionPane.showMessageDialog(null, "Database connection error");
-            return false;
+            return null;
         }
 
         try {
-            String sql = "SELECT password FROM customer WHERE username=?";
+            String sql = "SELECT password, role FROM customer WHERE username=?";
             PreparedStatement pst = connection.prepareStatement(sql);
             pst.setString(1, username);
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
                 String storedHashedPassword = rs.getString("password");
+                String role = rs.getString("role");
                 String hashedInputPassword = PasswordUtils.hashPassword(passwordInput);
-                return storedHashedPassword.equals(hashedInputPassword);
+
+                if (storedHashedPassword.equals(hashedInputPassword)) {
+                    return role; // Return the user's role if authentication succeeds
+                }
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
         }
-        return false;
+        return null; // Return null if authentication fails
     }
 
     // Method to check if username exists
@@ -61,7 +66,7 @@ public class UserDAO {
         try {
             String hashedPassword = PasswordUtils.hashPassword(password);
             PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO customer (username, email, phone_number, password) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO customer (username, email, phone_number, password) VALUES (?, ?, ?, ?)");
             stmt.setString(1, username);
             stmt.setString(2, email);
             stmt.setString(3, phone);

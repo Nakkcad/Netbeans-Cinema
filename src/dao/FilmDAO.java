@@ -1,6 +1,6 @@
 package dao;
 
-import Logic.DatabaseConnection;
+import Utils.DatabaseConnection;
 import model.Film;
 import java.sql.*;
 import java.util.ArrayList;
