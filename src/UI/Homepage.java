@@ -7,6 +7,15 @@ package UI;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.UnsupportedLookAndFeelException;
 import Logic.UserSession;
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import dao.FilmDAO;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import model.Film;
+import model.MovieDetailsDialog;
 
 /**
  *
@@ -22,6 +31,8 @@ public class Homepage extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         String username = UserSession.getUsername();
         welcome.setText("Welcome, " + username);
+        setupMoviesContainer();
+        loadMovies();
     }
 
     /**
@@ -33,8 +44,8 @@ public class Homepage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        Main = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        moviesContainer = new javax.swing.JPanel();
+        moviesScrollPane = new javax.swing.JScrollPane();
         Menubar = new javax.swing.JPanel();
         welcome = new javax.swing.JLabel();
         film_searchbar = new javax.swing.JTextField();
@@ -44,29 +55,33 @@ public class Homepage extends javax.swing.JFrame {
         setLocation(new java.awt.Point(0, 0));
         setPreferredSize(new java.awt.Dimension(1080, 720));
 
-        Main.setBackground(new java.awt.Color(102, 0, 0));
-        Main.setPreferredSize(new java.awt.Dimension(800, 600));
+        moviesContainer.setBackground(new java.awt.Color(102, 0, 0));
+        moviesContainer.setPreferredSize(new java.awt.Dimension(800, 600));
 
-        jScrollPane2.setBackground(new java.awt.Color(102, 0, 51));
-
-        javax.swing.GroupLayout MainLayout = new javax.swing.GroupLayout(Main);
-        Main.setLayout(MainLayout);
-        MainLayout.setHorizontalGroup(
-            MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1021, Short.MAX_VALUE)
+        javax.swing.GroupLayout moviesContainerLayout = new javax.swing.GroupLayout(moviesContainer);
+        moviesContainer.setLayout(moviesContainerLayout);
+        moviesContainerLayout.setHorizontalGroup(
+            moviesContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(moviesScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1021, Short.MAX_VALUE)
         );
-        MainLayout.setVerticalGroup(
-            MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+        moviesContainerLayout.setVerticalGroup(
+            moviesContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(moviesScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
         );
 
-        getContentPane().add(Main, java.awt.BorderLayout.CENTER);
+        getContentPane().add(moviesContainer, java.awt.BorderLayout.CENTER);
 
         Menubar.setBackground(new java.awt.Color(153, 102, 255));
         Menubar.setPreferredSize(new java.awt.Dimension(1080, 50));
 
         welcome.setForeground(new java.awt.Color(0, 0, 0));
         welcome.setText("Welcome, USER");
+
+        film_searchbar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                film_searchbarKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout MenubarLayout = new javax.swing.GroupLayout(Menubar);
         Menubar.setLayout(MenubarLayout);
@@ -93,6 +108,252 @@ public class Homepage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+private Timer searchTimer;
+    private void film_searchbarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_film_searchbarKeyTyped
+        // Cancel previous timer if still running
+        if (searchTimer != null && searchTimer.isRunning()) {
+            searchTimer.stop();
+        }
+
+        // Create new timer with 300ms delay
+        searchTimer = new Timer(300, e -> {
+            performSearch();
+        });
+        searchTimer.setRepeats(false);
+        searchTimer.start();
+    }//GEN-LAST:event_film_searchbarKeyTyped
+
+    private void performSearch() {
+        String searchText = film_searchbar.getText().toLowerCase().trim();
+
+        // Show loading indicator
+        moviesContainer.removeAll();
+        JLabel loadingLabel = new JLabel("Searching...", SwingConstants.CENTER);
+        loadingLabel.setForeground(Color.WHITE);
+        loadingLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        moviesContainer.add(loadingLabel);
+        moviesContainer.revalidate();
+
+        // Perform search in background thread
+        new SwingWorker<List<Film>, Void>() {
+            @Override
+            protected List<Film> doInBackground() throws Exception {
+                FilmDAO filmDAO = new FilmDAO();
+                return filmDAO.getAllFilms();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    List<Film> allFilms = get();
+                    moviesContainer.removeAll();
+
+                    // If empty search, show all movies
+                    if (searchText.isEmpty()) {
+                        for (Film film : allFilms) {
+                            addMovieCard(film);
+                        }
+                        return;
+                    }
+
+                    // Filter movies
+                    int matchCount = 0;
+                    for (Film film : allFilms) {
+                        if (film.getTitle().toLowerCase().contains(searchText)
+                                || film.getGenre().toLowerCase().contains(searchText)) {
+                            addMovieCard(film);
+                            matchCount++;
+                        }
+                    }
+
+                    // No results message
+                    if (matchCount == 0) {
+                        showNoResultsMessage(searchText);
+                    }
+
+                } catch (Exception ex) {
+                    showErrorMessage("Search failed: " + ex.getMessage());
+                } finally {
+                    moviesContainer.revalidate();
+                    moviesContainer.repaint();
+                }
+            }
+        }.execute();
+    }
+
+    private void addMovieCard(Film film) {
+        MovieCard card = new MovieCard(film, () -> {
+            openMovieDetails(film);
+        });
+        moviesContainer.add(card);
+    }
+
+    private void showNoResultsMessage(String searchText) {
+        JPanel messagePanel = new JPanel(new BorderLayout());
+        messagePanel.setBackground(new Color(102, 0, 0));
+
+        JLabel noResults = new JLabel("No movies found matching: '" + searchText + "'", SwingConstants.CENTER);
+        noResults.setForeground(Color.WHITE);
+        noResults.setFont(new Font("SansSerif", Font.ITALIC, 16));
+
+        JLabel suggestion = new JLabel("Try different keywords", SwingConstants.CENTER);
+        suggestion.setForeground(Color.LIGHT_GRAY);
+        suggestion.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        messagePanel.add(noResults, BorderLayout.CENTER);
+        messagePanel.add(suggestion, BorderLayout.SOUTH);
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+
+        moviesContainer.add(messagePanel);
+    }
+
+    private void showErrorMessage(String message) {
+        JLabel errorLabel = new JLabel(message, SwingConstants.CENTER);
+        errorLabel.setForeground(Color.RED);
+        errorLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        moviesContainer.add(errorLabel);
+    }
+
+    private void setupMoviesContainer() {
+        moviesContainer.removeAll();
+        moviesContainer.setLayout(new GridLayout(0, 4, 20, 20)); // 4 columns, 20px gaps
+        moviesContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    }
+
+    private void loadMovies() {
+        // Clear existing movies
+        moviesContainer.removeAll();
+        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Horizontal flow with 20px gaps
+
+        // Get movies from database
+        FilmDAO filmDAO = new FilmDAO();
+        List<Film> films = filmDAO.getAllFilms();
+
+        // Add movie cards with absolute size
+        for (Film film : films) {
+            MovieCard card = new MovieCard(film, () -> {
+                openMovieDetails(film);
+            });
+            card.setPreferredSize(new Dimension(250, 375)); // Absolute size
+            card.setMinimumSize(new Dimension(250, 375));
+            card.setMaximumSize(new Dimension(250, 375));
+            moviesContainer.add(card);
+        }
+
+        // Add filler component to prevent centering
+        moviesContainer.add(Box.createHorizontalGlue());
+
+        // Refresh layout
+        moviesContainer.revalidate();
+        moviesContainer.repaint();
+    }
+
+    private void openMovieDetails(Film film) {
+        MovieDetailsDialog detailsDialog = new MovieDetailsDialog(this, film);
+        detailsDialog.setVisible(true);
+    }
+
+    // MovieCard inner class
+    
+    class MovieCard extends JPanel {
+
+        private static final String PLACEHOLDER_PATH = "D:\\Main Storage\\Dekstop\\LoginSiginForm\\src\\resources\\posters\\poster_placeholder.png";
+
+        public MovieCard(Film film, Runnable onClick) {
+            setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(220, 330)); // Smaller 2:3 card
+            setBackground(new Color(30, 30, 30));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                    BorderFactory.createLineBorder(new Color(60, 60, 60), 1)));
+
+            // Poster panel
+            JPanel posterPanel = new JPanel(new BorderLayout());
+            posterPanel.setPreferredSize(new Dimension(210, 290));
+            posterPanel.setBackground(new Color(20, 20, 20));
+
+            JLabel posterLabel = new JLabel();
+            posterLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            loadPosterImage(film.getPosterUrl(), posterLabel);
+            posterPanel.add(posterLabel, BorderLayout.CENTER);
+
+            // Title panel
+            JPanel titlePanel = new JPanel(new BorderLayout());
+            titlePanel.setPreferredSize(new Dimension(210, 40));
+            titlePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            JLabel titleLabel = new JLabel("<html><center>" + film.getTitle() + "</center></html>");
+            titleLabel.setForeground(Color.WHITE);
+            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+            titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            titlePanel.add(titleLabel, BorderLayout.CENTER);
+
+            add(posterPanel, BorderLayout.CENTER);
+            add(titlePanel, BorderLayout.SOUTH);
+
+            setupHoverEffects();
+            addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    onClick.run();
+                }
+            });
+        }
+
+        private void loadPosterImage(String imagePath, JLabel posterLabel) {
+            new SwingWorker<ImageIcon, Void>() {
+                @Override
+                protected ImageIcon doInBackground() throws Exception {
+                    try {
+                        ImageIcon icon;
+                        if (imagePath != null && !imagePath.isEmpty() && !imagePath.equals("null")) {
+                            if (imagePath.startsWith("http")) {
+                                icon = new ImageIcon(new URL(imagePath));
+                            } else {
+                                icon = new ImageIcon(imagePath);
+                            }
+                        } else {
+                            icon = new ImageIcon(PLACEHOLDER_PATH);
+                        }
+
+                        // Resize image to 2:3 ratio (220x330 with padding considered)
+                        Image scaled = icon.getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    } catch (Exception e) {
+                        return new ImageIcon(PLACEHOLDER_PATH);
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        posterLabel.setIcon(get());
+                    } catch (Exception e) {
+                        posterLabel.setIcon(new ImageIcon(PLACEHOLDER_PATH));
+                    }
+                }
+            }.execute();
+        }
+
+        private void setupHoverEffects() {
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                            BorderFactory.createLineBorder(new Color(255, 215, 0), 2)
+                    ));
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+
+                public void mouseExited(MouseEvent e) {
+                    setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                            BorderFactory.createLineBorder(new Color(60, 60, 60), 1)
+                    ));
+                    setCursor(Cursor.getDefaultCursor());
+                }
+            });
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -135,10 +396,10 @@ public class Homepage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel Main;
     private javax.swing.JPanel Menubar;
     private javax.swing.JTextField film_searchbar;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel moviesContainer;
+    private javax.swing.JScrollPane moviesScrollPane;
     private javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
 }
