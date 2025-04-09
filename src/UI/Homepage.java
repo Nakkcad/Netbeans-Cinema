@@ -34,148 +34,65 @@ public class Homepage extends javax.swing.JFrame {
     private void initComponents() {
 
         Main = new javax.swing.JPanel();
-        account_panel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        welcome = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
         Menubar = new javax.swing.JPanel();
-        account_icon = new Logic.SVGIconLabel();
-        Sidebar = new javax.swing.JPanel();
+        welcome = new javax.swing.JLabel();
+        film_searchbar = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("CinemaApp - Homepage");
         setLocation(new java.awt.Point(0, 0));
         setPreferredSize(new java.awt.Dimension(1080, 720));
 
-        Main.setBackground(new java.awt.Color(204, 204, 204));
+        Main.setBackground(new java.awt.Color(102, 0, 0));
         Main.setPreferredSize(new java.awt.Dimension(800, 600));
 
-        account_panel.setBackground(new java.awt.Color(153, 255, 102));
-
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Profile", "Settings" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jList1.setToolTipText("pick");
-        jList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                jList1ValueChanged(evt);
-            }
-        });
-        jScrollPane1.setViewportView(jList1);
-
-        javax.swing.GroupLayout account_panelLayout = new javax.swing.GroupLayout(account_panel);
-        account_panel.setLayout(account_panelLayout);
-        account_panelLayout.setHorizontalGroup(
-            account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 126, Short.MAX_VALUE)
-            .addGroup(account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE))
-        );
-        account_panelLayout.setVerticalGroup(
-            account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 158, Short.MAX_VALUE)
-            .addGroup(account_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))
-        );
-
-        welcome.setForeground(new java.awt.Color(0, 0, 0));
-        welcome.setText("Welcome, USER");
+        jScrollPane2.setBackground(new java.awt.Color(102, 0, 51));
 
         javax.swing.GroupLayout MainLayout = new javax.swing.GroupLayout(Main);
         Main.setLayout(MainLayout);
         MainLayout.setHorizontalGroup(
             MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MainLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 567, Short.MAX_VALUE)
-                .addComponent(account_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(23, 23, 23))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1021, Short.MAX_VALUE)
         );
         MainLayout.setVerticalGroup(
             MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MainLayout.createSequentialGroup()
-                .addGroup(MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(account_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(MainLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(320, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
         );
-
-        account_panel.setVisible(false);
 
         getContentPane().add(Main, java.awt.BorderLayout.CENTER);
 
         Menubar.setBackground(new java.awt.Color(153, 102, 255));
         Menubar.setPreferredSize(new java.awt.Dimension(1080, 50));
 
-        account_icon.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        account_icon.setPreferredSize(new java.awt.Dimension(50, 50));
-        account_icon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                account_iconMouseClicked(evt);
-            }
-        });
+        welcome.setForeground(new java.awt.Color(0, 0, 0));
+        welcome.setText("Welcome, USER");
 
         javax.swing.GroupLayout MenubarLayout = new javax.swing.GroupLayout(Menubar);
         Menubar.setLayout(MenubarLayout);
         MenubarLayout.setHorizontalGroup(
             MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(MenubarLayout.createSequentialGroup()
-                .addContainerGap(946, Short.MAX_VALUE)
-                .addComponent(account_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 680, Short.MAX_VALUE)
+                .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25))
         );
         MenubarLayout.setVerticalGroup(
             MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MenubarLayout.createSequentialGroup()
-                .addComponent(account_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenubarLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(film_searchbar))
+                .addContainerGap())
         );
-
-        account_icon.setSvgFileName("account-circle.svg");
 
         getContentPane().add(Menubar, java.awt.BorderLayout.NORTH);
 
-        Sidebar.setPreferredSize(new java.awt.Dimension(100, 720));
-
-        javax.swing.GroupLayout SidebarLayout = new javax.swing.GroupLayout(Sidebar);
-        Sidebar.setLayout(SidebarLayout);
-        SidebarLayout.setHorizontalGroup(
-            SidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        SidebarLayout.setVerticalGroup(
-            SidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 478, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(Sidebar, java.awt.BorderLayout.WEST);
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void account_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_account_iconMouseClicked
-    account_panel.setVisible(true);
-    
-    // Add a global mouse listener to detect clicks outside
-    account_panel.getParent().addMouseListener(new java.awt.event.MouseAdapter() {
-        @Override
-        public void mousePressed(java.awt.event.MouseEvent evt) {
-            if (!account_panel.getBounds().contains(evt.getPoint())) {
-                account_panel.setVisible(false);
-            }
-        }
-    });
-    }//GEN-LAST:event_account_iconMouseClicked
-
-    private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList1ValueChanged
-        Login loginform = new Login();
-        loginform.setVisible(true);
-    }//GEN-LAST:event_jList1ValueChanged
 
     /**
      * @param args the command line arguments
@@ -208,12 +125,6 @@ public class Homepage extends javax.swing.JFrame {
             javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());  // Use FlatLaf
         } catch (UnsupportedLookAndFeelException ex) {
         }
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -226,11 +137,8 @@ public class Homepage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Main;
     private javax.swing.JPanel Menubar;
-    private javax.swing.JPanel Sidebar;
-    private Logic.SVGIconLabel account_icon;
-    private javax.swing.JPanel account_panel;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField film_searchbar;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
 }

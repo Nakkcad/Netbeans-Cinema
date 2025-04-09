@@ -67,6 +67,8 @@ private boolean isEditMode = false; // To track edit state
         btnDelete = new javax.swing.JButton();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         lblStatus = new javax.swing.JLabel();
+        searchfield = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
         SOUTH = new javax.swing.JScrollPane();
         tblMovies = new javax.swing.JTable();
 
@@ -262,6 +264,20 @@ private boolean isEditMode = false; // To track edit state
                 .addContainerGap())
         );
 
+        searchfield.setPreferredSize(new java.awt.Dimension(200, 25));
+        searchfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchfieldActionPerformed(evt);
+            }
+        });
+        searchfield.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                searchfieldKeyTyped(evt);
+            }
+        });
+
+        jLabel7.setText("Search");
+
         javax.swing.GroupLayout CENTERLayout = new javax.swing.GroupLayout(CENTER);
         CENTER.setLayout(CENTERLayout);
         CENTERLayout.setHorizontalGroup(
@@ -269,7 +285,9 @@ private boolean isEditMode = false; // To track edit state
             .addGroup(CENTERLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(CENTERLayout.createSequentialGroup()
+                        .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(642, Short.MAX_VALUE))
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
@@ -277,8 +295,12 @@ private boolean isEditMode = false; // To track edit state
                         .addGap(15, 15, 15)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(305, Short.MAX_VALUE))
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))))
         );
         CENTERLayout.setVerticalGroup(
             CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -288,7 +310,9 @@ private boolean isEditMode = false; // To track edit state
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -547,6 +571,37 @@ int selectedRow = tblMovies.getSelectedRow();
     }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void searchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchfieldActionPerformed
+ String keyword = searchfield.getText().trim().toLowerCase();
+    searchMovie(keyword);    }//GEN-LAST:event_searchfieldActionPerformed
+
+    private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
+ String keyword = searchfield.getText().trim().toLowerCase();
+    searchMovie(keyword);
+    }//GEN-LAST:event_searchfieldKeyTyped
+
+    private void searchMovie(String keyword) {
+    FilmDAO filmDAO = new FilmDAO();
+    List<Film> films = filmDAO.getAllFilms();
+
+    DefaultTableModel model = (DefaultTableModel) tblMovies.getModel();
+    model.setRowCount(0); // Clear existing data
+
+    for (Film film : films) {
+        if (film.getTitle().toLowerCase().contains(keyword) || 
+            film.getGenre().toLowerCase().contains(keyword)) {
+
+            model.addRow(new Object[]{
+                film.getFilmId(),
+                film.getTitle(),
+                film.getGenre(),
+                film.getDuration() + " mins",
+                film.getPosterUrl()
+            });
+        }
+    }
+}
+
     /**
      * @param args the command line arguments
      */
@@ -602,9 +657,11 @@ int selectedRow = tblMovies.getSelectedRow();
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblStatus;
+    private javax.swing.JTextField searchfield;
     private javax.swing.JSpinner spnDuration;
     private javax.swing.JTable tblMovies;
     private javax.swing.JTextField txtPosterUrl;
