@@ -4,16 +4,12 @@
  */
 package UI;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
-import Logic.DatabaseConnection;
-import Logic.PasswordUtils;
 import Logic.UserSession;
+import dao.UserDAO;
 
 /**
  *
@@ -27,7 +23,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
     }
 
     /**
@@ -322,42 +318,24 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_show_password_checkboxActionPerformed
 
     private void login_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_login_buttonActionPerformed
-        Connection conn = DatabaseConnection.connectDB(); // Call the database connection class
-        if (conn != null) {
-            try {
-                String username = usernamebox.getText();
-                String passwordInput = new String(passwordfield.getPassword());
+        String username = usernamebox.getText();
+        String passwordInput = new String(passwordfield.getPassword());
 
-                // Retrieve the hashed password from the database
-                String sql = "SELECT password FROM customer WHERE username=?";
-                PreparedStatement pst = conn.prepareStatement(sql);
-                pst.setString(1, username);
-                ResultSet rs = pst.executeQuery();
+        UserDAO userDAO = new UserDAO();
+        try {
+            if (userDAO.authenticateUser(username, passwordInput)) {
+                JOptionPane.showMessageDialog(null, "Login Successful!");
+                UserSession.setUsername(username);
 
-                if (rs.next()) {
-                    String storedHashedPassword = rs.getString("password"); // Get stored hashed password
-                    String hashedInputPassword = PasswordUtils.hashPassword(passwordInput); // Hash input password
-
-                    if (storedHashedPassword.equals(hashedInputPassword)) { // Compare hashed passwords
-                        JOptionPane.showMessageDialog(null, "Login Successful!");
-
-                        // Open the main application window
-                        UserSession.setUsername(username);
-
-                        Homepage main = new Homepage();
-                        main.setVisible(true);
-                        this.dispose(); // Close login form
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
-                }
-
-                conn.close();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Login Error: " + e.getMessage());
+                Homepage main = new Homepage();
+                main.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid Username or Password",
+                        "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
+        } finally {
+            userDAO.closeConnection();
         }
     }//GEN-LAST:event_login_buttonActionPerformed
 

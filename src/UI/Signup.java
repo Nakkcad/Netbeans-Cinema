@@ -4,14 +4,10 @@
  */
 package UI;
 
-import java.sql.Connection;
 import java.awt.event.ActionEvent;
-import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
-import Logic.DatabaseConnection;
 import Logic.PasswordUtils;
-import java.sql.ResultSet;
-
+import dao.UserDAO;
 
 /**
  *
@@ -385,52 +381,42 @@ public class Signup extends javax.swing.JFrame {
 
     private void signup_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signup_buttonActionPerformed
         String username = usernamebox.getText();
-    String email = email_field.getText();
-    String phone = phone_number_field.getText();
-    String password = new String(passwordfield.getPassword());
+        String email = email_field.getText();
+        String phone = phone_number_field.getText();
+        String password = new String(passwordfield.getPassword());
 
-    if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    // Validate password strength
-    if (!PasswordUtils.isValidPassword(password)) {
-        JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.", "Invalid Password", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    String hashedPassword = PasswordUtils.hashPassword(password); // Use PasswordUtils
-
-    try (Connection conn = DatabaseConnection.connectDB()) {
-
-        // Check for duplicate username
-        PreparedStatement checkStmt = conn.prepareStatement("SELECT * FROM customer WHERE username = ?");
-        checkStmt.setString(1, username);
-        ResultSet rs = checkStmt.executeQuery();
-
-        if (rs.next()) {
-            JOptionPane.showMessageDialog(this, "Username already exists. Please choose another one.", "Duplicate Username", JOptionPane.ERROR_MESSAGE);
-            usernamebox.setText("");
+        if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Insert new user
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO customer (username, email, phone_number, password) VALUES (?, ?, ?, ?)");
-        stmt.setString(1, username);
-        stmt.setString(2, email);
-        stmt.setString(3, phone);
-        stmt.setString(4, hashedPassword);
-
-        int rowsInserted = stmt.executeUpdate();
-        if (rowsInserted > 0) {
-            JOptionPane.showMessageDialog(this, "Signup successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-            new Login().setVisible(true);
+        if (!PasswordUtils.isValidPassword(password)) {
+            JOptionPane.showMessageDialog(this,
+                    "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.",
+                    "Invalid Password", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Signup failed: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
+
+        UserDAO userDAO = new UserDAO();
+        try {
+            if (userDAO.usernameExists(username)) {
+                JOptionPane.showMessageDialog(this,
+                        "Username already exists. Please choose another one.",
+                        "Duplicate Username", JOptionPane.ERROR_MESSAGE);
+                usernamebox.setText("");
+                return;
+            }
+
+            if (userDAO.createUser(username, email, phone, password)) {
+                JOptionPane.showMessageDialog(this, "Signup successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+                new Login().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Signup failed", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } finally {
+            userDAO.closeConnection();
+        }
     }//GEN-LAST:event_signup_buttonActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
