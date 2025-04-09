@@ -72,7 +72,7 @@ private boolean isEditMode = false; // To track edit state
         SOUTH = new javax.swing.JScrollPane();
         tblMovies = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Admin Panel");
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(900, 700));
@@ -265,11 +265,6 @@ private boolean isEditMode = false; // To track edit state
         );
 
         searchfield.setPreferredSize(new java.awt.Dimension(200, 25));
-        searchfield.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchfieldActionPerformed(evt);
-            }
-        });
         searchfield.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 searchfieldKeyTyped(evt);
@@ -570,10 +565,6 @@ int selectedRow = tblMovies.getSelectedRow();
         setStatus("Delete canceled", Color.GRAY);
     }
     }//GEN-LAST:event_btnDeleteActionPerformed
-
-    private void searchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchfieldActionPerformed
- String keyword = searchfield.getText().trim().toLowerCase();
-    searchMovie(keyword);    }//GEN-LAST:event_searchfieldActionPerformed
 
     private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
  String keyword = searchfield.getText().trim().toLowerCase();
