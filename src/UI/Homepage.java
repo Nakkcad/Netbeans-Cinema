@@ -11,8 +11,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import dao.FilmDAO;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
@@ -35,6 +38,8 @@ public class Homepage extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         String username = UserSession.getUsername();
         welcome.setText("Welcome, " + username);
+        setupScrollingSpeed(); // Add this line
+
         setupMoviesContainer();
         loadMovies();
     }
@@ -48,8 +53,8 @@ public class Homepage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        moviesContainer = new javax.swing.JPanel();
         moviesScrollPane = new javax.swing.JScrollPane();
+        moviesContainer = new javax.swing.JPanel();
         Menubar = new javax.swing.JPanel();
         welcome = new javax.swing.JLabel();
         film_searchbar = new javax.swing.JTextField();
@@ -64,21 +69,13 @@ public class Homepage extends javax.swing.JFrame {
             }
         });
 
+        moviesScrollPane.setVerifyInputWhenFocusTarget(false);
+
         moviesContainer.setBackground(new java.awt.Color(102, 0, 0));
         moviesContainer.setPreferredSize(new java.awt.Dimension(800, 600));
+        moviesScrollPane.setViewportView(moviesContainer);
 
-        javax.swing.GroupLayout moviesContainerLayout = new javax.swing.GroupLayout(moviesContainer);
-        moviesContainer.setLayout(moviesContainerLayout);
-        moviesContainerLayout.setHorizontalGroup(
-            moviesContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(moviesScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1021, Short.MAX_VALUE)
-        );
-        moviesContainerLayout.setVerticalGroup(
-            moviesContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(moviesScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(moviesContainer, java.awt.BorderLayout.CENTER);
+        getContentPane().add(moviesScrollPane, java.awt.BorderLayout.CENTER);
 
         Menubar.setBackground(new java.awt.Color(255, 204, 0));
         Menubar.setPreferredSize(new java.awt.Dimension(1080, 50));
@@ -99,7 +96,7 @@ public class Homepage extends javax.swing.JFrame {
             .addGroup(MenubarLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 680, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 739, Short.MAX_VALUE)
                 .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25))
         );
@@ -131,12 +128,45 @@ private Timer searchTimer;
         searchTimer.setRepeats(false);
         searchTimer.start();
     }//GEN-LAST:event_film_searchbarKeyTyped
+// Add this method to your Homepage class
 
+    private void setupScrollingSpeed() {
+        // Get the scroll pane's viewport
+        JScrollPane scrollPane = moviesScrollPane;
+
+        // Add mouse wheel listener to increase scroll speed
+        scrollPane.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // Get the current scroll bar
+                JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+
+                // Calculate scroll amount (multiply by factor to increase speed)
+                int scrollAmount = verticalScrollBar.getUnitIncrement() * 3;
+
+                // Apply the scroll amount based on wheel rotation
+                if (e.getWheelRotation() < 0) {
+                    // Scroll up
+                    verticalScrollBar.setValue(verticalScrollBar.getValue() - scrollAmount);
+                } else {
+                    // Scroll down
+                    verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                }
+
+                // Consume the event so it doesn't get processed further
+                e.consume();
+            }
+        });
+
+        // You can also increase the unit and block increments directly
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);  // Default is usually 1
+        scrollPane.getVerticalScrollBar().setBlockIncrement(256); // Default is usually 10
+    }
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // close all window too
         for (Window window : Window.getWindows()) {
-        window.dispose();
-    }
+            window.dispose();
+        }
         new Login().setVisible(true);
     }//GEN-LAST:event_formWindowClosed
 
@@ -233,15 +263,45 @@ private Timer searchTimer;
 
     private void setupMoviesContainer() {
         moviesContainer.removeAll();
-        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Horizontal flow with 20px gaps
+        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
         moviesContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Add these two lines:
+        moviesContainer.setAutoscrolls(true);
+        // Use null for track width to use parent's width
+        moviesContainer.setPreferredSize(null);
+    }
+
+    public void componentResized(ComponentEvent e) {
+        // Update container width when window is resized
+        updateContainerSize();
+    }
+
+    private void updateContainerSize() {
+        // Calculate how many cards fit in a row
+        int scrollPaneWidth = moviesScrollPane.getViewport().getWidth();
+        int cardWidth = 220 + 40; // card width + horizontal spacing
+        int cardsPerRow = Math.max(1, scrollPaneWidth / cardWidth);
+
+        // Get total number of movies
+        int totalMovies = moviesContainer.getComponentCount();
+
+        // Calculate number of rows needed
+        int rows = (int) Math.ceil((double) totalMovies / cardsPerRow);
+
+        // Calculate total height needed
+        int cardHeight = 330 + 40; // card height + vertical spacing
+        int totalHeight = rows * cardHeight + 40; // Add extra padding
+
+        // Set container's preferred size to allow scrolling
+        moviesContainer.setPreferredSize(new Dimension(scrollPaneWidth - 20, totalHeight));
+        moviesContainer.revalidate();
     }
 
     private void loadMovies() {
         // Clear existing movies
         moviesContainer.removeAll();
-        setupMoviesContainer(); // Use the same layout setup
+        setupMoviesContainer();
 
         // Get movies from database
         FilmDAO filmDAO = new FilmDAO();
@@ -251,6 +311,9 @@ private Timer searchTimer;
         for (Film film : films) {
             addMovieCard(film);
         }
+
+        // Add this line to update container size
+        updateContainerSize();
 
         // Refresh layout
         moviesContainer.revalidate();

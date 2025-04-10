@@ -33,10 +33,11 @@ public class AdminPanel extends javax.swing.JFrame {
     public AdminPanel() {
         initComponents();
         refreshMovieTable();
-        
+
     }
-private Film currentFilm; // To track the film being edited
-private boolean isEditMode = false; // To track edit state
+    private Film currentFilm; // To track the film being edited
+    private boolean isEditMode = false; // To track edit state
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,6 +61,8 @@ private boolean isEditMode = false; // To track edit state
         jScrollPane1 = new javax.swing.JScrollPane();
         txtSynopsis = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        date_field = new javax.swing.JTextField();
         CENTER = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -135,6 +138,16 @@ private boolean isEditMode = false; // To track edit state
         jLabel6.setPreferredSize(new java.awt.Dimension(80, 25));
         jLabel6.setRequestFocusEnabled(false);
 
+        jLabel8.setText("Release Date:");
+        jLabel8.setPreferredSize(new java.awt.Dimension(80, 25));
+
+        date_field.setPreferredSize(new java.awt.Dimension(300, 25));
+        date_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                date_fieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout NORTHLayout = new javax.swing.GroupLayout(NORTH);
         NORTH.setLayout(NORTHLayout);
         NORTHLayout.setHorizontalGroup(
@@ -143,7 +156,7 @@ private boolean isEditMode = false; // To track edit state
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(NORTHLayout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -151,13 +164,17 @@ private boolean isEditMode = false; // To track edit state
                                 .addGap(29, 29, 29)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spnDuration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(spnDuration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(NORTHLayout.createSequentialGroup()
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(NORTHLayout.createSequentialGroup()
@@ -173,7 +190,7 @@ private boolean isEditMode = false; // To track edit state
                                 .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addContainerGap(102, Short.MAX_VALUE))
         );
         NORTHLayout.setVerticalGroup(
             NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,7 +198,9 @@ private boolean isEditMode = false; // To track edit state
                 .addGap(20, 20, 20)
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -282,7 +301,7 @@ private boolean isEditMode = false; // To track edit state
                 .addGroup(CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(642, Short.MAX_VALUE))
+                        .addContainerGap(619, Short.MAX_VALUE))
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
@@ -315,18 +334,19 @@ private boolean isEditMode = false; // To track edit state
 
         getContentPane().add(CENTER, java.awt.BorderLayout.CENTER);
 
+        SOUTH.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         SOUTH.setPreferredSize(new java.awt.Dimension(850, 300));
 
         tblMovies.setAutoCreateRowSorter(true);
         tblMovies.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Title", "Genre", "Duration", "Poster"
+                "ID", "Title", "Genre", "Duration", "Release Date", "Poster"
             }
         ));
         tblMovies.setPreferredSize(new java.awt.Dimension(850, 300));
@@ -413,65 +433,67 @@ private boolean isEditMode = false; // To track edit state
             }
         };
     }
-    
-    
+
+
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // Clear previous status
         lblStatus.setText("Operation Status");
-    
-    // Validate inputs
-    if (txtTitle.getText().trim().isEmpty()) {
-        setStatus("Title is required", Color.RED);
-        txtTitle.requestFocus();
-        return;
-    }
 
-    try {
-        FilmDAO filmDAO = new FilmDAO();
-        
-        if (isEditMode) {
-            // UPDATE EXISTING FILM
-            currentFilm.setTitle(txtTitle.getText().trim());
-            currentFilm.setGenre(cbGenre.getSelectedItem().toString());
-            currentFilm.setDuration((Integer)spnDuration.getValue());
-            currentFilm.setSynopsis(txtSynopsis.getText().trim());
-            currentFilm.setPosterUrl(txtPosterUrl.getText().trim());
-            
-            if (filmDAO.updateFilm(currentFilm)) {
-                setStatus("Movie updated successfully!", new Color(0, 150, 0));
-                refreshMovieTable();
-                setStatus("Movie Updated", Color.GREEN);
-                clearForm();
-                exitEditMode();
-            } else {
-                setStatus("Failed to update movie", Color.RED);
-            }
-        } else {
-            // ADD NEW FILM
-            Film newFilm = new Film();
-            newFilm.setTitle(txtTitle.getText().trim());
-            newFilm.setGenre(cbGenre.getSelectedItem().toString());
-            newFilm.setDuration((Integer)spnDuration.getValue());
-            newFilm.setSynopsis(txtSynopsis.getText().trim());
-            newFilm.setPosterUrl(txtPosterUrl.getText().trim());
-            
-            if (filmDAO.addFilm(newFilm)) {
-                setStatus("Movie added successfully!", new Color(0, 150, 0));
-                refreshMovieTable();
-                clearForm();
-            } else {
-                setStatus("Failed to add movie", Color.RED);
-            }
+        // Validate inputs
+        if (txtTitle.getText().trim().isEmpty()) {
+            setStatus("Title is required", Color.RED);
+            txtTitle.requestFocus();
+            return;
         }
-    } catch (Exception e) {
-        setStatus("Error: " + e.getMessage(), Color.RED);
-    }
-}
 
-private void exitEditMode() {
-    isEditMode = false;
-    currentFilm = null;
-    btnAdd.setText("Add");
+        try {
+            FilmDAO filmDAO = new FilmDAO();
+
+            if (isEditMode) {
+                // UPDATE EXISTING FILM
+                currentFilm.setTitle(txtTitle.getText().trim());
+                currentFilm.setGenre(cbGenre.getSelectedItem().toString());
+                currentFilm.setDuration((Integer) spnDuration.getValue());
+                currentFilm.setSynopsis(txtSynopsis.getText().trim());
+                currentFilm.setPosterUrl(txtPosterUrl.getText().trim());
+                currentFilm.setReleaseDate(date_field.getText().trim()); // Add this line
+
+                if (filmDAO.updateFilm(currentFilm)) {
+                    setStatus("Movie updated successfully!", new Color(0, 150, 0));
+                    refreshMovieTable();
+                    setStatus("Movie Updated", Color.GREEN);
+                    clearForm();
+                    exitEditMode();
+                } else {
+                    setStatus("Failed to update movie", Color.RED);
+                }
+            } else {
+                // ADD NEW FILM
+                Film newFilm = new Film();
+                newFilm.setTitle(txtTitle.getText().trim());
+                newFilm.setGenre(cbGenre.getSelectedItem().toString());
+                newFilm.setDuration((Integer) spnDuration.getValue());
+                newFilm.setSynopsis(txtSynopsis.getText().trim());
+                newFilm.setPosterUrl(txtPosterUrl.getText().trim());
+                newFilm.setReleaseDate(date_field.getText().trim());
+
+                if (filmDAO.addFilm(newFilm)) {
+                    setStatus("Movie added successfully!", new Color(0, 150, 0));
+                    refreshMovieTable();
+                    clearForm();
+                } else {
+                    setStatus("Failed to add movie", Color.RED);
+                }
+            }
+        } catch (Exception e) {
+            setStatus("Error: " + e.getMessage(), Color.RED);
+        }
+    }
+
+    private void exitEditMode() {
+        isEditMode = false;
+        currentFilm = null;
+        btnAdd.setText("Add");
     }//GEN-LAST:event_btnAddActionPerformed
     private void refreshMovieTable() {
         FilmDAO filmDAO = new FilmDAO();
@@ -486,6 +508,7 @@ private void exitEditMode() {
                 film.getTitle(),
                 film.getGenre(),
                 film.getDuration() + " mins",
+                film.getReleaseDate(),
                 film.getPosterUrl()
             });
         }
@@ -500,6 +523,7 @@ private void exitEditMode() {
         spnDuration.setValue(90);
         txtPosterUrl.setText("");
         txtSynopsis.setText("");
+        date_field.setText(""); // Add this
         txtTitle.requestFocus();
         btnAdd.setText("Add Movie");
         setStatus("Operation Status", Color.GRAY);
@@ -507,91 +531,98 @@ private void exitEditMode() {
 
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-int selectedRow = tblMovies.getSelectedRow();
-    if (selectedRow == -1) {
-        setStatus("Please select a movie to edit", Color.ORANGE);
-        return;
-    }
-    
-    // Get selected film ID
-    int filmId = (Integer)tblMovies.getValueAt(selectedRow, 0);
-    
-    // Load film data into form
-    FilmDAO filmDAO = new FilmDAO();
-    currentFilm = filmDAO.getFilmById(filmId);
-    
-    if (currentFilm != null) {
-        txtTitle.setText(currentFilm.getTitle());
-        cbGenre.setSelectedItem(currentFilm.getGenre());
-        spnDuration.setValue(currentFilm.getDuration());
-        txtPosterUrl.setText(currentFilm.getPosterUrl());
-        txtSynopsis.setText(currentFilm.getSynopsis());
-        
-        // Change to edit mode
-        isEditMode = true;
-        btnAdd.setText("Update");
-        setStatus("Editing: " + currentFilm.getTitle(), new Color(0, 100, 200));
-    }
+        int selectedRow = tblMovies.getSelectedRow();
+        if (selectedRow == -1) {
+            setStatus("Please select a movie to edit", Color.ORANGE);
+            return;
+        }
+
+        // Get selected film ID
+        int filmId = (Integer) tblMovies.getValueAt(selectedRow, 0);
+
+        // Load film data into form
+        FilmDAO filmDAO = new FilmDAO();
+        currentFilm = filmDAO.getFilmById(filmId);
+
+        if (currentFilm != null) {
+            txtTitle.setText(currentFilm.getTitle());
+            cbGenre.setSelectedItem(currentFilm.getGenre());
+            spnDuration.setValue(currentFilm.getDuration());
+            txtPosterUrl.setText(currentFilm.getPosterUrl());
+            txtSynopsis.setText(currentFilm.getSynopsis());
+            date_field.setText(currentFilm.getReleaseDate()); // Add this line
+
+            isEditMode = true;
+            btnAdd.setText("Update");
+            setStatus("Editing: " + currentFilm.getTitle(), new Color(0, 100, 200));
+        }
+
+
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-         if (isEditMode) {
-        setStatus("Finish or cancel editing first", Color.ORANGE);
-        return;
-    }
-    
-    int selectedRow = tblMovies.getSelectedRow();
-    if (selectedRow == -1) {
-        setStatus("Please select a movie to delete", Color.ORANGE);
-        return;
-    }
-    
-    String movieTitle = (String)tblMovies.getValueAt(selectedRow, 1);
-    int confirm = JOptionPane.showConfirmDialog(this, 
-        "Are you sure you want to delete '" + movieTitle + "'?", 
-        "Confirm Delete", JOptionPane.YES_NO_OPTION);
-    
-    if (confirm == JOptionPane.YES_OPTION) {
-        int filmId = (Integer)tblMovies.getValueAt(selectedRow, 0);
-        FilmDAO filmDAO = new FilmDAO();
-        
-        if (filmDAO.deleteFilm(filmId)) {
-            setStatus("Deleted movie: " + movieTitle, new Color(0, 150, 0));
-            refreshMovieTable();
-        } else {
-            setStatus("Failed to delete movie", Color.RED);
+        if (isEditMode) {
+            setStatus("Finish or cancel editing first", Color.ORANGE);
+            return;
         }
-    } else {
-        setStatus("Delete canceled", Color.GRAY);
-    }
+
+        int selectedRow = tblMovies.getSelectedRow();
+        if (selectedRow == -1) {
+            setStatus("Please select a movie to delete", Color.ORANGE);
+            return;
+        }
+
+        String movieTitle = (String) tblMovies.getValueAt(selectedRow, 1);
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete '" + movieTitle + "'?",
+                "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            int filmId = (Integer) tblMovies.getValueAt(selectedRow, 0);
+            FilmDAO filmDAO = new FilmDAO();
+
+            if (filmDAO.deleteFilm(filmId)) {
+                setStatus("Deleted movie: " + movieTitle, new Color(0, 150, 0));
+                refreshMovieTable();
+            } else {
+                setStatus("Failed to delete movie", Color.RED);
+            }
+        } else {
+            setStatus("Delete canceled", Color.GRAY);
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
- String keyword = searchfield.getText().trim().toLowerCase();
-    searchMovie(keyword);
+        String keyword = searchfield.getText().trim().toLowerCase();
+        searchMovie(keyword);
     }//GEN-LAST:event_searchfieldKeyTyped
 
+    private void date_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_date_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_date_fieldActionPerformed
+
     private void searchMovie(String keyword) {
-    FilmDAO filmDAO = new FilmDAO();
-    List<Film> films = filmDAO.getAllFilms();
+        FilmDAO filmDAO = new FilmDAO();
+        List<Film> films = filmDAO.getAllFilms();
 
-    DefaultTableModel model = (DefaultTableModel) tblMovies.getModel();
-    model.setRowCount(0); // Clear existing data
+        DefaultTableModel model = (DefaultTableModel) tblMovies.getModel();
+        model.setRowCount(0); // Clear existing data
 
-    for (Film film : films) {
-        if (film.getTitle().toLowerCase().contains(keyword) || 
-            film.getGenre().toLowerCase().contains(keyword)) {
+        for (Film film : films) {
+            if (film.getTitle().toLowerCase().contains(keyword)
+                    || film.getGenre().toLowerCase().contains(keyword)) {
 
-            model.addRow(new Object[]{
-                film.getFilmId(),
-                film.getTitle(),
-                film.getGenre(),
-                film.getDuration() + " mins",
-                film.getPosterUrl()
-            });
+                model.addRow(new Object[]{
+                    film.getFilmId(),
+                    film.getTitle(),
+                    film.getGenre(),
+                    film.getDuration() + " mins",
+                    film.getReleaseDate(),
+                    film.getPosterUrl()
+                });
+            }
         }
     }
-}
 
     /**
      * @param args the command line arguments
@@ -642,6 +673,7 @@ int selectedRow = tblMovies.getSelectedRow();
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JComboBox<String> cbGenre;
+    private javax.swing.JTextField date_field;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -649,6 +681,7 @@ int selectedRow = tblMovies.getSelectedRow();
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblStatus;
