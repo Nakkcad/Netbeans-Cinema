@@ -223,7 +223,10 @@ private Timer searchTimer;
                 } finally {
                     moviesContainer.revalidate();
                     moviesContainer.repaint();
+                    updateContainerSize(); // Ensure scroll size matches content
+                    moviesScrollPane.getVerticalScrollBar().setValue(0); // ✅ Reset to top
                 }
+
             }
         }.execute();
     }

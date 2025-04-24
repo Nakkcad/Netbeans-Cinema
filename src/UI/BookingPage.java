@@ -27,28 +27,42 @@ public class BookingPage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        NorthPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        moviename_label = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("kosong");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("SHOWTIME");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(209, 209, 209)
+        moviename_label.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        moviename_label.setText("<MOVIE NAME>");
+
+        javax.swing.GroupLayout NorthPanelLayout = new javax.swing.GroupLayout(NorthPanel);
+        NorthPanel.setLayout(NorthPanelLayout);
+        NorthPanelLayout.setHorizontalGroup(
+            NorthPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NorthPanelLayout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(251, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(moviename_label, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+                .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(93, 93, 93)
-                .addComponent(jLabel1)
-                .addContainerGap(228, Short.MAX_VALUE))
+        NorthPanelLayout.setVerticalGroup(
+            NorthPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NorthPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(NorthPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(moviename_label))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
+
+        getContentPane().add(NorthPanel, java.awt.BorderLayout.NORTH);
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -89,6 +103,9 @@ public class BookingPage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel NorthPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel moviename_label;
     // End of variables declaration//GEN-END:variables
 }

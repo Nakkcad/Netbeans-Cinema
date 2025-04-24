@@ -4,6 +4,7 @@
  */
 package UI;
 
+import Utils.TMDBFetcher;
 import com.formdev.flatlaf.FlatDarkLaf;
 import dao.FilmDAO;
 import java.awt.Color;
@@ -13,7 +14,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -63,6 +66,10 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         date_field = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        fetchlinkfield = new javax.swing.JTextArea();
+        jLabel9 = new javax.swing.JLabel();
+        fetchmoviesbutton = new javax.swing.JButton();
         CENTER = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -148,12 +155,42 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        fetchlinkfield.setColumns(20);
+        fetchlinkfield.setRows(5);
+        jScrollPane2.setViewportView(fetchlinkfield);
+
+        jLabel9.setText("Fetch Link");
+
+        fetchmoviesbutton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        fetchmoviesbutton.setText("Fetch Movies");
+        fetchmoviesbutton.setPreferredSize(new java.awt.Dimension(120, 30));
+        fetchmoviesbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fetchmoviesbuttonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout NORTHLayout = new javax.swing.GroupLayout(NORTH);
         NORTH.setLayout(NORTHLayout);
         NORTHLayout.setHorizontalGroup(
             NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NORTHLayout.createSequentialGroup()
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(NORTHLayout.createSequentialGroup()
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(NORTHLayout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, NORTHLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(NORTHLayout.createSequentialGroup()
+                                .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -174,50 +211,48 @@ public class AdminPanel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(NORTHLayout.createSequentialGroup()
-                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(NORTHLayout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, NORTHLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(NORTHLayout.createSequentialGroup()
-                                .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(102, Short.MAX_VALUE))
+                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(11, Short.MAX_VALUE))
         );
         NORTHLayout.setVerticalGroup(
             NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NORTHLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbGenre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(spnDuration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                    .addGroup(NORTHLayout.createSequentialGroup()
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbGenre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(spnDuration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(NORTHLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         getContentPane().add(NORTH, java.awt.BorderLayout.NORTH);
@@ -301,7 +336,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 .addGroup(CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(619, Short.MAX_VALUE))
+                        .addContainerGap(684, Short.MAX_VALUE))
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
@@ -319,7 +354,7 @@ public class AdminPanel extends javax.swing.JFrame {
         CENTERLayout.setVerticalGroup(
             CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CENTERLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(7, Short.MAX_VALUE)
                 .addGroup(CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -334,7 +369,6 @@ public class AdminPanel extends javax.swing.JFrame {
 
         getContentPane().add(CENTER, java.awt.BorderLayout.CENTER);
 
-        SOUTH.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         SOUTH.setPreferredSize(new java.awt.Dimension(850, 300));
 
         tblMovies.setAutoCreateRowSorter(true);
@@ -601,6 +635,62 @@ public class AdminPanel extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_date_fieldActionPerformed
 
+    private void fetchmoviesbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fetchmoviesbuttonActionPerformed
+        // TODO add your handling code here:
+           String input = fetchlinkfield.getText().trim();
+    if (input.isEmpty()) {
+        setStatus("Paste TMDB movie links first!", Color.RED);
+        return;
+    }
+
+    String[] lines = input.split("\\R"); // Split by newline
+    TMDBFetcher fetcher = new TMDBFetcher();
+    FilmDAO dao = new FilmDAO();
+
+    // Load existing titles (lowercase for case-insensitive matching)
+    Set<String> existingTitles = new HashSet<>();
+    for (Film f : dao.getAllFilms()) {
+        existingTitles.add(f.getTitle().toLowerCase());
+    }
+
+    int successCount = 0;
+    int skippedCount = 0;
+
+    for (String line : lines) {
+        try {
+            line = line.trim();
+            if (!line.isEmpty() && line.contains("themoviedb.org/movie/")) {
+                String[] parts = line.split("/");
+                String idPart = parts[parts.length - 1]; // "822119-captain-america..."
+                String idStr = idPart.split("-")[0];     // get "822119"
+                int movieId = Integer.parseInt(idStr);
+
+                Film film = fetcher.fetchMovieById(movieId);
+                if (film != null) {
+                    String titleLower = film.getTitle().toLowerCase();
+
+                    if (!existingTitles.contains(titleLower)) {
+                        if (dao.addFilm(film)) {
+                            successCount++;
+                            existingTitles.add(titleLower); // Prevent duplicates within batch
+                            System.out.println("✅ Added: " + film.getTitle());
+                        }
+                    } else {
+                        skippedCount++;
+                        System.out.println("⏩ Skipped (duplicate): " + film.getTitle());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Failed to fetch: " + line + " - " + e.getMessage());
+        }
+    }
+
+    setStatus("✅ Added: " + successCount + " | ⏩ Skipped: " + skippedCount, new Color(0, 150, 0));
+    refreshMovieTable();
+
+    }//GEN-LAST:event_fetchmoviesbuttonActionPerformed
+
     private void searchMovie(String keyword) {
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getAllFilms();
@@ -674,6 +764,8 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JComboBox<String> cbGenre;
     private javax.swing.JTextField date_field;
+    private javax.swing.JTextArea fetchlinkfield;
+    private javax.swing.JButton fetchmoviesbutton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -682,8 +774,10 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JTextField searchfield;
     private javax.swing.JSpinner spnDuration;
