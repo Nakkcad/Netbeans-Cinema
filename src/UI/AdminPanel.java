@@ -531,7 +531,7 @@ public class AdminPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
     private void refreshMovieTable() {
         FilmDAO filmDAO = new FilmDAO();
-        List<Film> films = filmDAO.getAllFilms();
+        List<Film> films = filmDAO.getFilms(null);
 
         DefaultTableModel model = (DefaultTableModel) tblMovies.getModel();
         model.setRowCount(0); // Clear existing data
@@ -649,7 +649,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
     // Load existing titles (lowercase for case-insensitive matching)
     Set<String> existingTitles = new HashSet<>();
-    for (Film f : dao.getAllFilms()) {
+    for (Film f : dao.getFilms(null)) {
         existingTitles.add(f.getTitle().toLowerCase());
     }
 
@@ -693,7 +693,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
     private void searchMovie(String keyword) {
         FilmDAO filmDAO = new FilmDAO();
-        List<Film> films = filmDAO.getAllFilms();
+        List<Film> films = filmDAO.getFilms(null);
 
         DefaultTableModel model = (DefaultTableModel) tblMovies.getModel();
         model.setRowCount(0); // Clear existing data

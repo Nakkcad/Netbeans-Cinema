@@ -10,7 +10,7 @@ import model.Film;
 public class TMDBFetcher {
 
     private static final String API_KEY = "76104b3bc3dd38c735f7a2347034a853";
-    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/top_rated";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/now_playing";
     private static final String DETAIL_URL = "https://api.themoviedb.org/3/movie/";
 
     public List<Film> fetchMovies(int totalMovies) throws IOException {
@@ -19,7 +19,7 @@ public class TMDBFetcher {
 
         System.out.println("[DEBUG] Loading existing films from DB...");
         Set<String> existingTitles = new HashSet<>();
-        for (Film f : dao.getAllFilms()) {
+        for (Film f : dao.getFilms(null)) {
             existingTitles.add(f.getTitle().toLowerCase());
         }
         System.out.println("[DEBUG] Loaded " + existingTitles.size() + " existing titles.");
@@ -52,7 +52,7 @@ public class TMDBFetcher {
                 String title = obj.get("title").getAsString();
 
                 if (existingTitles.contains(title.toLowerCase())) {
-//                    System.out.println("[DEBUG] Skipped existing movie: " + title);
+                    System.out.println("[DEBUG] Skipped existing movie: " + title);
                     continue;
                 }
 
@@ -60,25 +60,29 @@ public class TMDBFetcher {
                 String overview = obj.get("overview").getAsString();
                 String posterPath = obj.get("poster_path").isJsonNull() ? "" : obj.get("poster_path").getAsString();
                 String releaseDate = obj.get("release_date").isJsonNull() ? "2000-01-01" : obj.get("release_date").getAsString();
+                double rating = obj.get("vote_average").isJsonNull() ? 0.0 : obj.get("vote_average").getAsDouble();
 
                 MovieDetail detail = fetchMovieDetail(movieId);
 
                 Film film = new Film(
-                    title,
-                    detail.genre,
-                    detail.duration,
-                    overview,
-                    "https://image.tmdb.org/t/p/w500" + posterPath,
-                    releaseDate
+                        title,
+                        detail.genre,
+                        detail.duration,
+                        overview,
+                        "https://image.tmdb.org/t/p/w500" + posterPath,
+                        releaseDate,
+                        rating
                 );
 
                 films.add(film);
                 existingTitles.add(title.toLowerCase());
                 moviesFetched++;
 
-                System.out.println("[DEBUG] Added movie: " + title + " (" + detail.genre + ", " + detail.duration + " min)");
+                System.out.println("[DEBUG] Added movie: " + title + " (" + detail.genre + ", " + detail.duration + " min, Rating: " + rating + ")");
 
-                if (moviesFetched >= totalMovies) break;
+                if (moviesFetched >= totalMovies) {
+                    break;
+                }
             }
 
             page++;
@@ -106,7 +110,7 @@ public class TMDBFetcher {
             genre = genresArray.get(0).getAsJsonObject().get("name").getAsString();
         }
 
-        System.out.println("[DEBUG] Detail fetched - Genre: " + genre + ", Duration: " + duration + " mins");
+//        System.out.println("[DEBUG] Detail fetched - Genre: " + genre + ", Duration: " + duration + " mins");
         return new MovieDetail(duration, genre);
     }
 
@@ -130,6 +134,7 @@ public class TMDBFetcher {
         String posterPath = json.get("poster_path").isJsonNull() ? "" : json.get("poster_path").getAsString();
         String releaseDate = json.get("release_date").isJsonNull() ? "2000-01-01" : json.get("release_date").getAsString();
         int duration = json.get("runtime").isJsonNull() ? 120 : json.get("runtime").getAsInt();
+        double rating = json.get("vote_average").isJsonNull() ? 0.0 : json.get("vote_average").getAsDouble();
 
         String genre = "Unknown";
         JsonArray genresArray = json.getAsJsonArray("genres");
@@ -138,10 +143,14 @@ public class TMDBFetcher {
         }
 
         System.out.println("[DEBUG] Movie fetched: " + title);
-        return new Film(title, genre, duration, overview, "https://image.tmdb.org/t/p/w500" + posterPath, releaseDate);
+        return new Film(title, genre, duration, overview,
+                "https://image.tmdb.org/t/p/w500" + posterPath,
+                releaseDate,
+                rating);
     }
 
     private class MovieDetail {
+
         int duration;
         String genre;
 

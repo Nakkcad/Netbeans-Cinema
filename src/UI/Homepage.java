@@ -11,16 +11,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import dao.FilmDAO;
+import dao.PosterDAO;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URL;
 import java.util.Random;
-import javax.imageio.ImageIO;
 import model.Film;
 import model.MovieDetailsDialog;
 
@@ -38,10 +37,10 @@ public class Homepage extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         String username = UserSession.getUsername();
         welcome.setText("Welcome, " + username);
-        setupScrollingSpeed(); // Add this line
+        setupScrollingSpeed();
 
         setupMoviesContainer();
-        loadMovies();
+        loadMovieCategories(); // Changed from loadMovies()
     }
 
     /**
@@ -62,7 +61,7 @@ public class Homepage extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Homepage");
         setLocation(new java.awt.Point(0, 0));
-        setPreferredSize(new java.awt.Dimension(1080, 720));
+        setPreferredSize(new java.awt.Dimension(1100, 720));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -73,6 +72,7 @@ public class Homepage extends javax.swing.JFrame {
 
         moviesContainer.setBackground(new java.awt.Color(102, 0, 0));
         moviesContainer.setPreferredSize(new java.awt.Dimension(800, 600));
+        moviesContainer.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 1, 1));
         moviesScrollPane.setViewportView(moviesContainer);
 
         getContentPane().add(moviesScrollPane, java.awt.BorderLayout.CENTER);
@@ -84,6 +84,9 @@ public class Homepage extends javax.swing.JFrame {
         welcome.setText("Welcome, USER");
 
         film_searchbar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                film_searchbarKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 film_searchbarKeyTyped(evt);
             }
@@ -114,7 +117,10 @@ public class Homepage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-private Timer searchTimer;
+    private Timer searchTimer;
+
+    private boolean isSearchMode = false;
+
     private void film_searchbarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_film_searchbarKeyTyped
         // Cancel previous timer if still running
         if (searchTimer != null && searchTimer.isRunning()) {
@@ -170,23 +176,39 @@ private Timer searchTimer;
         new Login().setVisible(true);
     }//GEN-LAST:event_formWindowClosed
 
+    private void film_searchbarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_film_searchbarKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            clearSearch();
+        }    }//GEN-LAST:event_film_searchbarKeyPressed
+
     private void performSearch() {
         String searchText = film_searchbar.getText().toLowerCase().trim();
 
-        // Show loading indicator
-        moviesContainer.removeAll();
-        JLabel loadingLabel = new JLabel("Searching...", SwingConstants.CENTER);
-        loadingLabel.setForeground(Color.WHITE);
-        loadingLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        moviesContainer.add(loadingLabel);
-        moviesContainer.revalidate();
+        // Check if we're entering or exiting search mode
+        boolean shouldBeInSearchMode = !searchText.isEmpty();
+
+        if (shouldBeInSearchMode != isSearchMode) {
+            // Transition between modes
+            isSearchMode = shouldBeInSearchMode;
+            setupMoviesContainer(); // Reset the container layout
+        }
+
+        // Show loading indicator only in search mode
+        if (isSearchMode) {
+            moviesContainer.removeAll();
+            JLabel loadingLabel = new JLabel("Searching...", SwingConstants.CENTER);
+            loadingLabel.setForeground(Color.WHITE);
+            loadingLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            moviesContainer.add(loadingLabel);
+            moviesContainer.revalidate();
+        }
 
         // Perform search in background thread
         new SwingWorker<List<Film>, Void>() {
             @Override
             protected List<Film> doInBackground() throws Exception {
                 FilmDAO filmDAO = new FilmDAO();
-                return filmDAO.getAllFilms();
+                return filmDAO.getFilms(null);
             }
 
             @Override
@@ -195,15 +217,13 @@ private Timer searchTimer;
                     List<Film> allFilms = get();
                     moviesContainer.removeAll();
 
-                    // If empty search, show all movies
-                    if (searchText.isEmpty()) {
-                        for (Film film : allFilms) {
-                            addMovieCard(film);
-                        }
+                    if (!isSearchMode) {
+                        // Return to default categories view
+                        loadMovieCategories();
                         return;
                     }
 
-                    // Filter movies
+                    // Filter movies for search results
                     int matchCount = 0;
                     for (Film film : allFilms) {
                         if (film.getTitle().toLowerCase().contains(searchText)
@@ -223,10 +243,9 @@ private Timer searchTimer;
                 } finally {
                     moviesContainer.revalidate();
                     moviesContainer.repaint();
-                    updateContainerSize(); // Ensure scroll size matches content
-                    moviesScrollPane.getVerticalScrollBar().setValue(0); // ✅ Reset to top
+                    updateContainerSize();
+                    moviesScrollPane.getVerticalScrollBar().setValue(0);
                 }
-
             }
         }.execute();
     }
@@ -235,7 +254,14 @@ private Timer searchTimer;
         MovieCard card = new MovieCard(film, () -> {
             openMovieDetails(film);
         });
-        moviesContainer.add(card);
+
+        if (isSearchMode) {
+            // In search mode, just add the card directly
+            moviesContainer.add(card);
+        } else {
+            // In category mode, this shouldn't be called directly
+            throw new IllegalStateException("addMovieCard should not be called directly in category mode");
+        }
     }
 
     private void showNoResultsMessage(String searchText) {
@@ -266,61 +292,126 @@ private Timer searchTimer;
 
     private void setupMoviesContainer() {
         moviesContainer.removeAll();
-        moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-        moviesContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Add these two lines:
+        if (isSearchMode) {
+            // Search mode - use FlowLayout for grid of results
+            moviesContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        } else {
+            // Default mode - use BoxLayout for categories
+            moviesContainer.setLayout(new BoxLayout(moviesContainer, BoxLayout.Y_AXIS));
+        }
+
+        moviesContainer.setBackground(new Color(102, 0, 0));
+        moviesContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         moviesContainer.setAutoscrolls(true);
-        // Use null for track width to use parent's width
-        moviesContainer.setPreferredSize(null);
     }
+
+    private void loadMovieCategories() {
+        FilmDAO filmDAO = new FilmDAO();
+
+        // Add Top Rated section
+        addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
+        addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
+        // Add sections for different genres
+        String[] popularGenres = {"Action", "Comedy", "Drama", "Sci-Fi", "Horror"};
+        for (String genre : popularGenres) {
+            addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
+        }
+
+        // Add All Movies section
+        addMovieCategory("All Movies", filmDAO.getFilms(null));
+
+        // Update container size after adding all categories
+        updateContainerSize();
+    }
+
+    private void addMovieCategory(String categoryTitle, List<Film> films) {
+        if (films.isEmpty()) {
+            return;
+        }
+
+        // Create category panel
+        JPanel categoryPanel = new JPanel();
+        categoryPanel.setLayout(new BorderLayout());
+        categoryPanel.setBackground(new Color(102, 0, 0));
+        categoryPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        // Add category title
+        JLabel titleLabel = new JLabel(categoryTitle);
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
+        categoryPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Create horizontal scrolling panel for movies
+        JPanel moviesPanel = new JPanel();
+        moviesPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        moviesPanel.setBackground(new Color(102, 0, 0));
+
+        // Add movie cards
+        for (Film film : films) {
+            MovieCard card = new MovieCard(film, () -> {
+                openMovieDetails(film);
+            });
+            moviesPanel.add(card);
+        }
+
+        // Create horizontal scroll pane
+        JScrollPane horizontalScroll = new JScrollPane(moviesPanel);
+        horizontalScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        horizontalScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        horizontalScroll.setBorder(null);
+        horizontalScroll.getViewport().setBackground(new Color(102, 0, 0));
+
+        categoryPanel.add(horizontalScroll, BorderLayout.CENTER);
+        moviesContainer.add(categoryPanel);
+
+        // Add some space between categories
+        moviesContainer.add(Box.createRigidArea(new Dimension(0, 10)));
+    }
+
+   private void updateContainerSize() {
+    if (isSearchMode) {
+        // Calculate size for search mode (grid layout)
+        int componentCount = moviesContainer.getComponentCount();
+        if (componentCount == 0) return;
+        
+        // Calculate rows and columns based on container width
+        int width = moviesScrollPane.getViewport().getWidth() - 20;
+        int cardWidth = 220 + 15; // card width + horizontal spacing
+        int cardsPerRow = Math.max(1, width / cardWidth);
+        int rows = (int) Math.ceil((double) componentCount / cardsPerRow);
+        
+        // Calculate total height needed
+        int cardHeight = 330 + 15; // card height + vertical spacing
+        int totalHeight = rows * cardHeight + 40; // Add extra padding
+        
+        moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
+    } else {
+        // Calculate size for category mode (vertical layout)
+        int totalHeight = 0;
+        for (Component comp : moviesContainer.getComponents()) {
+            if (comp instanceof JPanel) {
+                totalHeight += comp.getPreferredSize().height;
+            } else if (comp instanceof Box.Filler) {
+                totalHeight += comp.getPreferredSize().height;
+            }
+        }
+        
+        // Add extra padding
+        totalHeight += 40;
+        
+        // Set container's preferred size
+        int width = moviesScrollPane.getViewport().getWidth() - 20;
+        moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
+    }
+    
+    moviesContainer.revalidate();
+}
 
     public void componentResized(ComponentEvent e) {
         // Update container width when window is resized
         updateContainerSize();
-    }
-
-    private void updateContainerSize() {
-        // Calculate how many cards fit in a row
-        int scrollPaneWidth = moviesScrollPane.getViewport().getWidth();
-        int cardWidth = 220 + 40; // card width + horizontal spacing
-        int cardsPerRow = Math.max(1, scrollPaneWidth / cardWidth);
-
-        // Get total number of movies
-        int totalMovies = moviesContainer.getComponentCount();
-
-        // Calculate number of rows needed
-        int rows = (int) Math.ceil((double) totalMovies / cardsPerRow);
-
-        // Calculate total height needed
-        int cardHeight = 330 + 40; // card height + vertical spacing
-        int totalHeight = rows * cardHeight + 40; // Add extra padding
-
-        // Set container's preferred size to allow scrolling
-        moviesContainer.setPreferredSize(new Dimension(scrollPaneWidth - 20, totalHeight));
-        moviesContainer.revalidate();
-    }
-
-    private void loadMovies() {
-        // Clear existing movies
-        moviesContainer.removeAll();
-        setupMoviesContainer();
-
-        // Get movies from database
-        FilmDAO filmDAO = new FilmDAO();
-        List<Film> films = filmDAO.getAllFilms();
-
-        // Add movie cards
-        for (Film film : films) {
-            addMovieCard(film);
-        }
-
-        // Add this line to update container size
-        updateContainerSize();
-
-        // Refresh layout
-        moviesContainer.revalidate();
-        moviesContainer.repaint();
     }
 
     private void openMovieDetails(Film film) {
@@ -328,15 +419,19 @@ private Timer searchTimer;
         detailsDialog.setVisible(true);
     }
 
+    private void clearSearch() {
+        film_searchbar.setText("");
+        isSearchMode = false;
+        setupMoviesContainer();
+        loadMovieCategories();
+    }
+
     // MovieCard inner class
     // <editor-fold defaultstate="collapsed" desc="Moviecard bullshit">   
     class MovieCard extends JPanel {
 
-        private static final String PLACEHOLDER_PATH = "D:\\Main Storage\\Dekstop\\LoginSiginForm\\src\\resources\\posters\\poster_placeholder.png";
-        private static final String LOCAL_POSTERS_DIR = "D:\\Main Storage\\Dekstop\\LoginSiginForm\\src\\resources\\posters\\";
         private static final int CARD_WIDTH = 220;
         private static final int CARD_HEIGHT = 330;
-        private static final int ANIMATION_DURATION = 150; // milliseconds
         private static final Color BG_COLOR = new Color(30, 30, 30);
         private static final Color BORDER_COLOR = new Color(60, 60, 60);
         private static final Color HOVER_COLOR = new Color(255, 215, 0);
@@ -423,102 +518,29 @@ private Timer searchTimer;
         private void loadPosterImage(String imagePath, JPanel container) {
             new SwingWorker<JComponent, Void>() {
                 @Override
-                protected JComponent doInBackground() throws Exception {
+                protected JComponent doInBackground() {
                     try {
-                        URL imageUrl = null;
-                        String localPath = null;
+                        PosterDAO posterDAO = new PosterDAO();
+                        BufferedImage scaledImage = posterDAO.loadAndScalePoster(imagePath, film.getTitle(), 200, 300);
 
-                        // Check if we have a URL or local path
-                        if (imagePath != null && !imagePath.isEmpty() && !imagePath.equals("null")) {
-                            if (imagePath.startsWith("http")) {
-                                // Generate local filename from URL
-                                String filename = "poster_" + film.getTitle().hashCode() + ".jpg";
-                                filename = filename.replaceAll("[^a-zA-Z0-9.-]", "_");
-                                localPath = LOCAL_POSTERS_DIR + filename;
-
-                                // Check if we already have this file locally
-                                File localFile = new File(localPath);
-                                if (localFile.exists()) {
-                                    imageUrl = localFile.toURI().toURL();
-                                } else {
-                                    // Download the image
-                                    imageUrl = new URL(imagePath);
-                                    BufferedImage image = ImageIO.read(imageUrl);
-                                    if (image != null) {
-                                        // Save to local resources
-                                        File dir = new File(LOCAL_POSTERS_DIR);
-                                        if (!dir.exists()) {
-                                            dir.mkdirs();
-                                        }
-                                        ImageIO.write(image, "jpg", localFile);
-                                        imageUrl = localFile.toURI().toURL();
-                                    }
-                                }
-                            } else {
-                                // Local file path
-                                File file = new File(imagePath);
-                                if (file.exists()) {
-                                    imageUrl = file.toURI().toURL();
-                                }
-                            }
-                        }
-
-                        // If no valid URL, use placeholder
-                        if (imageUrl == null) {
-                            File placeholderFile = new File(PLACEHOLDER_PATH);
-                            if (placeholderFile.exists()) {
-                                imageUrl = placeholderFile.toURI().toURL();
-                            } else {
-                                return createTextPlaceholder(film.getTitle());
-                            }
-                        }
-
-                        // Load and scale image with high quality
-                        BufferedImage originalImage = ImageIO.read(imageUrl);
-                        if (originalImage == null) {
+                        if (scaledImage == null) {
                             return createTextPlaceholder(film.getTitle());
                         }
 
-                        // Calculate aspect ratio preserving dimensions
-                        int width = 200;
-                        int height = 300;
-                        double aspectRatio = (double) originalImage.getWidth() / originalImage.getHeight();
-
-                        if (aspectRatio > (double) width / height) {
-                            height = (int) (width / aspectRatio);
-                        } else {
-                            width = (int) (height * aspectRatio);
-                        }
-
-                        // Create high quality scaled image
-                        BufferedImage scaledImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D g2d = scaledImage.createGraphics();
-                        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-
-                        g2d.drawImage(originalImage, 0, 0, width, height, null);
-                        g2d.dispose();
-
-                        // Create a centered panel for the image
                         JPanel imagePanel = new JPanel(new GridBagLayout()) {
                             @Override
                             protected void paintComponent(Graphics g) {
                                 super.paintComponent(g);
-                                if (scaledImage != null) {
-                                    int x = (getWidth() - scaledImage.getWidth()) / 2;
-                                    int y = (getHeight() - scaledImage.getHeight()) / 2;
-                                    g.drawImage(scaledImage, x, y, this);
-                                }
+                                int x = (getWidth() - scaledImage.getWidth()) / 2;
+                                int y = (getHeight() - scaledImage.getHeight()) / 2;
+                                g.drawImage(scaledImage, x, y, this);
                             }
                         };
                         imagePanel.setOpaque(false);
                         imagePanel.setBackground(new Color(0, 0, 0, 0));
-
                         return imagePanel;
                     } catch (Exception e) {
-                        System.err.println("Error loading image: " + e.getMessage());
+                        System.err.println("Poster load error: " + e.getMessage());
                         return createErrorPlaceholder();
                     }
                 }
@@ -527,12 +549,10 @@ private Timer searchTimer;
                 protected void done() {
                     try {
                         JComponent result = get();
-                        if (result != null) {
-                            container.removeAll();
-                            container.add(result, BorderLayout.CENTER);
-                            container.revalidate();
-                            container.repaint();
-                        }
+                        container.removeAll();
+                        container.add(result, BorderLayout.CENTER);
+                        container.revalidate();
+                        container.repaint();
                     } catch (Exception e) {
                         container.removeAll();
                         container.add(createErrorPlaceholder(), BorderLayout.CENTER);
