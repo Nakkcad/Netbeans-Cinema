@@ -310,16 +310,16 @@ public class Homepage extends javax.swing.JFrame {
         FilmDAO filmDAO = new FilmDAO();
 
         // Add Top Rated section
-        addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
-        addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
+        addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(1));
+        addMovieCategory("Newest", filmDAO.getFilmsByNewest(1));
         // Add sections for different genres
         String[] popularGenres = {"Action", "Comedy", "Drama", "Sci-Fi", "Horror"};
         for (String genre : popularGenres) {
-            addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
+            addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 1));
         }
 
         // Add All Movies section
-        addMovieCategory("All Movies", filmDAO.getFilms(null));
+        addMovieCategory("All Movies", filmDAO.getFilms(1));
 
         // Update container size after adding all categories
         updateContainerSize();
