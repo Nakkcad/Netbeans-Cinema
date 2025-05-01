@@ -10,102 +10,137 @@ import java.util.Random;
 public class MovieDetailsDialog extends JDialog {
 
     private final Film film;
+    private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
+    private final Color TEXT_COLOR = new Color(220, 220, 220);
+    private final Color SECONDARY_COLOR = new Color(60, 63, 65);
+    private final Color ACCENT_COLOR = new Color(255, 204, 0);
+    private final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
+    private final Font DETAIL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
+    private final Font SYNOPSIS_FONT = new Font("Segoe UI", Font.PLAIN, 15);
 
     public MovieDetailsDialog(JFrame parent, Film film) {
         super(parent, film.getTitle(), true);
         this.film = film;
 
-        setSize(700, 550); // Increased size for better layout
+        setSize(900, 600); // Larger size for better content display
         setLocationRelativeTo(parent);
         setResizable(false);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(70,73,75));
+        JPanel mainPanel = new JPanel(new BorderLayout(20, 20));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        mainPanel.setBackground(BACKGROUND_COLOR);
 
         // Poster container (Left Side)
         JPanel posterContainer = new JPanel(new BorderLayout());
-        posterContainer.setPreferredSize(new Dimension(280, 400));
-        posterContainer.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        posterContainer.setPreferredSize(new Dimension(350, 500));
+        posterContainer.setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR, 2));
+        posterContainer.setBackground(SECONDARY_COLOR);
         loadPosterImage(film.getPosterUrl(), posterContainer);
 
-        // Movie Details (Right Side)
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
-        detailsPanel.setBackground(Color.WHITE);
-        detailsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        // Movie Details (Right Side) - Using GridBagLayout
+        JPanel detailsPanel = new JPanel(new GridBagLayout());
+        detailsPanel.setBackground(SECONDARY_COLOR);
+        detailsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        // Title with star rating
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(Color.WHITE);
-        
+// Title with star rating - Modified version
+        JPanel titlePanel = new JPanel(new BorderLayout(10, 0)); // Added horizontal gap
+        titlePanel.setBackground(SECONDARY_COLOR);
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
         JLabel titleLabel = new JLabel(film.getTitle());
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(30, 30, 30));
-        
-        // Star rating
+        titleLabel.setFont(TITLE_FONT);
+        titleLabel.setForeground(TEXT_COLOR);
+
+// Modified rating panel creation
         JPanel ratingPanel = createRatingPanel(film.getRating());
-        titlePanel.add(titleLabel, BorderLayout.WEST);
+        ratingPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5)); // Add right padding
+
+// Create a container panel for the title to prevent it from expanding too much
+        JPanel titleContainer = new JPanel(new BorderLayout());
+        titleContainer.setBackground(SECONDARY_COLOR);
+        titleContainer.add(titleLabel, BorderLayout.WEST);
+
+        titlePanel.add(titleContainer, BorderLayout.CENTER);
         titlePanel.add(ratingPanel, BorderLayout.EAST);
-        
-        // Metadata panel
-        JPanel metaPanel = new JPanel();
-        metaPanel.setLayout(new BoxLayout(metaPanel, BoxLayout.Y_AXIS));
-        metaPanel.setBackground(Color.WHITE);
-        metaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JLabel genreLabel = createDetailLabel("Genre: " + film.getGenre());
-        JLabel durationLabel = createDetailLabel("Duration: " + film.getDuration() + " minutes");
-        JLabel releaseLabel = createDetailLabel("Release Date: " + film.getReleaseDate());
-        
-        metaPanel.add(genreLabel);
-        metaPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        metaPanel.add(durationLabel);
-        metaPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        metaPanel.add(releaseLabel);
-        
-        // Synopsis
+
+// Set constraints for the title panel in detailsPanel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 15, 0);
+        detailsPanel.add(titlePanel, gbc);
+
+// Metadata panel
+        gbc.gridy++;
+        gbc.insets = new Insets(0, 0, 15, 0);
+
+        JPanel metaPanel = new JPanel(new GridLayout(3, 1, 0, 8));
+        metaPanel.setBackground(SECONDARY_COLOR);
+        metaPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        metaPanel.add(createDetailLabel("Genre: " + film.getGenre()));
+        metaPanel.add(createDetailLabel("Duration: " + film.getDuration() + " minutes"));
+        metaPanel.add(createDetailLabel("Release Date: " + film.getReleaseDate()));
+
+        detailsPanel.add(metaPanel, gbc);
+
+// Synopsis
+        gbc.gridy++;
+        gbc.insets = new Insets(0, 0, 15, 0);
+
         JLabel synopsisTitle = new JLabel("Synopsis:");
-        synopsisTitle.setFont(new Font("SansSerif", Font.BOLD, 14));
-        synopsisTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+        synopsisTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        synopsisTitle.setForeground(TEXT_COLOR);
+        synopsisTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+
+        detailsPanel.add(synopsisTitle, gbc);
+
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+
         JTextArea synopsisArea = new JTextArea(film.getSynopsis());
         synopsisArea.setEditable(false);
         synopsisArea.setLineWrap(true);
         synopsisArea.setWrapStyleWord(true);
-        synopsisArea.setBackground(Color.WHITE);
-        synopsisArea.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        synopsisArea.setForeground(new Color(60, 60, 60));
-        synopsisArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        synopsisArea.setHighlighter(null); // Make non-selectable
-        synopsisArea.setFocusable(false); // Make non-focusable
-        
+        synopsisArea.setBackground(SECONDARY_COLOR.darker());
+        synopsisArea.setFont(SYNOPSIS_FONT);
+        synopsisArea.setForeground(TEXT_COLOR);
+        synopsisArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        synopsisArea.setHighlighter(null);
+        synopsisArea.setFocusable(false);
+
         JScrollPane synopsisScroll = new JScrollPane(synopsisArea);
-        synopsisScroll.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
-        synopsisScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        // Book button
-        JButton bookButton = new JButton("Book Tickets");
-        bookButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        bookButton.setBackground(new Color(255, 204, 0));
+        synopsisScroll.setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR.darker()));
+        synopsisScroll.setBackground(SECONDARY_COLOR);
+
+        detailsPanel.add(synopsisScroll, gbc);
+
+// Book button
+        gbc.gridy++;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0);
+
+        JButton bookButton = new JButton("BOOK TICKETS");
+        bookButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        bookButton.setBackground(ACCENT_COLOR);
         bookButton.setForeground(Color.BLACK);
-        bookButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        bookButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        bookButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ACCENT_COLOR.darker(), 1),
+                BorderFactory.createEmptyBorder(12, 30, 12, 30)
+        ));
+        bookButton.setFocusPainted(false);
         bookButton.addActionListener(e -> {
-            new UI.SchedulePage().setVisible(true);
+            new UI.ScheduleUI(film.getFilmId(), film.getTitle()).setVisible(true);
             dispose();
         });
 
-        // Add components to details panel
-        detailsPanel.add(titlePanel);
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        detailsPanel.add(metaPanel);
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        detailsPanel.add(synopsisTitle);
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        detailsPanel.add(synopsisScroll);
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
-        detailsPanel.add(bookButton);
+        detailsPanel.add(bookButton, gbc);
 
         mainPanel.add(posterContainer, BorderLayout.WEST);
         mainPanel.add(detailsPanel, BorderLayout.CENTER);
@@ -115,45 +150,45 @@ public class MovieDetailsDialog extends JDialog {
 
     private JLabel createDetailLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        label.setForeground(new Color(80, 80, 80));
+        label.setFont(DETAIL_FONT);
+        label.setForeground(TEXT_COLOR.brighter());
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
     }
 
-private JPanel createRatingPanel(double rating) {
-    JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
-    panel.setBackground(Color.WHITE);
+    private JPanel createRatingPanel(double rating) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        panel.setBackground(SECONDARY_COLOR);
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+        panel.setMinimumSize(new Dimension(80, 30)); // Ensure minimum width for rating
 
-    URL location = getClass().getResource("/icons/star.png");
-    ImageIcon starIcon = null;
+        URL location = getClass().getResource("/icons/star.png");
+        ImageIcon starIcon = null;
 
-    if (location != null) {
-        starIcon = new ImageIcon(location);
-    } else {
-        // Fallback if icon not found
-        starIcon = new ImageIcon(createStarIcon());
-        System.err.println("[WARNING] Star icon not found, using fallback.");
+        if (location != null) {
+            starIcon = new ImageIcon(location);
+        } else {
+            starIcon = new ImageIcon(createStarIcon());
+//            System.err.println("[WARNING] Star icon not found, using fallback.");
+        }
+
+        JLabel ratingLabel = new JLabel(String.format("%.1f", rating));
+        ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        ratingLabel.setForeground(ACCENT_COLOR);
+
+        panel.add(new JLabel(starIcon));
+        panel.add(ratingLabel);
+
+        return panel;
     }
 
-    JLabel ratingLabel = new JLabel(String.format("%.1f", rating));
-    ratingLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-    ratingLabel.setForeground(new Color(255, 153, 0));
-
-    panel.add(new JLabel(starIcon));
-    panel.add(ratingLabel);
-
-    return panel;
-}
-
-
     private Image createStarIcon() {
-        // Create simple star icon programmatically if not found
-        BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
-        g2.setColor(new Color(255, 153, 0));
-        g2.fillPolygon(new int[]{8, 10, 16, 11, 13, 8, 3, 5, 0, 6}, 
-                      new int[]{0, 7, 7, 11, 18, 14, 18, 11, 7, 7}, 10);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(ACCENT_COLOR);
+        g2.fillPolygon(new int[]{10, 12, 20, 14, 16, 10, 4, 6, 0, 8},
+                new int[]{0, 8, 8, 13, 20, 15, 20, 13, 8, 8}, 10);
         g2.dispose();
         return image;
     }
@@ -164,9 +199,11 @@ private JPanel createRatingPanel(double rating) {
             protected JComponent doInBackground() {
                 try {
                     PosterDAO posterDAO = new PosterDAO();
-                    BufferedImage scaledImage = posterDAO.loadAndScalePoster(imagePath, film.getTitle(), 250, 375);
+                    BufferedImage scaledImage = posterDAO.loadAndScalePoster(imagePath, film.getTitle(), 320, 480);
 
-                    if (scaledImage == null) return createTextPlaceholder(film.getTitle());
+                    if (scaledImage == null) {
+                        return createTextPlaceholder(film.getTitle());
+                    }
 
                     JPanel imagePanel = new JPanel(new GridBagLayout()) {
                         @Override
@@ -178,7 +215,6 @@ private JPanel createRatingPanel(double rating) {
                         }
                     };
                     imagePanel.setOpaque(false);
-                    imagePanel.setBackground(new Color(0, 0, 0, 0));
                     return imagePanel;
                 } catch (Exception e) {
                     System.err.println("Poster load error: " + e.getMessage());
@@ -207,14 +243,14 @@ private JPanel createRatingPanel(double rating) {
     private JPanel createTextPlaceholder(String title) {
         JPanel placeholder = new JPanel(new GridBagLayout());
         placeholder.setBackground(getRandomDarkColor());
-        placeholder.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        placeholder.setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR, 2));
 
         String letter = title != null && !title.isEmpty()
                 ? title.substring(0, 1).toUpperCase()
                 : "?";
 
         JLabel letterLabel = new JLabel(letter);
-        letterLabel.setFont(new Font("SansSerif", Font.BOLD, 72));
+        letterLabel.setFont(new Font("Segoe UI", Font.BOLD, 100));
         letterLabel.setForeground(Color.WHITE);
         placeholder.add(letterLabel);
 
@@ -223,11 +259,11 @@ private JPanel createRatingPanel(double rating) {
 
     private JPanel createErrorPlaceholder() {
         JPanel placeholder = new JPanel(new GridBagLayout());
-        placeholder.setBackground(new Color(40, 40, 40));
-        placeholder.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        placeholder.setBackground(new Color(50, 50, 50));
+        placeholder.setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR, 2));
 
         JLabel errorLabel = new JLabel("!");
-        errorLabel.setFont(new Font("SansSerif", Font.BOLD, 72));
+        errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 100));
         errorLabel.setForeground(new Color(255, 100, 100));
         placeholder.add(errorLabel);
 
@@ -245,4 +281,27 @@ private JPanel createRatingPanel(double rating) {
         };
         return colors[new Random().nextInt(colors.length)];
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // Sample film for demonstration
+            Film sampleFilm = new Film();
+            sampleFilm.setFilmId(1);
+            sampleFilm.setTitle("Inception");
+            sampleFilm.setGenre("Science Fiction");
+            sampleFilm.setDuration(148);
+            sampleFilm.setReleaseDate("2010-07-16");
+            sampleFilm.setRating(4.8);
+            sampleFilm.setSynopsis("A thief who steals corporate secrets through use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.");
+            sampleFilm.setPosterUrl("/path/to/sample/poster.jpg"); // Make sure this path is valid or test with a null
+
+            JFrame dummyParent = new JFrame();
+            dummyParent.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            dummyParent.setVisible(true);
+
+            MovieDetailsDialog dialog = new MovieDetailsDialog(dummyParent, sampleFilm);
+            dialog.setVisible(true);
+        });
+    }
+
 }
