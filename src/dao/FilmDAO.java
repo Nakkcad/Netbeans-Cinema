@@ -123,6 +123,22 @@ public class FilmDAO {
         return films;
     }
 
+    
+    public Film getFilmByTitle(String title) {
+    String sql = "SELECT * FROM film WHERE title = ?";
+    try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, title);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return mapResultSetToFilm(rs);
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Error getting film by title: " + e.getMessage());
+    }
+    return null;
+}
+    
     public void insertFilms(List<Film> films) {
         String sql = "INSERT INTO film (title, genre, duration, synopsis, poster_url, release_date, rating) VALUES (?, ?, ?, ?, ?, ?, ?)"; // Added 'rating'
 

@@ -16,7 +16,7 @@ import model.Film;
 public class Main {
     public static void main(String[] args) throws IOException {
         TMDBFetcher fetcher = new TMDBFetcher();
-        List<Film> films = fetcher.fetchMovies(50);
+        List<Film> films = fetcher.fetchMovies(100);
 
         FilmDAO dao = new FilmDAO();
         dao.insertFilms(films);

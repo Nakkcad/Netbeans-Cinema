@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/bioskop_db"; // XAMPP MySQL Database URL
+    private static final String URL = "jdbc:mysql://localhost:3306/bioskop_db2"; // XAMPP MySQL Database URL
     private static final String USER = "root"; // Default MySQL username in XAMPP
     private static final String PASSWORD = ""; // Default MySQL password in XAMPP (empty by default)
 

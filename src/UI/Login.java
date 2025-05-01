@@ -4,6 +4,7 @@
  */
 package UI;
 
+import admin.AdminPanel;
 import javax.swing.JOptionPane;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.event.ActionEvent;
