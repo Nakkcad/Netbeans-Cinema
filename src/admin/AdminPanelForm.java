@@ -53,7 +53,7 @@ public class AdminPanelForm extends javax.swing.JFrame {
         viewByDateButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Screening Schedule Admin Panel");
 
         scheduleTable.setModel(new javax.swing.table.DefaultTableModel(

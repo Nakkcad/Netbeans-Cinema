@@ -40,7 +40,7 @@ public class Homepage extends javax.swing.JFrame {
         setupScrollingSpeed();
 
         setupMoviesContainer();
-        loadMovieCategories(); // Changed from loadMovies()
+        loadMovieCategoriesInBackground(); // Changed from loadMovies()
     }
 
     /**
@@ -57,6 +57,7 @@ public class Homepage extends javax.swing.JFrame {
         Menubar = new javax.swing.JPanel();
         welcome = new javax.swing.JLabel();
         film_searchbar = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Homepage");
@@ -92,6 +93,9 @@ public class Homepage extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("Search:");
+
         javax.swing.GroupLayout MenubarLayout = new javax.swing.GroupLayout(Menubar);
         Menubar.setLayout(MenubarLayout);
         MenubarLayout.setHorizontalGroup(
@@ -99,7 +103,9 @@ public class Homepage extends javax.swing.JFrame {
             .addGroup(MenubarLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 739, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 690, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25))
         );
@@ -109,7 +115,8 @@ public class Homepage extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(film_searchbar))
+                    .addComponent(film_searchbar)
+                    .addComponent(jLabel1))
                 .addContainerGap())
         );
 
@@ -219,7 +226,7 @@ public class Homepage extends javax.swing.JFrame {
 
                     if (!isSearchMode) {
                         // Return to default categories view
-                        loadMovieCategories();
+                        loadMovieCategoriesInBackground();
                         return;
                     }
 
@@ -304,26 +311,62 @@ public class Homepage extends javax.swing.JFrame {
         moviesContainer.setBackground(new Color(102, 0, 0));
         moviesContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         moviesContainer.setAutoscrolls(true);
-    }
+    }    
+
+// <editor-fold defaultstate="collapsed" desc="unused Code">                          
 
     private void loadMovieCategories() {
         FilmDAO filmDAO = new FilmDAO();
 
         // Add Top Rated section
-        addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(1));
-        addMovieCategory("Newest", filmDAO.getFilmsByNewest(1));
+        addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
+        addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
         // Add sections for different genres
         String[] popularGenres = {"Action", "Comedy", "Drama", "Sci-Fi", "Horror"};
         for (String genre : popularGenres) {
-            addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 1));
+            addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
         }
 
         // Add All Movies section
-        addMovieCategory("All Movies", filmDAO.getFilms(1));
+        addMovieCategory("All Movies", filmDAO.getFilms(null));
 
         // Update container size after adding all categories
         updateContainerSize();
-    }
+    } // </editor-fold>
+    
+    
+    private void loadMovieCategoriesInBackground() {
+    SwingWorker<Void, Void> worker = new SwingWorker<>() {
+        @Override
+        protected Void doInBackground() {
+            FilmDAO filmDAO = new FilmDAO();
+
+            // Add Top Rated section
+            addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
+            addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
+
+            // Add sections for different genres
+            String[] popularGenres = {"Action", "Comedy", "Drama", "Sci-Fi", "Horror"};
+            for (String genre : popularGenres) {
+                addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
+            }
+
+            // Add All Movies section
+            addMovieCategory("All Movies", filmDAO.getFilms(null));
+
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            // Called on the Event Dispatch Thread (safe to update UI)
+            updateContainerSize();
+        }
+    };
+
+    worker.execute();
+}
+
 
     private void addMovieCategory(String categoryTitle, List<Film> films) {
         if (films.isEmpty()) {
@@ -423,7 +466,7 @@ public class Homepage extends javax.swing.JFrame {
         film_searchbar.setText("");
         isSearchMode = false;
         setupMoviesContainer();
-        loadMovieCategories();
+        loadMovieCategoriesInBackground();
     }
 
     // MovieCard inner class
@@ -754,6 +797,7 @@ public class Homepage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menubar;
     private javax.swing.JTextField film_searchbar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel moviesContainer;
     private javax.swing.JScrollPane moviesScrollPane;
     private javax.swing.JLabel welcome;
