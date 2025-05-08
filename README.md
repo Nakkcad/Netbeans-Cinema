@@ -1,41 +1,69 @@
 # Netbeans-Cinema
 
 ## Description
-Netbeans-Cinema is a Java-based project designed for managing cinema operations. It uses NetBeans as the development environment, with the JDK as a requirement for running the Java code.
+Netbeans-Cinema is a Java-based project designed to manage cinema operations. It is developed using the NetBeans IDE and requires the Java Development Kit (JDK) to run.
 
-## Features
-- Cinema management system
-- Modular and extensible Java codebase
+This project is used as part of the Informatics learning curriculum at SMA Sedes Sapientiae Semarang.
 
-## Installation Instructions
+## System Requirements
+Before running the application, ensure your system meets the following requirements:
 
-### Prerequisites
-Before you begin, ensure you have the following installed:
-1. **NetBeans IDE**: [Download here](https://netbeans.apache.org/download/index.html)
-2. **Java Development Kit (JDK)**: [Download here](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+- Operating System: Windows 7/10/11 (64-bit recommended)
+- Java Runtime Environment (JRE) version 8 or higher  
+  [Download JRE](https://www.java.com)
+- XAMPP/MariaDB (for database management)  
+  [Download XAMPP](https://www.apachefriends.org)
 
-### Steps to Set Up the Project
-1. **Clone the Repository**:
-   ```
-   git clone https://github.com/Nakkcad/Netbeans-Cinema.git
-   cd Netbeans-Cinema
-   ```
+---
 
-2. **Import the Project into NetBeans**:
-   - Open NetBeans.
-   - Go to `File > Open Project`.
-   - Select the cloned repository folder and click `Open`.
+## 🔽 Which Option Should You Use?
 
-3. **Configure the JDK**:
-   - Ensure the JDK is properly installed on your system.
-   - In NetBeans, go to `Tools > Java Platforms` to verify that the JDK is recognized.
-   - Set the JDK as the default platform for the project.
+### ✅ Just Want to Run the App?
+You can simply download the `/dist` folder (which contains the `.jar` file) if:
+- You **don’t need to edit the source code**
+- You **already have Java installed**
+- You want a **faster setup**  
+> How to run: Double-click the `.jar` file or run it from Command Prompt (see below).
 
-4. **Run the Project**:
-   - Press `F6` or go to `Run > Run Project` in NetBeans to start the application.
+### 🛠 Want to Edit or Study the Code?
+Clone the full project if:
+- You want to **open the project in NetBeans**
+- You want to **customize or debug** the application
 
-## Contribution Guidelines
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+---
 
-## License
-This project currently doesn't have a license. Please contact the repository owner for more details.
+## Installation & Running Instructions
+
+### Step 1: Install Prerequisites
+- Install JRE on your computer
+- Install and run XAMPP
+- Open the XAMPP Control Panel and start **Apache** and **MySQL**
+
+### Step 2: Import the Database
+1. Open your browser and go to [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+2. Create a new database named `bioskop_db2` (if it doesn’t already exist)
+3. Click the **Import** tab
+4. Choose the file `bioskop_db2.sql`
+5. Click **Go** to import the database
+6. Make sure there are no errors during the import
+
+> **Database Configuration Parameters**  
+> These should match the configuration file (if used by the app):
+> - Host: `localhost`  
+> - Port: `3306`  
+> - Database name: `bioskop_db2`  
+> - Username: `root`  
+> - Password: *(leave blank)*
+
+---
+
+## How to Run the Application
+
+### Method 1: Double-Click (Simplest)
+1. Make sure JRE is installed
+2. Right-click the `.jar` file (in `/dist` folder) → Open With → **Java(TM) Platform SE Binary**
+
+### Method 2: Command Line (For Troubleshooting)
+```bash
+cd path_to_project_folder/dist
+java -jar your_application_name.jar
