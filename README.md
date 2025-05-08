@@ -67,3 +67,48 @@ Clone the full project if:
 ```bash
 cd path_to_project_folder/dist
 java -jar your_application_name.jar
+````
+
+---
+
+## How to Open the Full Project in NetBeans
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Nakkcad/Netbeans-Cinema.git
+   cd Netbeans-Cinema
+   ```
+
+2. Open NetBeans:
+
+   * Go to `File > Open Project`
+   * Select the cloned folder and click **Open**
+
+3. Configure the JDK:
+
+   * Go to `Tools > Java Platforms` to ensure the JDK is detected
+   * Set it as the default for the project
+
+4. Run the project:
+
+   * Press `F6` or go to `Run > Run Project`
+
+---
+
+## Troubleshooting
+
+### Common Issues & Solutions:
+
+* **Application won’t start**:
+
+  * Ensure JRE is correctly installed
+  * Try running from the command line to see error messages
+
+* **Database connection failed**:
+
+  * Make sure MySQL server is running
+  * Verify credentials in configuration file
+  * Ensure the `bioskop_db2` database is imported correctly
+
+---
