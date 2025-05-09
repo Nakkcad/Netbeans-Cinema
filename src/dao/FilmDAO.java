@@ -123,22 +123,41 @@ public class FilmDAO {
         return films;
     }
 
-    
     public Film getFilmByTitle(String title) {
-    String sql = "SELECT * FROM film WHERE title = ?";
-    try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, title);
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return mapResultSetToFilm(rs);
+        String sql = "SELECT * FROM film WHERE title = ?";
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, title);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToFilm(rs);
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Error getting film by title: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Error getting film by title: " + e.getMessage());
+        return null;
     }
-    return null;
-}
-    
+
+    // Get all films that have at least one screening schedule
+    public List<Film> getAllFilmsWithSchedule() {
+        List<Film> films = new ArrayList<>();
+        String sql = "SELECT DISTINCT f.* FROM film f "
+                + "INNER JOIN screening_schedule s ON f.film_id = s.film_id "
+                + "ORDER BY f.title";
+
+        try (Connection conn = DatabaseConnection.connectDB(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Film film = mapResultSetToFilm(rs);
+                films.add(film);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting films with schedules: " + e.getMessage());
+        }
+
+        return films;
+    }
+
     public void insertFilms(List<Film> films) {
         String sql = "INSERT INTO film (title, genre, duration, synopsis, poster_url, release_date, rating) VALUES (?, ?, ?, ?, ?, ?, ?)"; // Added 'rating'
 
