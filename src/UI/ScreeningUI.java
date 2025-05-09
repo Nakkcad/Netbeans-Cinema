@@ -10,9 +10,12 @@ import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import model.Film;
+import admin.Screening.FilmScreeningAdminPanel;
 
 public class ScreeningUI extends JDialog {
 
+    private final JFrame parent;
+    private final Film film;
     private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private final Color TEXT_COLOR = new Color(220, 220, 220);
     private final Color SECONDARY_COLOR = new Color(60, 63, 65);
@@ -27,6 +30,8 @@ public class ScreeningUI extends JDialog {
 
     public ScreeningUI(JFrame parent, Film film) {
         super(parent, "ScreeningSchedule - " + film.getTitle(), true);
+        this.parent = parent;
+        this.film = film;
         int filmid = film.getFilmId();
 
         setSize(800, 500);
@@ -81,20 +86,34 @@ public class ScreeningUI extends JDialog {
         // Back button on the left
         JButton backButton = new JButton("Back");
         styleButton(backButton, SECONDARY_COLOR);
-        backButton.addActionListener(e -> this.dispose());
+        backButton.addActionListener(e -> {
+            new model.MovieDetailsDialog(parent, film).setVisible(true);  // reopen the dialog
+            dispose();
+        });
 
         // Book button on the right
         bookButton = new JButton("Select Seat");
-        styleButton(bookButton, ACCENT_COLOR);
+        styleButton(bookButton, ACCENT_COLOR.darker());
+        bookButton.setEnabled(false); // Initially disabled
         bookButton.addActionListener(e -> bookSelectedScreening());
+
+        // Add selection listener to table
+        screeningsTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                bookButton.setEnabled(screeningsTable.getSelectedRow() != -1);
+                // Update button style based on enabled state
+                styleButton(bookButton, bookButton.isEnabled() ? ACCENT_COLOR : ACCENT_COLOR.darker());
+            }
+        });
 
         // Admin button in the center if user is admin
         if (UserSession.getRole() != null && UserSession.getRole().equals("admin")) {
             JButton adminButton = new JButton("Edit/Add Schedule");
             styleButton(adminButton, new Color(100, 150, 255));
             adminButton.addActionListener(e -> {
-                // Open schedule management UI
-                JOptionPane.showMessageDialog(this, "Open schedule management for film ID: " + filmid);
+                FilmScreeningAdminPanel adminPanel = new FilmScreeningAdminPanel(parent, film);
+                adminPanel.setVisible(true);
+                dispose();
             });
 
             JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
@@ -186,7 +205,7 @@ public class ScreeningUI extends JDialog {
 
     public static void main(String[] args) {
         // For testing purposes
-//        UserSession.setRole("admin"); // Comment this line to see non-admin version
+        UserSession.setRole("admin"); // Comment this line to see non-admin version
 
         SwingUtilities.invokeLater(() -> {
             Film sampleFilm = new Film();
