@@ -72,6 +72,8 @@ public class Homepage extends javax.swing.JFrame {
         moviesScrollPane.setVerifyInputWhenFocusTarget(false);
 
         moviesContainer.setBackground(new java.awt.Color(102, 0, 0));
+        moviesContainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        moviesContainer.setToolTipText("");
         moviesContainer.setPreferredSize(new java.awt.Dimension(800, 600));
         moviesContainer.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 1, 1));
         moviesScrollPane.setViewportView(moviesContainer);
@@ -81,6 +83,7 @@ public class Homepage extends javax.swing.JFrame {
         Menubar.setBackground(new java.awt.Color(255, 204, 0));
         Menubar.setPreferredSize(new java.awt.Dimension(1080, 50));
 
+        welcome.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         welcome.setForeground(new java.awt.Color(0, 0, 0));
         welcome.setText("Welcome, USER");
 
@@ -93,6 +96,7 @@ public class Homepage extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Search:");
 
@@ -103,7 +107,7 @@ public class Homepage extends javax.swing.JFrame {
             .addGroup(MenubarLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 690, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 686, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -115,7 +119,7 @@ public class Homepage extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(film_searchbar)
+                    .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addContainerGap())
         );
@@ -141,37 +145,40 @@ public class Homepage extends javax.swing.JFrame {
         searchTimer.setRepeats(false);
         searchTimer.start();
     }//GEN-LAST:event_film_searchbarKeyTyped
-// Add this method to your Homepage class
 
     private void setupScrollingSpeed() {
         // Get the scroll pane's viewport
         JScrollPane scrollPane = moviesScrollPane;
 
-        // Add mouse wheel listener to increase scroll speed
+        // Replace the existing mouse wheel listener with this one
         scrollPane.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                // Get the current scroll bar
-                JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+                // Only handle vertical scrolling if Shift isn't pressed
+                if (!e.isShiftDown()) {
+                    // Get the current scroll bar
+                    JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
 
-                // Calculate scroll amount (multiply by factor to increase speed)
-                int scrollAmount = verticalScrollBar.getUnitIncrement() * 3;
+                    // Calculate scroll amount (multiply by factor to increase speed)
+                    int scrollAmount = verticalScrollBar.getUnitIncrement() * 3;
 
-                // Apply the scroll amount based on wheel rotation
-                if (e.getWheelRotation() < 0) {
-                    // Scroll up
-                    verticalScrollBar.setValue(verticalScrollBar.getValue() - scrollAmount);
-                } else {
-                    // Scroll down
-                    verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                    // Apply the scroll amount based on wheel rotation
+                    if (e.getWheelRotation() < 0) {
+                        // Scroll up
+                        verticalScrollBar.setValue(verticalScrollBar.getValue() - scrollAmount);
+                    } else {
+                        // Scroll down
+                        verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollAmount);
+                    }
+
+                    // Consume the event so it doesn't get processed further
+                    e.consume();
                 }
-
-                // Consume the event so it doesn't get processed further
-                e.consume();
+                // If Shift is pressed, let the horizontal scroll handling in addMovieCategory() take over
             }
         });
 
-        // You can also increase the unit and block increments directly
+        // Keep these increments for smoother scrolling
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);  // Default is usually 1
         scrollPane.getVerticalScrollBar().setBlockIncrement(256); // Default is usually 10
     }
@@ -311,7 +318,7 @@ public class Homepage extends javax.swing.JFrame {
         moviesContainer.setBackground(new Color(102, 0, 0));
         moviesContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         moviesContainer.setAutoscrolls(true);
-    }    
+    }
 
 // <editor-fold defaultstate="collapsed" desc="unused Code">                          
 
@@ -333,40 +340,35 @@ public class Homepage extends javax.swing.JFrame {
         // Update container size after adding all categories
         updateContainerSize();
     } // </editor-fold>
-    
-    
+
     private void loadMovieCategoriesInBackground() {
-    SwingWorker<Void, Void> worker = new SwingWorker<>() {
-        @Override
-        protected Void doInBackground() {
-            FilmDAO filmDAO = new FilmDAO();
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                FilmDAO filmDAO = new FilmDAO();
 
-            // Add Top Rated section
-            addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
-            addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
+                addMovieCategory("Scheduled", filmDAO.getAllFilmsWithSchedule());
 
-            // Add sections for different genres
-            String[] popularGenres = {"Action", "Comedy", "Drama", "Sci-Fi", "Horror"};
-            for (String genre : popularGenres) {
-                addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
+                // Add Top Rated section
+                addMovieCategory("Top Rated Movies", filmDAO.getTopRatedFilms(10));
+                addMovieCategory("Newest", filmDAO.getFilmsByNewest(10));
+
+                // Add sections for different genres
+                String[] popularGenres = {"Action", "Animation", "Comedy", "Drama", "Horror"};
+                for (String genre : popularGenres) {
+                    addMovieCategory("Top " + genre, filmDAO.getFilmsByGenre(genre, 10));
+                }
+
+                return null;
             }
 
-            // Add All Movies section
-            addMovieCategory("All Movies", filmDAO.getFilms(null));
-
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            // Called on the Event Dispatch Thread (safe to update UI)
-            updateContainerSize();
-        }
-    };
-
-    worker.execute();
-}
-
+            @Override
+            protected void done() {
+                updateContainerSize();
+            }
+        };
+        worker.execute();
+    }
 
     private void addMovieCategory(String categoryTitle, List<Film> films) {
         if (films.isEmpty()) {
@@ -399,12 +401,25 @@ public class Homepage extends javax.swing.JFrame {
             moviesPanel.add(card);
         }
 
-        // Create horizontal scroll pane
+// Create horizontal scroll pane
         JScrollPane horizontalScroll = new JScrollPane(moviesPanel);
+
+// Custom mouse wheel behavior - only scroll horizontally when Shift is pressed
+        horizontalScroll.addMouseWheelListener((MouseWheelEvent e) -> {
+            if (e.isShiftDown()) {
+                JScrollBar hBar = horizontalScroll.getHorizontalScrollBar();
+                int amount = e.getUnitsToScroll() * hBar.getUnitIncrement();
+                hBar.setValue(hBar.getValue() + amount);
+                e.consume(); // prevent vertical scroll
+            }
+            // If Shift isn't pressed, let the default vertical scrolling happen
+        });
+
         horizontalScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         horizontalScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         horizontalScroll.setBorder(null);
         horizontalScroll.getViewport().setBackground(new Color(102, 0, 0));
+        horizontalScroll.getHorizontalScrollBar().setUnitIncrement(20);
 
         categoryPanel.add(horizontalScroll, BorderLayout.CENTER);
         moviesContainer.add(categoryPanel);
@@ -413,44 +428,46 @@ public class Homepage extends javax.swing.JFrame {
         moviesContainer.add(Box.createRigidArea(new Dimension(0, 10)));
     }
 
-   private void updateContainerSize() {
-    if (isSearchMode) {
-        // Calculate size for search mode (grid layout)
-        int componentCount = moviesContainer.getComponentCount();
-        if (componentCount == 0) return;
-        
-        // Calculate rows and columns based on container width
-        int width = moviesScrollPane.getViewport().getWidth() - 20;
-        int cardWidth = 220 + 15; // card width + horizontal spacing
-        int cardsPerRow = Math.max(1, width / cardWidth);
-        int rows = (int) Math.ceil((double) componentCount / cardsPerRow);
-        
-        // Calculate total height needed
-        int cardHeight = 330 + 15; // card height + vertical spacing
-        int totalHeight = rows * cardHeight + 40; // Add extra padding
-        
-        moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
-    } else {
-        // Calculate size for category mode (vertical layout)
-        int totalHeight = 0;
-        for (Component comp : moviesContainer.getComponents()) {
-            if (comp instanceof JPanel) {
-                totalHeight += comp.getPreferredSize().height;
-            } else if (comp instanceof Box.Filler) {
-                totalHeight += comp.getPreferredSize().height;
+    private void updateContainerSize() {
+        if (isSearchMode) {
+            // Calculate size for search mode (grid layout)
+            int componentCount = moviesContainer.getComponentCount();
+            if (componentCount == 0) {
+                return;
             }
+
+            // Calculate rows and columns based on container width
+            int width = moviesScrollPane.getViewport().getWidth() - 20;
+            int cardWidth = 220 + 15; // card width + horizontal spacing
+            int cardsPerRow = Math.max(1, width / cardWidth);
+            int rows = (int) Math.ceil((double) componentCount / cardsPerRow);
+
+            // Calculate total height needed
+            int cardHeight = 330 + 15; // card height + vertical spacing
+            int totalHeight = rows * cardHeight + 40; // Add extra padding
+
+            moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
+        } else {
+            // Calculate size for category mode (vertical layout)
+            int totalHeight = 0;
+            for (Component comp : moviesContainer.getComponents()) {
+                if (comp instanceof JPanel) {
+                    totalHeight += comp.getPreferredSize().height;
+                } else if (comp instanceof Box.Filler) {
+                    totalHeight += comp.getPreferredSize().height;
+                }
+            }
+
+            // Add extra padding
+            totalHeight += 40;
+
+            // Set container's preferred size
+            int width = moviesScrollPane.getViewport().getWidth() - 20;
+            moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
         }
-        
-        // Add extra padding
-        totalHeight += 40;
-        
-        // Set container's preferred size
-        int width = moviesScrollPane.getViewport().getWidth() - 20;
-        moviesContainer.setPreferredSize(new Dimension(width, totalHeight));
+
+        moviesContainer.revalidate();
     }
-    
-    moviesContainer.revalidate();
-}
 
     public void componentResized(ComponentEvent e) {
         // Update container width when window is resized
