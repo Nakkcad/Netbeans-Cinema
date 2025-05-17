@@ -1,8 +1,9 @@
+// Seat.java
 package model;
 
 public class Seat {
-
-    private int seatId;
+    private int screeningSeatId;
+    private int scheduleId;
     private int screenId;
     private char rowLetter;
     private int seatNumber;
@@ -13,7 +14,8 @@ public class Seat {
     public Seat() {
     }
 
-    public Seat(int screenId, char rowLetter, int seatNumber, String status, double price) {
+    public Seat(int scheduleId, int screenId, char rowLetter, int seatNumber, String status, double price) {
+        this.scheduleId = scheduleId;
         this.screenId = screenId;
         this.rowLetter = rowLetter;
         this.seatNumber = seatNumber;
@@ -22,12 +24,20 @@ public class Seat {
     }
 
     // Getters and setters
-    public int getSeatId() {
-        return seatId;
+    public int getScreeningSeatId() {
+        return screeningSeatId;
     }
 
-    public void setSeatId(int seatId) {
-        this.seatId = seatId;
+    public void setScreeningSeatId(int screeningSeatId) {
+        this.screeningSeatId = screeningSeatId;
+    }
+
+    public int getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(int scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public int getScreenId() {

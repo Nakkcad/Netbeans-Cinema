@@ -134,7 +134,7 @@ public class BookingDialog extends JDialog {
     private void confirmBooking(String qrCodeData, JPanel qrPanel) {
         Booking booking = new Booking(
             UserSession.getUserId(),
-            selectedSeats.stream().map(Seat::getSeatId).collect(Collectors.toList()),
+            selectedSeats.stream().map(Seat::getScreeningSeatId).collect(Collectors.toList()),
             screening.getScheduleId(),
             "Cash",
             totalPrice
