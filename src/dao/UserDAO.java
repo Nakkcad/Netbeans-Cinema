@@ -4,6 +4,7 @@
  */
 package dao;
 
+import Utils.Authenticate;
 import Utils.DatabaseConnection;
 import Utils.PasswordUtils;
 import java.sql.Connection;
@@ -14,39 +15,37 @@ import javax.swing.JOptionPane;
 
 public class UserDAO {
 
+   
+
     private Connection connection;
 
     public UserDAO() {
         this.connection = DatabaseConnection.connectDB();
     }
 
+    
+    
     // Method to authenticate user
-    public String authenticateUser(String username, String passwordInput) {
-        if (connection == null) {
-            JOptionPane.showMessageDialog(null, "Database connection error");
-            return null;
+public Authenticate authenticateUser(String username, String passwordInput) throws SQLException {
+    String sql = "SELECT password, role, customer_id FROM customer WHERE username=?";
+    PreparedStatement pst = connection.prepareStatement(sql);
+    pst.setString(1, username);
+    ResultSet rs = pst.executeQuery();
+
+    if (rs.next()) {
+        String storedHashedPassword = rs.getString("password");
+        String role = rs.getString("role");
+        int userid = rs.getInt("customer_id");
+        String hashedInputPassword = PasswordUtils.hashPassword(passwordInput);
+
+        if (storedHashedPassword.equals(hashedInputPassword)) {
+            return new Authenticate(role, userid);
         }
-
-        try {
-            String sql = "SELECT password, role FROM customer WHERE username=?";
-            PreparedStatement pst = connection.prepareStatement(sql);
-            pst.setString(1, username);
-            ResultSet rs = pst.executeQuery();
-
-            if (rs.next()) {
-                String storedHashedPassword = rs.getString("password");
-                String role = rs.getString("role");
-                String hashedInputPassword = PasswordUtils.hashPassword(passwordInput);
-
-                if (storedHashedPassword.equals(hashedInputPassword)) {
-                    return role; // Return the user's role if authentication succeeds
-                }
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
-        }
-        return null; // Return null if authentication fails
     }
+
+    return null; // Authentication failed
+}
+
 
     // Method to check if username exists
     public boolean usernameExists(String username) {
