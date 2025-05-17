@@ -136,8 +136,8 @@ public class MovieDetailsDialog extends JDialog {
         ));
         bookButton.setFocusPainted(false);
         bookButton.addActionListener(e -> {
-            new UI.ScreeningUI(parent, film).setVisible(true);
             dispose();
+            new UI.ScreeningUI(parent, film).setVisible(true);
         });
 
         detailsPanel.add(bookButton, gbc);
