@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class Booking {
+
     private int bookingId;
     private int customerId;
     private List<Integer> seatIds;  // List of seat IDs for multiple seats
@@ -13,13 +14,18 @@ public class Booking {
     private String paymentStatus;
     private Timestamp bookingDate;
     private String qrCodeData;  // Stores the QR code information
+    private String filmTitle;
+    private java.sql.Date screeningDate;
+    private java.sql.Time screeningTime;
+    private String seatInfo;
+    private String customerName;
 
     // Constructors
     public Booking() {
     }
 
-    public Booking(int customerId, List<Integer> seatIds, int scheduleId, 
-                  String paymentMethod, double totalPrice) {
+    public Booking(int customerId, List<Integer> seatIds, int scheduleId,
+            String paymentMethod, double totalPrice) {
         this.customerId = customerId;
         this.seatIds = seatIds;
         this.scheduleId = scheduleId;
@@ -108,17 +114,57 @@ public class Booking {
         return seatIds.toString();
     }
 
+    public String getFilmTitle() {
+        return filmTitle;
+    }
+
+    public void setFilmTitle(String filmTitle) {
+        this.filmTitle = filmTitle;
+    }
+
+    public java.sql.Date getScreeningDate() {
+        return screeningDate;
+    }
+
+    public void setScreeningDate(java.sql.Date screeningDate) {
+        this.screeningDate = screeningDate;
+    }
+
+    public java.sql.Time getScreeningTime() {
+        return screeningTime;
+    }
+
+    public void setScreeningTime(java.sql.Time screeningTime) {
+        this.screeningTime = screeningTime;
+    }
+
+    public String getSeatInfo() {
+        return seatInfo;
+    }
+
+    public void setSeatInfo(String seatInfo) {
+        this.seatInfo = seatInfo;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
     @Override
     public String toString() {
-        return "Booking{" +
-                "bookingId=" + bookingId +
-                ", customerId=" + customerId +
-                ", seatIds=" + seatIds +
-                ", scheduleId=" + scheduleId +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", totalPrice=" + totalPrice +
-                ", paymentStatus='" + paymentStatus + '\'' +
-                ", bookingDate=" + bookingDate +
-                '}';
+        return "Booking{"
+                + "bookingId=" + bookingId
+                + ", customerId=" + customerId
+                + ", seatIds=" + seatIds
+                + ", scheduleId=" + scheduleId
+                + ", paymentMethod='" + paymentMethod + '\''
+                + ", totalPrice=" + totalPrice
+                + ", paymentStatus='" + paymentStatus + '\''
+                + ", bookingDate=" + bookingDate
+                + '}';
     }
 }

@@ -89,7 +89,7 @@ public class ScreeningUI extends JDialog {
         styleButton(backButton, SECONDARY_COLOR);
         backButton.addActionListener(e -> {
             dispose();
-            new model.MovieDetailsDialog(parent, film).setVisible(true);
+            new UI.MovieDetailsDialog(parent, film).setVisible(true);
         });
 
         // Book button on the right

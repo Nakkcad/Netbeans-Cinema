@@ -18,7 +18,7 @@ public class Seat {
         this.rowLetter = rowLetter;
         this.seatNumber = seatNumber;
         this.status = status;
-        this.price = price * 1000; // Convert to IDR (assuming price was in thousands)
+        this.price = price;
     }
 
     // Getters and setters

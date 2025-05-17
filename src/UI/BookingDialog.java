@@ -56,20 +56,21 @@ public class BookingDialog extends JDialog {
         
         infoPanel.add(new JLabel("Total Price: Rp" + String.format("%,.0f", totalPrice)));
         
-        // Generate QR code
-        String bookingData = generateBookingData();
-        QRGenerator qrGenerator = new QRGenerator();
-        BufferedImage qrImage = qrGenerator.generateQRImage(bookingData);
-        JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+        // QR code panel (initially empty)
+        JPanel qrPanel = new JPanel(new BorderLayout());
+        qrPanel.setBorder(BorderFactory.createTitledBorder("Booking QR Code"));
         
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton confirmButton = new JButton("Confirm Payment");
-        confirmButton.addActionListener(e -> confirmBooking(bookingData));
+        JButton confirmButton = new JButton("Confirm Booking");
+        confirmButton.addActionListener(e -> {
+            String bookingData = generateBookingData();
+            confirmBooking(bookingData, qrPanel);
+        });
         buttonPanel.add(confirmButton);
         
         mainPanel.add(infoPanel, BorderLayout.NORTH);
-        mainPanel.add(qrLabel, BorderLayout.CENTER);
+        mainPanel.add(qrPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         
         add(mainPanel);
@@ -91,7 +92,7 @@ public class BookingDialog extends JDialog {
         return sb.toString();
     }
     
-    private void confirmBooking(String qrCodeData) {
+    private void confirmBooking(String qrCodeData, JPanel qrPanel) {
         BookingDAO bookingDAO = new BookingDAO();
         int customerId = UserSession.getUserId();
         
@@ -109,9 +110,18 @@ public class BookingDialog extends JDialog {
         boolean success = bookingDAO.createBooking(booking);
         
         if (success) {
-            JOptionPane.showMessageDialog(this, "Booking confirmed! Thank you.", 
+            // Generate and show QR code after confirmation
+            QRGenerator qrGenerator = new QRGenerator();
+            BufferedImage qrImage = qrGenerator.generateQRImage(qrCodeData);
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            
+            qrPanel.removeAll();
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+            qrPanel.revalidate();
+            qrPanel.repaint();
+            
+            JOptionPane.showMessageDialog(this, "Booking confirmed! Your QR code is now displayed.", 
                                         "Success", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Failed to create booking. Please try again.", 
                                         "Error", JOptionPane.ERROR_MESSAGE);

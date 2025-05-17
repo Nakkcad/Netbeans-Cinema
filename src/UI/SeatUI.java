@@ -14,15 +14,14 @@ import java.util.List;
 
 public class SeatUI extends JDialog {
 
-    private List<Seat> selectedSeats = new ArrayList<>();
-    private List<JButton> selectedButtons = new ArrayList<>();
+    private final List<Seat> selectedSeats = new ArrayList<>();
+    private final List<JButton> selectedButtons = new ArrayList<>();
     private double totalPrice = 0;
     private final JFrame parent;
     private final ScreeningSchedule screening;
     private final Film film;
     private final SeatDAO seatDAO;
-    private Seat selectedSeat = null;
-    private JButton selectedButton = null; // Track the currently selected button
+    // Track the currently selected button
     private JButton confirmButton;
     private JLabel selectionLabel;
 
