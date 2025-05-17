@@ -10,7 +10,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
 import Utils.UserSession;
-import DAO.UserDAO;
+import dao.UserDAO;
 
 /**
  *
@@ -336,7 +336,7 @@ public class Login extends javax.swing.JFrame {
                     AdminPanel adminPanel = new AdminPanel();
                     adminPanel.setVisible(true);
                 } 
-                    ModernHomepage main = new ModernHomepage();
+                    Homepage main = new Homepage();
                     main.setVisible(true);
                 
                 this.dispose();

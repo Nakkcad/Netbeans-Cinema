@@ -1,7 +1,7 @@
 package admin;
 
-import DAO.FilmDAO;
-import DAO.ScreeningScheduleDAO;
+import dao.FilmDAO;
+import dao.ScreeningScheduleDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;

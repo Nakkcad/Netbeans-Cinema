@@ -7,7 +7,7 @@ package UI;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import Utils.PasswordUtils;
-import DAO.UserDAO;
+import dao.UserDAO;
 
 /**
  *

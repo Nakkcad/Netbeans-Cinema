@@ -1,7 +1,7 @@
 package admin;
 
-import DAO.FilmDAO;
-import DAO.ScreeningScheduleDAO;
+import dao.FilmDAO;
+import dao.ScreeningScheduleDAO;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;

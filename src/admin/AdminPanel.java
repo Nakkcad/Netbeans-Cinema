@@ -6,7 +6,7 @@ package admin;
 
 import Utils.TMDBFetcher;
 import com.formdev.flatlaf.FlatDarkLaf;
-import DAO.FilmDAO;
+import dao.FilmDAO;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import javax.swing.JFileChooser;

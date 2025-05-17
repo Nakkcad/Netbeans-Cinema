@@ -1,7 +1,7 @@
 package Utils;
 
 import com.google.gson.*;
-import DAO.FilmDAO;
+import dao.FilmDAO;
 import java.io.*;
 import java.net.*;
 import java.util.*;

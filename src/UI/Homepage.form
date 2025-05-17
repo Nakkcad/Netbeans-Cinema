@@ -88,8 +88,8 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                  <Component id="welcome" min="-2" pref="160" max="-2" attributes="0"/>
-                  <EmptySpace pref="629" max="32767" attributes="0"/>
+                  <Component id="welcome" min="-2" pref="103" max="-2" attributes="0"/>
+                  <EmptySpace pref="686" max="32767" attributes="0"/>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="film_searchbar" min="-2" pref="198" max="-2" attributes="0"/>

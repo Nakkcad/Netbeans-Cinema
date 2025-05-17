@@ -5,7 +5,7 @@
 package admin.Screening;
 
 
-import DAO.ScreeningScheduleDAO;
+import dao.ScreeningScheduleDAO;
 import java.sql.Date;
 import java.sql.Time;
 import javax.swing.JOptionPane;

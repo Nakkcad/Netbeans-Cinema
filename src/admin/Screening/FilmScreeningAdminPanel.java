@@ -8,8 +8,8 @@ package admin.Screening;
  *
  * @author ACER
  */
-import DAO.FilmDAO;
-import DAO.ScreeningScheduleDAO;
+import dao.FilmDAO;
+import dao.ScreeningScheduleDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
