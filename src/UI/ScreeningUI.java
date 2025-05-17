@@ -11,11 +11,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import model.Film;
 import admin.Screening.FilmScreeningAdminPanel;
+import dao.ScreeningScheduleDAO;
 
 public class ScreeningUI extends JDialog {
 
     private final JFrame parent;
     private final Film film;
+    private final List<ScreeningSchedule> screenings; // Added class field
     private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private final Color TEXT_COLOR = new Color(220, 220, 220);
     private final Color SECONDARY_COLOR = new Color(60, 63, 65);
@@ -33,6 +35,10 @@ public class ScreeningUI extends JDialog {
         this.parent = parent;
         this.film = film;
         int filmid = film.getFilmId();
+
+        // Initialize screenings list
+        ScreeningScheduleDAO screeningDAO = new ScreeningScheduleDAO();
+        this.screenings = screeningDAO.getScreeningSchedulesByFilmId(filmid);
 
         setSize(800, 500);
         setLocationRelativeTo(parent);
@@ -53,10 +59,6 @@ public class ScreeningUI extends JDialog {
         titlePanel.add(titleLabel, BorderLayout.NORTH);
 
         mainPanel.add(titlePanel, BorderLayout.NORTH);
-
-        // Get screenings data
-        ScreeningScheduleDAO screeningDAO = new ScreeningScheduleDAO();
-        List<ScreeningSchedule> screenings = screeningDAO.getScreeningSchedulesByFilmId(filmid);
 
         // Create table for screenings
         String[] columnNames = {"Date", "Time", "Screen"};
@@ -87,21 +89,20 @@ public class ScreeningUI extends JDialog {
         JButton backButton = new JButton("Back");
         styleButton(backButton, SECONDARY_COLOR);
         backButton.addActionListener(e -> {
-            new model.MovieDetailsDialog(parent, film).setVisible(true);  // reopen the dialog
+            new model.MovieDetailsDialog(parent, film).setVisible(true);
             dispose();
         });
 
         // Book button on the right
         bookButton = new JButton("Select Seat");
         styleButton(bookButton, ACCENT_COLOR.darker());
-        bookButton.setEnabled(false); // Initially disabled
+        bookButton.setEnabled(false);
         bookButton.addActionListener(e -> bookSelectedScreening());
 
         // Add selection listener to table
         screeningsTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 bookButton.setEnabled(screeningsTable.getSelectedRow() != -1);
-                // Update button style based on enabled state
                 styleButton(bookButton, bookButton.isEnabled() ? ACCENT_COLOR : ACCENT_COLOR.darker());
             }
         });
@@ -121,7 +122,6 @@ public class ScreeningUI extends JDialog {
             centerPanel.add(adminButton);
             buttonPanel.add(centerPanel, BorderLayout.CENTER);
         } else {
-            // Add empty panel to maintain layout
             JPanel centerPanel = new JPanel();
             centerPanel.setBackground(BACKGROUND_COLOR);
             buttonPanel.add(centerPanel, BorderLayout.CENTER);
@@ -153,21 +153,18 @@ public class ScreeningUI extends JDialog {
         screeningsTable.setIntercellSpacing(new Dimension(0, 0));
         screeningsTable.setFillsViewportHeight(true);
 
-        // Customize table header
         JTableHeader header = screeningsTable.getTableHeader();
         header.setBackground(SECONDARY_COLOR.darker());
         header.setForeground(TEXT_COLOR);
         header.setFont(HEADER_FONT);
         header.setBorder(BorderFactory.createEmptyBorder());
 
-        // Center align all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < screeningsTable.getColumnCount(); i++) {
             screeningsTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // Set selection mode
         screeningsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
@@ -185,27 +182,18 @@ public class ScreeningUI extends JDialog {
     private void bookSelectedScreening() {
         int selectedRow = screeningsTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a screening first", "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a screening first", 
+                "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Get the selected screening data
-        String date = (String) screeningsTable.getValueAt(selectedRow, 0);
-        String time = (String) screeningsTable.getValueAt(selectedRow, 1);
-        String screen = (String) screeningsTable.getValueAt(selectedRow, 2);
-
-        JOptionPane.showMessageDialog(this,
-                "Booking confirmed for:\n"
-                + "Date: " + date + "\n"
-                + "Time: " + time + "\n"
-                + "Screen: " + screen,
-                "Booking Confirmation",
-                JOptionPane.INFORMATION_MESSAGE);
+        ScreeningSchedule selectedScreening = screenings.get(selectedRow);
+        new SeatUI(parent, selectedScreening,film).setVisible(true);
+        dispose();
     }
 
     public static void main(String[] args) {
-        // For testing purposes
-        UserSession.setRole("admin"); // Comment this line to see non-admin version
+        UserSession.setRole("admin");
 
         SwingUtilities.invokeLater(() -> {
             Film sampleFilm = new Film();
@@ -216,9 +204,9 @@ public class ScreeningUI extends JDialog {
             sampleFilm.setReleaseDate("2010-07-16");
             sampleFilm.setRating(4.8);
             sampleFilm.setSynopsis("A thief who steals corporate secrets through use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.");
-            sampleFilm.setPosterUrl("/path/to/sample/poster.jpg"); // Make sure this path is valid or test with a null
+            sampleFilm.setPosterUrl("/path/to/sample/poster.jpg");
             JFrame dummyParent = new JFrame();
-            ScreeningUI dialog = new ScreeningUI(dummyParent, sampleFilm);// Pass a film ID
+            ScreeningUI dialog = new ScreeningUI(dummyParent, sampleFilm);
             dialog.setVisible(true);
         });
     }
