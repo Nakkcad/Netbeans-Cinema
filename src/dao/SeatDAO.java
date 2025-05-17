@@ -11,6 +11,8 @@ public class SeatDAO {
 
     // Get all seats for a screening, marking which ones are unavailable
     public List<Seat> getSeatsForScreening(int scheduleId) {
+            System.out.println("Fetching seats for screening ID: " + scheduleId);
+
         List<Seat> seats = new ArrayList<>();
         String sql = "SELECT ss.screening_seat_id, ss.schedule_id, ss.screen_id, ss.row_letter, " +
                      "ss.seat_number, ss.status, ss.price, " +
@@ -33,6 +35,9 @@ public class SeatDAO {
                 while (rs.next()) {
                     Seat seat = mapResultSetToSeat(rs);
                     seat.setStatus(rs.getString("availability"));
+                    System.out.println("Loaded seat: " + seat.toString() + 
+                             " | Status: " + seat.getStatus() + 
+                             " | ScreeningSeatID: " + seat.getScreeningSeatId());
                     seats.add(seat);
                 }
             }
@@ -94,6 +99,9 @@ public class SeatDAO {
 
     // Update seat status
     public boolean updateSeatStatus(int screeningSeatId, String status) {
+    System.out.println("Attempting to update seat ID " + screeningSeatId + " to status: " + status);
+    // ... existing code ...
+
         String sql = "UPDATE screening_seat SET status = ? WHERE screening_seat_id = ?";
 
         try (Connection conn = DatabaseConnection.connectDB(); 
