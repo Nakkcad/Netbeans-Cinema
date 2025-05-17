@@ -1,6 +1,7 @@
 package model;
 
 public class Seat {
+
     private int seatId;
     private int screenId;
     private char rowLetter;
@@ -9,14 +10,15 @@ public class Seat {
     private double price;
 
     // Constructors
-    public Seat() {}
+    public Seat() {
+    }
 
     public Seat(int screenId, char rowLetter, int seatNumber, String status, double price) {
         this.screenId = screenId;
         this.rowLetter = rowLetter;
         this.seatNumber = seatNumber;
         this.status = status;
-        this.price = price;
+        this.price = price * 1000; // Convert to IDR (assuming price was in thousands)
     }
 
     // Getters and setters
@@ -71,5 +73,9 @@ public class Seat {
     @Override
     public String toString() {
         return String.format("%c%d", rowLetter, seatNumber);
+    }
+
+    public String getFormattedPrice() {
+        return String.format("Rp%,.0f", price);
     }
 }
