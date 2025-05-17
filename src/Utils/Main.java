@@ -4,7 +4,7 @@
  */
 package Utils;
 
-import dao.FilmDAO;
+import DAO.FilmDAO;
 import java.io.IOException;
 import java.util.List;
 import model.Film;

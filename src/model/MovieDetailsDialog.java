@@ -1,6 +1,6 @@
 package model;
 
-import dao.PosterDAO;
+import DAO.PosterDAO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;

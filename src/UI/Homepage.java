@@ -10,8 +10,8 @@ import Utils.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import dao.FilmDAO;
-import dao.PosterDAO;
+import DAO.FilmDAO;
+import DAO.PosterDAO;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -106,8 +106,8 @@ public class Homepage extends javax.swing.JFrame {
             MenubarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(MenubarLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 686, Short.MAX_VALUE)
+                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 629, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(film_searchbar, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)

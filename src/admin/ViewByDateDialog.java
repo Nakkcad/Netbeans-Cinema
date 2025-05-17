@@ -1,6 +1,6 @@
 package admin;
 
-import dao.ScreeningScheduleDAO;
+import DAO.ScreeningScheduleDAO;
 import java.sql.Date;
 import java.util.List;
 import javax.swing.JOptionPane;

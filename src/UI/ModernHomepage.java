@@ -6,14 +6,13 @@ import Utils.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import dao.FilmDAO;
-import dao.PosterDAO;
+import DAO.FilmDAO;
+import DAO.PosterDAO;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import model.Film;
 import model.MovieDetailsDialog;
-import model.ScreeningSchedule;
 
 public class ModernHomepage extends javax.swing.JFrame {
 

@@ -1,7 +1,7 @@
 package admin;
 
-import dao.FilmDAO;
-import dao.ScreeningScheduleDAO;
+import DAO.FilmDAO;
+import DAO.ScreeningScheduleDAO;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
