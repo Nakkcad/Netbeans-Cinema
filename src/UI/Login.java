@@ -339,12 +339,11 @@ public class Login extends javax.swing.JFrame {
                 if ("admin".equalsIgnoreCase(userAuth.getRole())) {
                     AdminPanel adminPanel = new AdminPanel();
                     adminPanel.setVisible(true);
-                } else {
-                    ModernHomepage main = new ModernHomepage();
-                    main.setVisible(true);
                 }
-
                 this.dispose(); // Dispose the login window after opening the next one
+                ModernHomepage main = new ModernHomepage();
+                main.setVisible(true);
+
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid username or password.");
             }
