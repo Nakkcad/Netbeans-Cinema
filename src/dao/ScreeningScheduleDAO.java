@@ -9,33 +9,75 @@ import java.util.List;
 public class ScreeningScheduleDAO {
 
     // Add a new screening schedule
-    public boolean addScreeningSchedule(ScreeningSchedule schedule) {
-        String sql = "INSERT INTO screening_schedule (film_id, screen_id, screening_date, screening_time) VALUES (?, ?, ?, ?)";
+public boolean addScreeningSchedule(ScreeningSchedule schedule) {
+    Connection conn = null;
+    try {
+        conn = DatabaseConnection.connectDB();
+        conn.setAutoCommit(false); // Start transaction
 
-        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        // 1. First insert the screening schedule
+        String scheduleSql = "INSERT INTO screening_schedule (film_id, screen_id, screening_date, screening_time) "
+                          + "VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement scheduleStmt = conn.prepareStatement(scheduleSql, Statement.RETURN_GENERATED_KEYS)) {
+            scheduleStmt.setInt(1, schedule.getFilmId());
+            scheduleStmt.setInt(2, schedule.getScreenId());
+            scheduleStmt.setDate(3, schedule.getScreeningDate());
+            scheduleStmt.setTime(4, schedule.getScreeningTime());
 
-            stmt.setInt(1, schedule.getFilmId());
-            stmt.setInt(2, schedule.getScreenId());
-            stmt.setDate(3, schedule.getScreeningDate());
-            stmt.setTime(4, schedule.getScreeningTime());
-
-            int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        schedule.setScheduleId(rs.getInt(1));
-                    }
-                }
+            int affectedRows = scheduleStmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating screening failed, no rows affected.");
             }
 
-            return affectedRows > 0;
+            // Get the generated schedule ID
+            try (ResultSet generatedKeys = scheduleStmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    schedule.setScheduleId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Creating screening failed, no ID obtained.");
+                }
+            }
+        }
+
+        // 2. Generate seats for this screening
+        SeatDAO seatDao = new SeatDAO();
+        boolean seatsCreated = seatDao.generateSeatsForScreening(
+            conn, // Pass the same connection to maintain transaction
+            schedule.getScheduleId(),
+            schedule.getScreenId(),
+            10,  // Number of rows (A-J)
+            15   // Seats per row
+        );
+
+        if (!seatsCreated) {
+            throw new SQLException("Failed to generate seats for screening");
+        }
+
+        conn.commit();
+        return true;
+
+    } catch (SQLException e) {
+        try {
+            if (conn != null) {
+                conn.rollback();
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error rolling back transaction: " + ex.getMessage());
+        }
+        System.err.println("Error adding screening schedule: " + e.getMessage());
+        return false;
+    } finally {
+        try {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
         } catch (SQLException e) {
-            System.err.println("Error adding screening schedule: " + e.getMessage());
-            return false;
+            System.err.println("Error closing connection: " + e.getMessage());
         }
     }
-
+}
     // Get all screening schedules
     public List<ScreeningSchedule> getAllScreeningSchedules() {
         List<ScreeningSchedule> schedules = new ArrayList<>();
