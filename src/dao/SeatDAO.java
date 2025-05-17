@@ -7,40 +7,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SeatDAO {
-    // Get available seats for a specific screening
-public List<Seat> getAvailableSeatsForScreening(int scheduleId) {
-    List<Seat> seats = new ArrayList<>();
-    String sql = "SELECT s.seat_id, s.screen_id, s.row_letter, s.seat_number, s.status, s.price " +
-                 "FROM seat s " +
-                 "LEFT JOIN booking b ON s.seat_id = b.seat_id AND b.schedule_id = ? " +
-                 "WHERE s.screen_id = (SELECT screen_id FROM screening_schedule WHERE schedule_id = ?) " +
-                 "AND b.booking_id IS NULL AND s.status = 'available' " +
-                 "ORDER BY s.row_letter, s.seat_number";
-    
-    try (Connection conn = DatabaseConnection.connectDB();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setInt(1, scheduleId);
-        stmt.setInt(2, scheduleId);
-        try (ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                seats.add(mapResultSetToSeat(rs));
+
+    // Get all seats for a screening, marking which ones are unavailable
+    public List<Seat> getSeatsForScreening(int scheduleId) {
+        List<Seat> seats = new ArrayList<>();
+        String sql = "SELECT s.seat_id, s.screen_id, s.row_letter, s.seat_number, s.status, s.price, "
+                + "CASE WHEN b.booking_id IS NOT NULL THEN 'booked' ELSE s.status END AS availability "
+                + "FROM seat s "
+                + "JOIN screening_schedule sc ON s.screen_id = sc.screen_id "
+                + "LEFT JOIN booking b ON s.seat_id = b.seat_id AND b.schedule_id = ? "
+                + "WHERE sc.schedule_id = ? "
+                + "ORDER BY s.row_letter, s.seat_number";
+
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, scheduleId);
+            stmt.setInt(2, scheduleId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Seat seat = mapResultSetToSeat(rs);
+                    seat.setStatus(rs.getString("availability")); // Override status with availability
+                    seats.add(seat);
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Error getting seats for screening: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Error getting available seats: " + e.getMessage());
+        return seats;
     }
-    return seats;
-}
+
+    public List<Seat> getAvailableSeatsForScreening(int scheduleId) {
+        List<Seat> seats = new ArrayList<>();
+        String sql = "SELECT s.seat_id, s.screen_id, s.row_letter, s.seat_number, s.status, s.price "
+                + "FROM seat s "
+                + "LEFT JOIN booking b ON s.seat_id = b.seat_id AND b.schedule_id = ? "
+                + "WHERE s.screen_id = (SELECT screen_id FROM screening_schedule WHERE schedule_id = ?) "
+                + "AND b.booking_id IS NULL AND s.status = 'available' "
+                + "ORDER BY s.row_letter, s.seat_number";
+
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, scheduleId);
+            stmt.setInt(2, scheduleId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    seats.add(mapResultSetToSeat(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting available seats: " + e.getMessage());
+        }
+        return seats;
+    }
 
     // Get all seats for a screen (including booked ones)
     public List<Seat> getAllSeatsForScreen(int screenId) {
         List<Seat> seats = new ArrayList<>();
         String sql = "SELECT * FROM seat WHERE screen_id = ? ORDER BY row_letter, seat_number";
-        
-        try (Connection conn = DatabaseConnection.connectDB();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, screenId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -56,10 +82,9 @@ public List<Seat> getAvailableSeatsForScreening(int scheduleId) {
     // Update seat status
     public boolean updateSeatStatus(int seatId, String status) {
         String sql = "UPDATE seat SET status = ? WHERE seat_id = ?";
-        
-        try (Connection conn = DatabaseConnection.connectDB();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, status);
             stmt.setInt(2, seatId);
             return stmt.executeUpdate() > 0;
@@ -72,10 +97,9 @@ public List<Seat> getAvailableSeatsForScreening(int scheduleId) {
     // Get seat by ID
     public Seat getSeatById(int seatId) {
         String sql = "SELECT * FROM seat WHERE seat_id = ?";
-        
-        try (Connection conn = DatabaseConnection.connectDB();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, seatId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
