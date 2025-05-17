@@ -5,12 +5,17 @@ import model.ScreeningSchedule;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import model.ScreeningSeat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import Utils.UserSession;
+import dao.BookingDAO;
+import dao.SeatDAO;
 
 public class SeatUI extends JDialog {
 
-    private final JFrame parent;
     private final ScreeningSchedule screening;
-    private final Film film;
     private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private final Color TEXT_COLOR = new Color(220, 220, 220);
     private final Color SEAT_AVAILABLE = new Color(60, 63, 65);
@@ -18,16 +23,18 @@ public class SeatUI extends JDialog {
     private final Color SEAT_BOOKED = new Color(200, 50, 50);
     private final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private final Font SEAT_FONT = new Font("Segoe UI", Font.PLAIN, 12);
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy");
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    private final SeatDAO seatDao;
+    private final List<ScreeningSeat> selectedSeats;
+    private final BookingDAO bookingDao;
 
-    public SeatUI(JFrame parent, ScreeningSchedule screening, Film film) {
+    public SeatUI(JFrame parent, ScreeningSchedule screening, Film film, SeatDAO seatDao) {
+        this.seatDao = seatDao;
+        this.selectedSeats = new ArrayList<>();
         super(parent, getWindowTitle(screening, film), true);
-        this.parent = parent;
         this.screening = screening;
-        this.film = film;
+        this.bookingDao = new BookingDAO();
 
-        setSize(1000, 900);
+        setSize(1000, 600);
         setLocationRelativeTo(parent);
         setResizable(false);
 
@@ -87,10 +94,10 @@ public class SeatUI extends JDialog {
 
         // Create seat buttons (A-J rows)
         char[] rows = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-        
+
         for (int row = 0; row < rows.length; row++) {
             gbc.gridy = row + 1;
-            
+
             // Row label
             gbc.gridx = 0;
             JLabel rowLabel = new JLabel(String.valueOf(rows[row]));
@@ -119,11 +126,11 @@ public class SeatUI extends JDialog {
         // Legend panel
         JPanel legendPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         legendPanel.setBackground(BACKGROUND_COLOR);
-        
+
         legendPanel.add(createLegendItem("Available", SEAT_AVAILABLE));
         legendPanel.add(createLegendItem("Selected", SEAT_SELECTED));
         legendPanel.add(createLegendItem("Booked", SEAT_BOOKED));
-        
+
         buttonPanel.add(legendPanel, BorderLayout.WEST);
 
         // Back button
@@ -138,8 +145,41 @@ public class SeatUI extends JDialog {
         JButton bookButton = new JButton("Confirm Booking");
         styleButton(bookButton, SEAT_SELECTED);
         bookButton.addActionListener(e -> {
-            // TODO: Implement booking confirmation
-            JOptionPane.showMessageDialog(this, "Booking confirmed!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            if (selectedSeats.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please select at least one seat",
+                        "No Seats Selected",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (UserSession.getUserId() <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "You must be logged in to book seats",
+                        "Not Logged In",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Calculate total price
+            double totalPrice = selectedSeats.stream()
+                    .mapToDouble(seat -> seat.getPrice().doubleValue())
+                    .sum();
+            // Create booking
+            List<Integer> seatIds = selectedSeats.stream()
+                    .map(ScreeningSeat::getScreeningSeatId)
+                    .collect(Collectors.toList());
+            int bookingId = bookingDao.createBooking(
+                    UserSession.getUserId(),
+                    screening.getScheduleId(),
+                    "Cash",
+                    totalPrice,
+                    seatIds
+            );
+            JOptionPane.showMessageDialog(this,
+                    "Booking confirmed! Your booking ID: " + bookingId,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
             dispose();
         });
 
@@ -159,28 +199,28 @@ public class SeatUI extends JDialog {
         seatButton.setFont(SEAT_FONT);
         seatButton.setPreferredSize(new Dimension(40, 40));
         seatButton.setFocusPainted(false);
-        
-        // Randomly set some seats as booked for demonstration
-        boolean isBooked = Math.random() < 0.2; // 20% chance of being booked
-        
-        if (isBooked) {
+        // Get seat from database
+        ScreeningSeat seat = seatDao.getSeatByPosition(screening.getScheduleId(), row, col);
+        if (seat != null && "booked".equals(seat.getStatus())) {
             seatButton.setBackground(SEAT_BOOKED);
             seatButton.setEnabled(false);
         } else {
             seatButton.setBackground(SEAT_AVAILABLE);
             seatButton.setForeground(TEXT_COLOR);
-            seatButton.addActionListener(e -> {     
+            seatButton.addActionListener(e -> {
                 Color current = seatButton.getBackground();
                 if (current.equals(SEAT_AVAILABLE)) {
                     seatButton.setBackground(SEAT_SELECTED);
                     seatButton.setForeground(Color.BLACK);
+                    selectedSeats.add(seat); // Add to selected seats list
                 } else {
                     seatButton.setBackground(SEAT_AVAILABLE);
                     seatButton.setForeground(TEXT_COLOR);
+                    selectedSeats.remove(seat); // Remove from selected seats list
                 }
             });
         }
-        
+
         seatButton.setBorder(BorderFactory.createLineBorder(BACKGROUND_COLOR, 1));
         return seatButton;
     }
@@ -188,20 +228,20 @@ public class SeatUI extends JDialog {
     private JPanel createLegendItem(String text, Color color) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         panel.setBackground(BACKGROUND_COLOR);
-        
+
         JLabel colorLabel = new JLabel();
         colorLabel.setOpaque(true);
         colorLabel.setBackground(color);
         colorLabel.setPreferredSize(new Dimension(20, 20));
         colorLabel.setBorder(BorderFactory.createLineBorder(BACKGROUND_COLOR.brighter(), 1));
-        
+
         JLabel textLabel = new JLabel(text);
         textLabel.setForeground(TEXT_COLOR);
         textLabel.setFont(SEAT_FONT);
-        
+
         panel.add(colorLabel);
         panel.add(textLabel);
-        
+
         return panel;
     }
 
@@ -219,26 +259,10 @@ public class SeatUI extends JDialog {
     private static String getWindowTitle(ScreeningSchedule screening, Film film) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        
-        return String.format("%s - %s - %s", 
+
+        return String.format("%s - %s - %s",
                 timeFormat.format(screening.getScreeningTime()),
                 dateFormat.format(screening.getScreeningDate()),
                 film.getTitle());
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Film sampleFilm = new Film();
-            sampleFilm.setFilmId(1);
-            sampleFilm.setTitle("Inception");
-            
-            ScreeningSchedule sampleScreening = new ScreeningSchedule();
-            sampleScreening.setScreeningDate(new java.sql.Date(System.currentTimeMillis()));
-            sampleScreening.setScreeningTime(new java.sql.Time(System.currentTimeMillis()));
-            
-            JFrame dummyParent = new JFrame();
-            SeatUI dialog = new SeatUI(dummyParent, sampleScreening, sampleFilm);
-            dialog.setVisible(true);
-        });
     }
 }
