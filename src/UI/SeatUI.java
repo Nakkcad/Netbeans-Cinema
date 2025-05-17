@@ -127,13 +127,13 @@ public class SeatUI extends JDialog {
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        // Back button
-        JButton backButton = new JButton("Back");
-        styleButton(backButton, SECONDARY_COLOR);
-        backButton.addActionListener(e -> {
-            new ScreeningUI(parent, film).setVisible(true);
-            dispose();
-        });
+// Back button
+JButton backButton = new JButton("Back");
+styleButton(backButton, SECONDARY_COLOR);
+backButton.addActionListener(e -> {
+    dispose(); // Close this dialog first
+    new ScreeningUI(parent, film).setVisible(true); // Then show screening UI
+});
 
         // Confirm button
         confirmButton = new JButton("Confirm Selection");
