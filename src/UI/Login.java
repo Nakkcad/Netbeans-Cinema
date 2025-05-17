@@ -336,10 +336,11 @@ public class Login extends javax.swing.JFrame {
                 UserSession.setUserId(userAuth.getUserId());
 
                 // Open appropriate panel based on role
-                if ("admin".equalsIgnoreCase(userAuth.getRole())) {
-                    AdminPanel adminPanel = new AdminPanel();
-                    adminPanel.setVisible(true);
-                }
+                // moved the functionality to homepage
+//                if ("admin".equalsIgnoreCase(UserSession.getRole())) {
+//                    AdminPanel adminPanel = new AdminPanel();
+//                    adminPanel.setVisible(true);
+//                }
                 this.dispose(); // Dispose the login window after opening the next one
                 ModernHomepage main = new ModernHomepage();
                 main.setVisible(true);
