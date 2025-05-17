@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import Utils.UserSession;
 import dao.BookingDAO;
 import dao.SeatDAO;
+import java.util.Objects;
 
 public class SeatUI extends JDialog {
 
@@ -163,7 +164,8 @@ public class SeatUI extends JDialog {
 
             // Calculate total price
             double totalPrice = selectedSeats.stream()
-                    .mapToDouble(seat -> seat.getPrice().doubleValue())
+                    .filter(Objects::nonNull) // Still good practice to filter
+                    .mapToDouble(ScreeningSeat::getPrice) // Now safe to use method reference
                     .sum();
             // Create booking
             List<Integer> seatIds = selectedSeats.stream()
