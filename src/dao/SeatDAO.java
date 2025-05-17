@@ -75,7 +75,7 @@ public class SeatDAO {
                     seat.setRowLetter(rs.getString("row_letter").charAt(0));
                     seat.setSeatNumber(rs.getInt("seat_number"));
                     seat.setStatus(rs.getString("availability"));
-                    seat.setPrice(rs.getBigDecimal("price"));
+                    seat.setPrice(rs.getDouble("price"));
                     return seat;
                 }
             }
@@ -168,6 +168,28 @@ public class SeatDAO {
         }
         return null;
     }
+    public boolean generateSeatsForScreening(Connection conn, int scheduleId, int screenId, int rows, int seatsPerRow) throws SQLException {
+    String sql = "INSERT INTO screening_seat (schedule_id, screen_id, row_letter, seat_number, status, price) "
+               + "VALUES (?, ?, ?, ?, 'available', ?)";
+    
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        double seatPrice = 50.00; // Standard price for all seats
+        
+        for (int row = 0; row < rows; row++) {
+            char rowLetter = (char) ('A' + row);
+            for (int seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
+                stmt.setInt(1, scheduleId);
+                stmt.setInt(2, screenId);
+                stmt.setString(3, String.valueOf(rowLetter));
+                stmt.setInt(4, seatNum);
+                stmt.setDouble(5, seatPrice);
+                stmt.addBatch();
+            }
+        }
+        stmt.executeBatch();
+        return true;
+    }
+}
 
     // Helper method to map ResultSet to Seat object
     private Seat mapResultSetToSeat(ResultSet rs) throws SQLException {
