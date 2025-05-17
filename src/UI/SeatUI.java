@@ -28,9 +28,9 @@ public class SeatUI extends JDialog {
     private final BookingDAO bookingDao;
 
     public SeatUI(JFrame parent, ScreeningSchedule screening, Film film, SeatDAO seatDao) {
+        super(parent, getWindowTitle(screening, film), true);
         this.seatDao = seatDao;
         this.selectedSeats = new ArrayList<>();
-        super(parent, getWindowTitle(screening, film), true);
         this.screening = screening;
         this.bookingDao = new BookingDAO();
 
