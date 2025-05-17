@@ -164,25 +164,50 @@ public class SeatUI extends JDialog {
 
             // Calculate total price
             double totalPrice = selectedSeats.stream()
-                    .filter(Objects::nonNull) // Still good practice to filter
-                    .mapToDouble(ScreeningSeat::getPrice) // Now safe to use method reference
+                    .filter(Objects::nonNull)
+                    .mapToDouble(ScreeningSeat::getPrice)
                     .sum();
-            // Create booking
-            List<Integer> seatIds = selectedSeats.stream()
-                    .map(ScreeningSeat::getScreeningSeatId)
-                    .collect(Collectors.toList());
-            int bookingId = bookingDao.createBooking(
-                    UserSession.getUserId(),
-                    screening.getScheduleId(),
-                    "Cash",
-                    totalPrice,
-                    seatIds
+
+            // Show confirmation dialog
+            BookingDialog confirmationDialog = new BookingDialog(
+                    (JFrame) getParent(),
+                    screening,
+                    film,
+                    selectedSeats,
+                    totalPrice
             );
-            JOptionPane.showMessageDialog(this,
-                    "Booking confirmed! Your booking ID: " + bookingId,
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+
+            confirmationDialog.addPropertyChangeListener("BOOKING_CONFIRMED", evt -> {
+                String paymentMethod = (String) evt.getNewValue();
+
+                // Create booking
+                List<Integer> seatIds = selectedSeats.stream()
+                        .map(ScreeningSeat::getScreeningSeatId)
+                        .collect(Collectors.toList());
+
+                int bookingId = bookingDao.createBooking(
+                        UserSession.getUserId(),
+                        screening.getScheduleId(),
+                        paymentMethod,
+                        totalPrice,
+                        seatIds
+                );
+
+                if (bookingId > 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "Booking confirmed! Your booking ID: " + bookingId,
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Failed to create booking. Please try again.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            });
+
+            confirmationDialog.setVisible(true);
         });
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
