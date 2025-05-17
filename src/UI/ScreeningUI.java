@@ -89,8 +89,8 @@ public class ScreeningUI extends JDialog {
         JButton backButton = new JButton("Back");
         styleButton(backButton, SECONDARY_COLOR);
         backButton.addActionListener(e -> {
-            new model.MovieDetailsDialog(parent, film).setVisible(true);
             dispose();
+            new model.MovieDetailsDialog(parent, film).setVisible(true);
         });
 
         // Book button on the right
@@ -112,9 +112,9 @@ public class ScreeningUI extends JDialog {
             JButton adminButton = new JButton("Edit/Add Schedule");
             styleButton(adminButton, new Color(100, 150, 255));
             adminButton.addActionListener(e -> {
+                dispose();
                 FilmScreeningAdminPanel adminPanel = new FilmScreeningAdminPanel(parent, film);
                 adminPanel.setVisible(true);
-                dispose();
             });
 
             JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
@@ -182,14 +182,14 @@ public class ScreeningUI extends JDialog {
     private void bookSelectedScreening() {
         int selectedRow = screeningsTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a screening first", 
-                "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a screening first",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         ScreeningSchedule selectedScreening = screenings.get(selectedRow);
-        new SeatUI(parent, selectedScreening,film).setVisible(true);
         dispose();
+        new SeatUI(parent, selectedScreening, film).setVisible(true);
     }
 
     public static void main(String[] args) {
