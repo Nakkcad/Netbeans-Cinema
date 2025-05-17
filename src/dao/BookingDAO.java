@@ -10,6 +10,9 @@ public class BookingDAO {
 
     // Create a new booking with transaction
     public boolean createBooking(Booking booking) {
+        System.out.println("Creating booking with details:");
+        System.out.println("Customer ID: " + booking.getCustomerId());
+        System.out.println("Schedule ID: " + booking.getScheduleId());
         Connection conn = null;
         try {
             conn = DatabaseConnection.connectDB();
@@ -37,11 +40,21 @@ public class BookingDAO {
             conn.commit();
             return true;
         } catch (SQLException e) {
-            try { if (conn != null) conn.rollback(); } catch (SQLException ex) {}
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+            }
             e.printStackTrace();
             return false;
         } finally {
-            try { if (conn != null) conn.close(); } catch (SQLException e) {}
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+            }
         }
     }
 
@@ -49,20 +62,18 @@ public class BookingDAO {
     public List<Booking> getAllBookings() {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT b.*, f.title AS film_title, ss.screening_date, ss.screening_time, sc.screen_name, "
-                   + "GROUP_CONCAT(CONCAT(s.row_letter, s.seat_number)) AS seat_numbers "
-                   + "FROM booking b "
-                   + "JOIN screening_schedule ss ON b.schedule_id = ss.schedule_id "
-                   + "JOIN film f ON ss.film_id = f.film_id "
-                   + "JOIN screen sc ON ss.screen_id = sc.screen_id "
-                   + "JOIN booking_seat bs ON b.booking_id = bs.booking_id "
-                   + "JOIN screening_seat ss2 ON bs.screening_seat_id = ss2.screening_seat_id "
-                   + "JOIN seat s ON ss2.seat_id = s.seat_id "
-                   + "GROUP BY b.booking_id "
-                   + "ORDER BY b.booking_date DESC";
+                + "GROUP_CONCAT(CONCAT(s.row_letter, s.seat_number)) AS seat_numbers "
+                + "FROM booking b "
+                + "JOIN screening_schedule ss ON b.schedule_id = ss.schedule_id "
+                + "JOIN film f ON ss.film_id = f.film_id "
+                + "JOIN screen sc ON ss.screen_id = sc.screen_id "
+                + "JOIN booking_seat bs ON b.booking_id = bs.booking_id "
+                + "JOIN screening_seat ss2 ON bs.screening_seat_id = ss2.screening_seat_id "
+                + "JOIN seat s ON ss2.seat_id = s.seat_id "
+                + "GROUP BY b.booking_id "
+                + "ORDER BY b.booking_date DESC";
 
-        try (Connection conn = DatabaseConnection.connectDB();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = DatabaseConnection.connectDB(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 Booking booking = mapResultSetToBooking(rs);
@@ -83,20 +94,19 @@ public class BookingDAO {
     public List<Booking> getBookingsByCustomer(int customerId) {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT b.*, f.title AS film_title, ss.screening_date, ss.screening_time, sc.screen_name, "
-                   + "GROUP_CONCAT(CONCAT(s.row_letter, s.seat_number)) AS seat_numbers "
-                   + "FROM booking b "
-                   + "JOIN screening_schedule ss ON b.schedule_id = ss.schedule_id "
-                   + "JOIN film f ON ss.film_id = f.film_id "
-                   + "JOIN screen sc ON ss.screen_id = sc.screen_id "
-                   + "JOIN booking_seat bs ON b.booking_id = bs.booking_id "
-                   + "JOIN screening_seat ss2 ON bs.screening_seat_id = ss2.screening_seat_id "
-                   + "JOIN seat s ON ss2.seat_id = s.seat_id "
-                   + "WHERE b.customer_id = ? "
-                   + "GROUP BY b.booking_id "
-                   + "ORDER BY b.booking_date DESC";
+                + "GROUP_CONCAT(CONCAT(s.row_letter, s.seat_number)) AS seat_numbers "
+                + "FROM booking b "
+                + "JOIN screening_schedule ss ON b.schedule_id = ss.schedule_id "
+                + "JOIN film f ON ss.film_id = f.film_id "
+                + "JOIN screen sc ON ss.screen_id = sc.screen_id "
+                + "JOIN booking_seat bs ON b.booking_id = bs.booking_id "
+                + "JOIN screening_seat ss2 ON bs.screening_seat_id = ss2.screening_seat_id "
+                + "JOIN seat s ON ss2.seat_id = s.seat_id "
+                + "WHERE b.customer_id = ? "
+                + "GROUP BY b.booking_id "
+                + "ORDER BY b.booking_date DESC";
 
-        try (Connection conn = DatabaseConnection.connectDB();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, customerId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -119,8 +129,8 @@ public class BookingDAO {
     // Helper methods
     private int insertBooking(Booking booking, Connection conn) throws SQLException {
         String sql = "INSERT INTO booking (customer_id, schedule_id, payment_method, "
-                   + "total_price, payment_status, qr_code_data) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "total_price, payment_status, qr_code_data) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, booking.getCustomerId());
@@ -132,7 +142,9 @@ public class BookingDAO {
 
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) return rs.getInt(1);
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
                 }
             }
             return 0;
@@ -150,7 +162,9 @@ public class BookingDAO {
             }
             int[] results = stmt.executeBatch();
             for (int result : results) {
-                if (result == Statement.EXECUTE_FAILED) return false;
+                if (result == Statement.EXECUTE_FAILED) {
+                    return false;
+                }
             }
             return true;
         }
@@ -167,7 +181,9 @@ public class BookingDAO {
             }
             int[] results = stmt.executeBatch();
             for (int result : results) {
-                if (result == Statement.EXECUTE_FAILED) return false;
+                if (result == Statement.EXECUTE_FAILED) {
+                    return false;
+                }
             }
             return true;
         }
