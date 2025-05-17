@@ -12,10 +12,14 @@ public class SeatDAO {
     public List<Seat> getSeatsForScreening(int scheduleId) {
         List<Seat> seats = new ArrayList<>();
         String sql = "SELECT s.seat_id, s.screen_id, s.row_letter, s.seat_number, s.status, s.price, "
-                + "CASE WHEN b.booking_id IS NOT NULL THEN 'booked' ELSE s.status END AS availability "
+                + "CASE WHEN bs.seat_id IS NOT NULL THEN 'booked' ELSE s.status END AS availability "
                 + "FROM seat s "
-                + "JOIN screening_schedule sc ON s.screen_id = sc.screen_id "
-                + "LEFT JOIN booking b ON s.seat_id = b.seat_id AND b.schedule_id = ? "
+                + "CROSS JOIN screening_schedule sc ON s.screen_id = sc.screen_id "
+                + "LEFT JOIN ("
+                + "   SELECT bs.seat_id FROM booking_seat bs "
+                + "   JOIN booking b ON bs.booking_id = b.booking_id "
+                + "   WHERE b.schedule_id = ?"
+                + ") bs ON s.seat_id = bs.seat_id "
                 + "WHERE sc.schedule_id = ? "
                 + "ORDER BY s.row_letter, s.seat_number";
 
@@ -26,7 +30,7 @@ public class SeatDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Seat seat = mapResultSetToSeat(rs);
-                    seat.setStatus(rs.getString("availability")); // Override status with availability
+                    seat.setStatus(rs.getString("availability"));
                     seats.add(seat);
                 }
             }
@@ -40,9 +44,14 @@ public class SeatDAO {
         List<Seat> seats = new ArrayList<>();
         String sql = "SELECT s.seat_id, s.screen_id, s.row_letter, s.seat_number, s.status, s.price "
                 + "FROM seat s "
-                + "LEFT JOIN booking b ON s.seat_id = b.seat_id AND b.schedule_id = ? "
-                + "WHERE s.screen_id = (SELECT screen_id FROM screening_schedule WHERE schedule_id = ?) "
-                + "AND b.booking_id IS NULL AND s.status = 'available' "
+                + "CROSS JOIN screening_schedule sc ON s.screen_id = sc.screen_id "
+                + "LEFT JOIN ("
+                + "   SELECT bs.seat_id FROM booking_seat bs "
+                + "   JOIN booking b ON bs.booking_id = b.booking_id "
+                + "   WHERE b.schedule_id = ?"
+                + ") bs ON s.seat_id = bs.seat_id "
+                + "WHERE sc.schedule_id = ? "
+                + "AND bs.seat_id IS NULL AND s.status = 'available' "
                 + "ORDER BY s.row_letter, s.seat_number";
 
         try (Connection conn = DatabaseConnection.connectDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -38,14 +38,15 @@ public class BookingHistoryUI extends JDialog {
             for (int i = 0; i < bookings.size(); i++) {
                 Booking b = bookings.get(i);
                 data[i][0] = b.getFilmTitle();
-                data[i][1] = dateFormat.format(b.getScreeningDate());
-                data[i][2] = timeFormat.format(b.getScreeningTime());
-                data[i][3] = b.getSeatInfo();
+                data[i][1] = b.getScreeningDate() != null ? dateFormat.format(b.getScreeningDate()) : "N/A";
+                data[i][2] = b.getScreeningTime() != null ? timeFormat.format(b.getScreeningTime()) : "N/A";
+                data[i][3] = b.getSeatNumbers() != null ? b.getSeatNumbers() : "N/A";
                 data[i][4] = String.format("Rp%,.0f", b.getTotalPrice());
-                data[i][5] = b.getPaymentStatus();
+                data[i][5] = b.getPaymentStatus() != null ? b.getPaymentStatus() : "N/A";
             }
 
             JTable bookingTable = new JTable(data, columnNames);
+            bookingTable.setAutoCreateRowSorter(true);
             JScrollPane scrollPane = new JScrollPane(bookingTable);
             mainPanel.add(scrollPane, BorderLayout.CENTER);
         }

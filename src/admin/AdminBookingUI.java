@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package admin;
 
 import dao.BookingDAO;
@@ -41,17 +37,18 @@ public class AdminBookingUI extends JDialog {
 
             for (int i = 0; i < bookings.size(); i++) {
                 Booking b = bookings.get(i);
-                data[i][0] = b.getCustomerName();
-                data[i][1] = b.getFilmTitle();
-                data[i][2] = dateFormat.format(b.getScreeningDate());
-                data[i][3] = timeFormat.format(b.getScreeningTime());
-                data[i][4] = b.getSeatInfo();
+                data[i][0] = b.getCustomerName() != null ? b.getCustomerName() : "N/A";
+                data[i][1] = b.getFilmTitle() != null ? b.getFilmTitle() : "N/A";
+                data[i][2] = b.getScreeningDate() != null ? dateFormat.format(b.getScreeningDate()) : "N/A";
+                data[i][3] = b.getScreeningTime() != null ? timeFormat.format(b.getScreeningTime()) : "N/A";
+                data[i][4] = b.getSeatNumbers() != null ? b.getSeatNumbers() : "N/A";
                 data[i][5] = String.format("Rp%,.0f", b.getTotalPrice());
-                data[i][6] = b.getPaymentStatus();
-                data[i][7] = bookingDateFormat.format(b.getBookingDate());
+                data[i][6] = b.getPaymentStatus() != null ? b.getPaymentStatus() : "N/A";
+                data[i][7] = b.getBookingDate() != null ? bookingDateFormat.format(b.getBookingDate()) : "N/A";
             }
 
             JTable bookingTable = new JTable(data, columnNames);
+            bookingTable.setAutoCreateRowSorter(true);
             JScrollPane scrollPane = new JScrollPane(bookingTable);
             mainPanel.add(scrollPane, BorderLayout.CENTER);
         }

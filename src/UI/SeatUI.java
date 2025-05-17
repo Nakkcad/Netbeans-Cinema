@@ -265,7 +265,7 @@ public class SeatUI extends JDialog {
             return;
         }
 
-        new BookingDialog(parent, film, screening, selectedSeats, totalPrice).setVisible(true);
         dispose();
+        new BookingDialog(parent, film, screening, selectedSeats, totalPrice).setVisible(true);
     }
 }
