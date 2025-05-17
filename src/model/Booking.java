@@ -6,13 +6,14 @@ import java.util.List;
 public class Booking {
     private int bookingId;
     private int customerId;
-    private List<Integer> screeningSeatIds; // Changed from seatIds to screeningSeatIds
+    private List<Integer> screeningSeatIds;
     private int scheduleId;
     private String paymentMethod;
     private double totalPrice;
     private String paymentStatus;
     private Timestamp bookingDate;
     private String qrCodeData;
+    private int screenId;  // Added proper screenId field
     
     // Display fields
     private String filmTitle;
@@ -20,7 +21,7 @@ public class Booking {
     private java.sql.Time screeningTime;
     private String screenName;
     private String customerName;
-    private String seatNumbers; // Formatted seat info (e.g., "A1, A2, B3")
+    private String seatNumbers;
 
     // Constructors
     public Booking() {
@@ -28,7 +29,7 @@ public class Booking {
     }
 
     public Booking(int customerId, List<Integer> screeningSeatIds, int scheduleId,
-                 String paymentMethod, double totalPrice) {
+                  String paymentMethod, double totalPrice) {
         this();
         this.customerId = customerId;
         this.screeningSeatIds = screeningSeatIds;
@@ -67,6 +68,9 @@ public class Booking {
     public String getQrCodeData() { return qrCodeData; }
     public void setQrCodeData(String qrCodeData) { this.qrCodeData = qrCodeData; }
     
+    public int getScreenId() { return screenId; }
+    public void setScreenId(int screenId) { this.screenId = screenId; }
+    
     public String getFilmTitle() { return filmTitle; }
     public void setFilmTitle(String filmTitle) { this.filmTitle = filmTitle; }
     
@@ -91,10 +95,25 @@ public class Booking {
                 "bookingId=" + bookingId +
                 ", customerId=" + customerId +
                 ", scheduleId=" + scheduleId +
+                ", screenId=" + screenId +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", totalPrice=" + totalPrice +
                 ", paymentStatus='" + paymentStatus + '\'' +
                 ", bookingDate=" + bookingDate +
+                ", filmTitle='" + filmTitle + '\'' +
+                ", screeningDate=" + screeningDate +
+                ", screeningTime=" + screeningTime +
+                ", seatNumbers='" + seatNumbers + '\'' +
                 '}';
+    }
+
+    // Helper method to format seat numbers for display
+    public String formatSeatNumbers() {
+        if (screeningSeatIds == null || screeningSeatIds.isEmpty()) {
+            return "N/A";
+        }
+        // This would be replaced with actual seat formatting logic
+        // when you have access to seat data from DAO
+        return seatNumbers != null ? seatNumbers : "N/A";
     }
 }
