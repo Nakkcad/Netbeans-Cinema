@@ -3,6 +3,7 @@ package Utils;
 public class UserSession {
     private static String username;
     private static String role;
+    private static int userid;
 
     public static String getUsername() {
         return username;
@@ -19,9 +20,21 @@ public class UserSession {
     public static void setRole(String role) {
         UserSession.role = role;
     }
+    
+    
+        public static int getUserId() {
+        return userid;
+    }
+
+    public static void setUserId(int userid) {
+        UserSession.userid = userid;
+    }
+    
+    
 
     public static void clearSession() {
         username = null;
         role = null;
+        userid = -1;
     }
 }

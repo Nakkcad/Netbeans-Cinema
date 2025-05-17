@@ -1,6 +1,7 @@
 package model;
 
 public class Seat {
+
     private int seatId;
     private int screenId;
     private char rowLetter;
@@ -9,7 +10,8 @@ public class Seat {
     private double price;
 
     // Constructors
-    public Seat() {}
+    public Seat() {
+    }
 
     public Seat(int screenId, char rowLetter, int seatNumber, String status, double price) {
         this.screenId = screenId;
@@ -71,5 +73,9 @@ public class Seat {
     @Override
     public String toString() {
         return String.format("%c%d", rowLetter, seatNumber);
+    }
+
+    public String getFormattedPrice() {
+        return String.format("Rp%,.0f", price);
     }
 }

@@ -9,17 +9,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeatUI extends JDialog {
+
+    private final List<Seat> selectedSeats = new ArrayList<>();
+    private final List<JButton> selectedButtons = new ArrayList<>();
+    private double totalPrice = 0;
     private final JFrame parent;
     private final ScreeningSchedule screening;
     private final Film film;
     private final SeatDAO seatDAO;
-    private Seat selectedSeat = null;
+    // Track the currently selected button
     private JButton confirmButton;
     private JLabel selectionLabel;
-    
+
     // Color scheme
     private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private final Color TEXT_COLOR = new Color(220, 220, 220);
@@ -27,7 +32,7 @@ public class SeatUI extends JDialog {
     private final Color ACCENT_COLOR = new Color(255, 204, 0);
     private final Color BOOKED_COLOR = new Color(150, 50, 50);
     private final Color SELECTED_COLOR = new Color(50, 150, 50);
-    
+
     // Fonts
     private final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private final Font SEAT_FONT = new Font("Segoe UI", Font.BOLD, 12);
@@ -39,17 +44,17 @@ public class SeatUI extends JDialog {
         this.screening = screening;
         this.film = film;
         this.seatDAO = new SeatDAO();
-        
+
         initializeUI();
     }
 
     private static String getWindowTitle(Film film, ScreeningSchedule screening) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
-        return String.format("%s - %s at %s", 
-            film.getTitle(),
-            dateFormat.format(screening.getScreeningDate()),
-            timeFormat.format(screening.getScreeningTime()));
+        return String.format("%s - %s at %s",
+                film.getTitle(),
+                dateFormat.format(screening.getScreeningDate()),
+                timeFormat.format(screening.getScreeningTime()));
     }
 
     private void initializeUI() {
@@ -85,34 +90,41 @@ public class SeatUI extends JDialog {
         // Seat grid panel
         JPanel seatGridPanel = new JPanel(new GridBagLayout());
         seatGridPanel.setBackground(BACKGROUND_COLOR);
-        seatGridPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        seatGridPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Get available seats
-        List<Seat> availableSeats = seatDAO.getAvailableSeatsForScreening(screening.getScheduleId());
+// Get all seats for this screening (both available and booked)
+        List<Seat> allSeats = seatDAO.getSeatsForScreening(screening.getScheduleId());
 
-        // Create seat buttons
+// Create seat buttons
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-        
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+
         for (int row = 0; row < 10; row++) {
             gbc.gridy = row;
             for (int col = 0; col < 15; col++) {
                 gbc.gridx = col;
-                
+
                 char rowLetter = (char) ('A' + row);
                 int seatNumber = col + 1;
-                
-                Seat currentSeat = findSeat(availableSeats, rowLetter, seatNumber);
+
+                Seat currentSeat = findSeat(allSeats, rowLetter, seatNumber);
                 JButton seatButton = new JButton(String.format("%c%d", rowLetter, seatNumber));
-                
-                if (currentSeat != null) {
+
+// In the seat grid creation code where you add the ActionListener:
+                if (currentSeat != null && "booked".equalsIgnoreCase(currentSeat.getStatus())) {
+                    styleSeatButton(seatButton, false);
+                    seatButton.setEnabled(false);
+                } else if (currentSeat != null) {
                     styleSeatButton(seatButton, true);
-                    seatButton.addActionListener(new SeatSelectionListener(seatButton, currentSeat));
+                    seatButton.addActionListener(new SeatSelectionListener(seatButton, currentSeat)); // Pass both button and seat
                 } else {
                     styleSeatButton(seatButton, false);
                     seatButton.setEnabled(false);
                 }
-                
+
                 seatGridPanel.add(seatButton, gbc);
             }
         }
@@ -120,6 +132,7 @@ public class SeatUI extends JDialog {
         JScrollPane scrollPane = new JScrollPane(seatGridPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(BACKGROUND_COLOR);
+        scrollPane.setPreferredSize(new Dimension(800, 600));
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Button panel
@@ -127,13 +140,13 @@ public class SeatUI extends JDialog {
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-// Back button
-JButton backButton = new JButton("Back");
-styleButton(backButton, SECONDARY_COLOR);
-backButton.addActionListener(e -> {
-    dispose(); // Close this dialog first
-    new ScreeningUI(parent, film).setVisible(true); // Then show screening UI
-});
+        // Back button
+        JButton backButton = new JButton("Back");
+        styleButton(backButton, SECONDARY_COLOR);
+        backButton.addActionListener(e -> {
+            dispose();
+            new ScreeningUI(parent, film).setVisible(true);
+        });
 
         // Confirm button
         confirmButton = new JButton("Confirm Selection");
@@ -179,10 +192,14 @@ backButton.addActionListener(e -> {
     private void styleSeatButton(JButton button, boolean available) {
         button.setFont(SEAT_FONT);
         button.setPreferredSize(new Dimension(50, 50));
+        button.setMinimumSize(new Dimension(50, 50));
+        button.setMaximumSize(new Dimension(50, 50));
         button.setBackground(available ? SECONDARY_COLOR : BOOKED_COLOR);
         button.setForeground(TEXT_COLOR);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(TEXT_COLOR, 1));
+        button.setOpaque(true);
+        button.setBorderPainted(true);
     }
 
     private void styleButton(JButton button, Color bgColor) {
@@ -197,9 +214,9 @@ backButton.addActionListener(e -> {
     }
 
     private class SeatSelectionListener implements ActionListener {
+
         private final JButton button;
         private final Seat seat;
-        private boolean isSelected = false;
 
         public SeatSelectionListener(JButton button, Seat seat) {
             this.button = button;
@@ -208,46 +225,47 @@ backButton.addActionListener(e -> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            isSelected = !isSelected;
-            
-            if (isSelected) {
-                // Deselect any previously selected seat
-                if (selectedSeat != null) {
-                    // In a real implementation, you'd need to track the previously selected button
-                    // This is simplified for demonstration
-                }
-                
-                selectedSeat = seat;
-                button.setBackground(SELECTED_COLOR);
-                confirmButton.setEnabled(true);
-                selectionLabel.setText("Selected: " + seat + " - $" + seat.getPrice());
-            } else {
-                selectedSeat = null;
+            if (selectedButtons.contains(button)) {
+                // Deselect seat
                 button.setBackground(SECONDARY_COLOR);
-                confirmButton.setEnabled(false);
-                selectionLabel.setText("No seat selected");
+                selectedButtons.remove(button);
+                selectedSeats.remove(seat);
+                totalPrice -= seat.getPrice();
+            } else {
+                // Select seat
+                button.setBackground(SELECTED_COLOR);
+                selectedButtons.add(button);
+                selectedSeats.add(seat);
+                totalPrice += seat.getPrice();
             }
+
+            updateSelectionLabel();
+        }
+    }
+
+    private void updateSelectionLabel() {
+        if (selectedSeats.isEmpty()) {
+            selectionLabel.setText("No seats selected");
+            confirmButton.setEnabled(false);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Selected: ");
+            for (Seat seat : selectedSeats) {
+                sb.append(seat).append(", ");
+            }
+            sb.delete(sb.length() - 2, sb.length()); // Remove last comma
+            sb.append(" - Total: Rp").append(String.format("%,.0f", totalPrice));
+            selectionLabel.setText(sb.toString());
+            confirmButton.setEnabled(true);
         }
     }
 
     private void confirmBooking() {
-        if (selectedSeat == null) return;
-        
-        // Here you would normally:
-        // 1. Create a booking record
-        // 2. Update seat status
-        // 3. Process payment
-        
-        JOptionPane.showMessageDialog(this, 
-            "Booking confirmed!\n" +
-            "Movie: " + film.getTitle() + "\n" +
-            "Date: " + new SimpleDateFormat("EEE, MMM d").format(screening.getScreeningDate()) + "\n" +
-            "Time: " + new SimpleDateFormat("h:mm a").format(screening.getScreeningTime()) + "\n" +
-            "Seat: " + selectedSeat + "\n" +
-            "Price: $" + selectedSeat.getPrice(),
-            "Booking Confirmed", 
-            JOptionPane.INFORMATION_MESSAGE);
-        
+        if (selectedSeats.isEmpty()) {
+            return;
+        }
+
         dispose();
+        new BookingDialog(parent, film, screening, selectedSeats, totalPrice).setVisible(true);
     }
 }

@@ -3,6 +3,7 @@ package UI;
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.UnsupportedLookAndFeelException;
 import Utils.UserSession;
+import admin.AdminPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -12,8 +13,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import model.Film;
-import model.MovieDetailsDialog;
-import model.ScreeningSchedule;
 
 public class ModernHomepage extends javax.swing.JFrame {
 
@@ -132,7 +131,39 @@ public class ModernHomepage extends javax.swing.JFrame {
 
         searchPanel.add(searchLabel, BorderLayout.WEST);
         searchPanel.add(film_searchbar, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        JButton mybookButton = new JButton("My Booking");
+        mybookButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        mybookButton.setBackground(ACCENT_COLOR);
+        mybookButton.setForeground(Color.BLACK);
+        mybookButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ACCENT_COLOR.darker(), 1),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+        mybookButton.setFocusPainted(false);
+        mybookButton.addActionListener(e -> {
+            new BookingHistoryUI(this).setVisible(true);
+        });
+        centerPanel.add(mybookButton);
+
+        if ("admin".equalsIgnoreCase(UserSession.getRole())) {
+
+            JButton adminButton = new JButton("Admin Panel");
+            adminButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            adminButton.setBackground(new Color(70, 130, 180)); // Steel blue color
+            adminButton.setForeground(Color.WHITE);
+            adminButton.setFocusPainted(false);
+            adminButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+
+            adminButton.addActionListener(e -> {
+                AdminPanel adminPanel = new AdminPanel();
+                adminPanel.setVisible(true);
+            });
+
+            centerPanel.add(adminButton);
+        }
+        menuBar.add(centerPanel, BorderLayout.CENTER);
         menuBar.add(welcomeLabel, BorderLayout.WEST);
         menuBar.add(searchPanel, BorderLayout.EAST);
 

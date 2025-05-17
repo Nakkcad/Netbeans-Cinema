@@ -1,4 +1,4 @@
-package model;
+package UI;
 
 import dao.PosterDAO;
 import javax.swing.*;
@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Random;
+import model.Film;
 
 public class MovieDetailsDialog extends JDialog {
 

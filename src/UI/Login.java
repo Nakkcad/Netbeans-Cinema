@@ -4,6 +4,7 @@
  */
 package UI;
 
+import Utils.Authenticate;
 import admin.AdminPanel;
 import javax.swing.JOptionPane;
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -324,27 +325,32 @@ public class Login extends javax.swing.JFrame {
 
         UserDAO userDAO = new UserDAO();
         try {
-            String userRole = userDAO.authenticateUser(username, passwordInput);
+            Authenticate userAuth = userDAO.authenticateUser(username, passwordInput);
 
-            if (userRole != null) {
+            if (userAuth != null) {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
+
+                // Store in session
                 UserSession.setUsername(username);
-                UserSession.setRole(userRole); // Store the user's role in session
+                UserSession.setRole(userAuth.getRole());
+                UserSession.setUserId(userAuth.getUserId());
 
                 // Open appropriate panel based on role
-                if ("admin".equalsIgnoreCase(userRole)) {
-                    AdminPanel adminPanel = new AdminPanel();
-                    adminPanel.setVisible(true);
-                } 
-                this.dispose();
-                    ModernHomepage main = new ModernHomepage();
-                    main.setVisible(true);
-                
-                
+                // moved the functionality to homepage
+//                if ("admin".equalsIgnoreCase(UserSession.getRole())) {
+//                    AdminPanel adminPanel = new AdminPanel();
+//                    adminPanel.setVisible(true);
+//                }
+                this.dispose(); // Dispose the login window after opening the next one
+                ModernHomepage main = new ModernHomepage();
+                main.setVisible(true);
+
             } else {
-                JOptionPane.showMessageDialog(null, "Invalid Username or Password",
-                        "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid username or password.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "An error occurred during login.");
         } finally {
             userDAO.closeConnection();
         }

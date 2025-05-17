@@ -34,11 +34,10 @@ public class ScreeningUI extends JDialog {
         super(parent, "ScreeningSchedule - " + film.getTitle(), true);
         this.parent = parent;
         this.film = film;
-        int filmid = film.getFilmId();
 
         // Initialize screenings list
         ScreeningScheduleDAO screeningDAO = new ScreeningScheduleDAO();
-        this.screenings = screeningDAO.getScreeningSchedulesByFilmId(filmid);
+        this.screenings = screeningDAO.getScreeningSchedulesByFilmId(film.getFilmId());
 
         setSize(800, 500);
         setLocationRelativeTo(parent);
@@ -90,7 +89,7 @@ public class ScreeningUI extends JDialog {
         styleButton(backButton, SECONDARY_COLOR);
         backButton.addActionListener(e -> {
             dispose();
-            new model.MovieDetailsDialog(parent, film).setVisible(true);
+            new UI.MovieDetailsDialog(parent, film).setVisible(true);
         });
 
         // Book button on the right
@@ -121,6 +120,7 @@ public class ScreeningUI extends JDialog {
             centerPanel.setBackground(BACKGROUND_COLOR);
             centerPanel.add(adminButton);
             buttonPanel.add(centerPanel, BorderLayout.CENTER);
+            
         } else {
             JPanel centerPanel = new JPanel();
             centerPanel.setBackground(BACKGROUND_COLOR);

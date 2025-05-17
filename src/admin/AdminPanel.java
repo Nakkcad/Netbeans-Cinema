@@ -71,6 +71,7 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         fetchmoviesbutton = new javax.swing.JButton();
         screeningPanel = new javax.swing.JButton();
+        bookingpanel = new javax.swing.JButton();
         CENTER = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -180,6 +181,15 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        bookingpanel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        bookingpanel.setText("Booking Panel");
+        bookingpanel.setPreferredSize(new java.awt.Dimension(120, 30));
+        bookingpanel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bookingpanelActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout NORTHLayout = new javax.swing.GroupLayout(NORTH);
         NORTH.setLayout(NORTHLayout);
         NORTHLayout.setHorizontalGroup(
@@ -203,7 +213,9 @@ public class AdminPanel extends javax.swing.JFrame {
                             .addGroup(NORTHLayout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(screeningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(screeningPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(bookingpanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -257,20 +269,19 @@ public class AdminPanel extends javax.swing.JFrame {
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtPosterUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(NORTHLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(NORTHLayout.createSequentialGroup()
-                                .addGap(37, 37, 37)
-                                .addComponent(screeningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(screeningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(bookingpanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
                         .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         getContentPane().add(NORTH, java.awt.BorderLayout.NORTH);
@@ -714,6 +725,12 @@ public class AdminPanel extends javax.swing.JFrame {
         adminPanelForm.setVisible(true);
     }//GEN-LAST:event_screeningPanelActionPerformed
 
+    private void bookingpanelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookingpanelActionPerformed
+        // TODO add your handling code here:
+        AdminBookingUI adminBookingUI = new AdminBookingUI(this);
+        adminBookingUI.setVisible(true);
+    }//GEN-LAST:event_bookingpanelActionPerformed
+
     private void searchMovie(String keyword) {
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getFilms(null);
@@ -781,6 +798,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JPanel CENTER;
     private javax.swing.JPanel NORTH;
     private javax.swing.JScrollPane SOUTH;
+    private javax.swing.JButton bookingpanel;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnClear;
