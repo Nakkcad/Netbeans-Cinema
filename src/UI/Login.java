@@ -336,10 +336,11 @@ public class Login extends javax.swing.JFrame {
                     AdminPanel adminPanel = new AdminPanel();
                     adminPanel.setVisible(true);
                 } 
-                    Homepage main = new Homepage();
+                this.dispose();
+                    ModernHomepage main = new ModernHomepage();
                     main.setVisible(true);
                 
-                this.dispose();
+                
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid Username or Password",
                         "Login Failed", JOptionPane.ERROR_MESSAGE);
@@ -359,11 +360,10 @@ public class Login extends javax.swing.JFrame {
 
     private void signupformbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupformbuttonActionPerformed
         // Open the Signup form
+        this.dispose();
         Signup signupForm = new Signup();
         signupForm.setVisible(true);
 
-        // Optionally, close the current login form
-        this.dispose(); // Closes the current form
     }//GEN-LAST:event_signupformbuttonActionPerformed
 
     /**
