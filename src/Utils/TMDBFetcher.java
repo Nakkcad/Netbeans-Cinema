@@ -8,8 +8,6 @@ import java.util.*;
 import model.Film;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 // In your imports section, keep:
 import java.util.List;
 import java.util.ArrayList;
@@ -42,10 +40,15 @@ List<Film> films = new ArrayList<>();
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
+    
+    public static void gui() {
+        createAndShowGUI();
+    }
+    
 
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("TMDB Movie Fetcher");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLayout(new BorderLayout(10, 10));
 
@@ -160,6 +163,7 @@ List<Film> films = new ArrayList<>();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
 
     public List<Film> fetchMovies(FetchType type, int totalMovies) throws IOException {
         List<Film> films = new ArrayList<>();

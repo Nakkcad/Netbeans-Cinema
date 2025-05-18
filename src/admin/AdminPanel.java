@@ -72,6 +72,7 @@ public class AdminPanel extends javax.swing.JFrame {
         fetchmoviesbutton = new javax.swing.JButton();
         screeningPanel = new javax.swing.JButton();
         bookingpanel = new javax.swing.JButton();
+        tmdbfetchbutton = new javax.swing.JButton();
         CENTER = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -87,11 +88,11 @@ public class AdminPanel extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Admin Panel");
         setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(900, 700));
+        setPreferredSize(new java.awt.Dimension(1000, 700));
 
         NORTH.setBackground(new java.awt.Color(153, 0, 51));
         NORTH.setBorder(javax.swing.BorderFactory.createTitledBorder("Movie Details"));
-        NORTH.setPreferredSize(new java.awt.Dimension(850, 250));
+        NORTH.setPreferredSize(new java.awt.Dimension(1000, 250));
 
         jLabel1.setText("Title:");
         jLabel1.setPreferredSize(new java.awt.Dimension(80, 25));
@@ -190,12 +191,21 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        tmdbfetchbutton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        tmdbfetchbutton.setText("TMDB fetch");
+        tmdbfetchbutton.setPreferredSize(new java.awt.Dimension(120, 30));
+        tmdbfetchbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tmdbfetchbuttonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout NORTHLayout = new javax.swing.GroupLayout(NORTH);
         NORTH.setLayout(NORTHLayout);
         NORTHLayout.setHorizontalGroup(
             NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NORTHLayout.createSequentialGroup()
-                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(NORTHLayout.createSequentialGroup()
@@ -212,10 +222,13 @@ public class AdminPanel extends javax.swing.JFrame {
                                 .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(NORTHLayout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(39, 39, 39)
                                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(screeningPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(bookingpanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(screeningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(NORTHLayout.createSequentialGroup()
+                                        .addComponent(bookingpanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(tmdbfetchbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                     .addGroup(NORTHLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -237,12 +250,15 @@ public class AdminPanel extends javax.swing.JFrame {
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 21, Short.MAX_VALUE)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(NORTHLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, NORTHLayout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         NORTHLayout.setVerticalGroup(
@@ -251,12 +267,17 @@ public class AdminPanel extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(NORTHLayout.createSequentialGroup()
+                        .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))
+                        .addGap(12, 12, 12)
+                        .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(NORTHLayout.createSequentialGroup()
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))
+                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,12 +297,10 @@ public class AdminPanel extends javax.swing.JFrame {
                             .addGroup(NORTHLayout.createSequentialGroup()
                                 .addComponent(screeningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(bookingpanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(NORTHLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(fetchmoviesbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(7, Short.MAX_VALUE))
+                                .addGroup(NORTHLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(bookingpanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tmdbfetchbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(NORTH, java.awt.BorderLayout.NORTH);
@@ -365,7 +384,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 .addGroup(CENTERLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(684, Short.MAX_VALUE))
+                        .addContainerGap(740, Short.MAX_VALUE))
                     .addGroup(CENTERLayout.createSequentialGroup()
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15)
@@ -731,6 +750,10 @@ public class AdminPanel extends javax.swing.JFrame {
         adminBookingUI.setVisible(true);
     }//GEN-LAST:event_bookingpanelActionPerformed
 
+    private void tmdbfetchbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tmdbfetchbuttonActionPerformed
+        TMDBFetcher.gui();
+    }//GEN-LAST:event_tmdbfetchbuttonActionPerformed
+
     private void searchMovie(String keyword) {
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getFilms(null);
@@ -825,6 +848,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JTextField searchfield;
     private javax.swing.JSpinner spnDuration;
     private javax.swing.JTable tblMovies;
+    private javax.swing.JButton tmdbfetchbutton;
     private javax.swing.JTextField txtPosterUrl;
     private javax.swing.JTextArea txtSynopsis;
     private javax.swing.JTextField txtTitle;
