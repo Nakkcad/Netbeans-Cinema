@@ -36,6 +36,10 @@ List<Film> films = new ArrayList<>();
      * The URL for fetching detailed information about a specific movie.
      */
     private static final String DETAIL_URL = "https://api.themoviedb.org/3/movie/";
+
+    List<Film> fetchMovies(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     /**
      * Enumeration of different movie categories that can be fetched from TMDB.
      * This enum defines the different types of movie lists available from the TMDB API,
