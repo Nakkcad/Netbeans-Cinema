@@ -801,7 +801,10 @@ public class AdminPanel extends javax.swing.JFrame {
     refreshMovieTable();
 
     }//GEN-LAST:event_fetchmoviesbuttonActionPerformed
-
+    /**
+     *
+     * @param evt 
+     */
     private void screeningPanelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_screeningPanelActionPerformed
         // TODO add your handling code here:
         AdminPanelForm adminPanelForm = new AdminPanelForm();
@@ -813,11 +816,20 @@ public class AdminPanel extends javax.swing.JFrame {
         AdminBookingUI adminBookingUI = new AdminBookingUI(this);
         adminBookingUI.setVisible(true);
     }//GEN-LAST:event_bookingpanelActionPerformed
-
+    /**
+    *  Handles the TMDB fetch button click event.
+    * Launches the TMDBFetcher GUI for retrieving movie data from TMDB API.
+    * @param evt The ActionEvent object containing event details
+    */
     private void tmdbfetchbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tmdbfetchbuttonActionPerformed
         TMDBFetcher.gui();
     }//GEN-LAST:event_tmdbfetchbuttonActionPerformed
-
+    /**
+    * Searches for movies matching the given keyword in title or genre.
+    * Populates the movies table with matching results.
+    * 
+    * @param keyword The search term to match against movie titles and genres
+    */
     private void searchMovie(String keyword) {
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getFilms(null);
@@ -843,7 +855,9 @@ public class AdminPanel extends javax.swing.JFrame {
     }
 
     /**
-     * @param args the command line arguments
+    * Main entry point for the AdminPanel application.
+    * Initializes the look and feel and launches the admin interface.
+    * @param args Command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
