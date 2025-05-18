@@ -11,14 +11,24 @@ public class QRGenerator {
     private int scale;
     private int border;
     private Ecc errorCorrectionLevel;
-
+    /**
+     * Constructs a QRGenerator with default settings:
+     * - Scale: 4
+     * - Border: 10
+     * - Error Correction: MEDIUM
+     */
     public QRGenerator() {
         // Default values
         this.scale = 4;
         this.border = 10;
         this.errorCorrectionLevel = QrCode.Ecc.MEDIUM;
     }
-
+    /**
+     * Constructs a QRGenerator with custom settings.
+     * @param scale The scaling factor for the QR code
+     * @param border The border size around the QR code
+     * @param errorCorrectionLevel The error correction level (LOW, MEDIUM, QUARTILE, HIGH)
+     */
     public QRGenerator(int scale, int border, Ecc errorCorrectionLevel) {
         this.scale = scale;
         this.border = border;
@@ -75,26 +85,45 @@ public class QRGenerator {
     }
 
     // Getters and setters
+    /**
+     * Gets the current scale factor for QR codes
+     * @return The current scale value
+     */
     public int getScale() {
         return scale;
     }
-
+    /**
+     * Sets the scale factor for QR codes
+     * @param scale The new scale value to set
+     */
     public void setScale(int scale) {
         this.scale = scale;
     }
-
+    /**
+     * Gets the current border size for QR codes
+     * @return The current border size
+     */
     public int getBorder() {
         return border;
     }
-
+    /**
+     * Sets the border size for QR codes
+     * @param border The new border size to set
+     */
     public void setBorder(int border) {
         this.border = border;
     }
-
+    /**
+     * Gets the current error correction level
+     * @return The current error correction level
+     */
     public Ecc getErrorCorrectionLevel() {
         return errorCorrectionLevel;
     }
-
+    /**
+     * Sets the error correction level
+     * @param errorCorrectionLevel The new error correction level to set
+     */
     public void setErrorCorrectionLevel(Ecc errorCorrectionLevel) {
         this.errorCorrectionLevel = errorCorrectionLevel;
     }
