@@ -25,13 +25,15 @@ import javax.swing.table.DefaultTableModel;
 import model.Film;
 
 /**
- *
+ *AdminPanel class provides the main administrative interface for managing films.
+ * It allows administrators to add, edit, delete, and search for films, as well as access other administrative panels for managing screenings and bookings.
  * @author ACER
  */
 public class AdminPanel extends javax.swing.JFrame {
 
     /**
      * Creates new form AdminPanel
+     * Initializes components and loads movie data.
      */
     public AdminPanel() {
         initComponents();
@@ -444,13 +446,25 @@ public class AdminPanel extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
+    /**
+     * Handles the action when the title text field is used.
+     * Moves focus to the genre combo box.
+     * @param evt The action event
+     */
     private void txtTitleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTitleActionPerformed
         cbGenre.requestFocusInWindow();    }//GEN-LAST:event_txtTitleActionPerformed
-
+    /**
+     * Handles the action when the poster URL text field is used.
+     * Validates the poster URL format
+     * @param evt The action event
+     */
     private void txtPosterUrlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPosterUrlActionPerformed
         validatePosterUrl();
     }//GEN-LAST:event_txtPosterUrlActionPerformed
+    /**
+     * Validates the poster URL format.
+     * Shows a warning message if the URL is invalid.
+     */
     private void validatePosterUrl() {
         String url = txtPosterUrl.getText().trim();
         if (!url.isEmpty() && !url.matches("^(https?|file)://.*\\.(jpg|jpeg|png|gif)$")) {
@@ -463,6 +477,12 @@ public class AdminPanel extends javax.swing.JFrame {
             txtPosterUrl.requestFocus();
         }
     }
+    /**
+     * Handles the action when the browse button is clicked.
+     * Opens a file chooser dialog to select a poster image.
+     * @param evt The action event
+     * @param evt 
+     */
     private void btnBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseActionPerformed
         // Browse button action - select image file
         JFileChooser fileChooser = new JFileChooser();
@@ -483,7 +503,10 @@ public class AdminPanel extends javax.swing.JFrame {
             showImagePreview(selectedFile);
 
         }    }//GEN-LAST:event_btnBrowseActionPerformed
-
+    /**
+     * Shows a preview of the selected image file.
+     * @param imageFile The image file to preview
+     */
     private void showImagePreview(File imageFile) {
         try {
             ImageIcon icon = new ImageIcon(imageFile.getPath());
@@ -498,7 +521,12 @@ public class AdminPanel extends javax.swing.JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Sets the status message with the specified color.
+     * Automatically clears the status after 5 seconds.
+     * @param message The status message to display
+     * @param color The color for the status message
+     */
     private void setStatus(String message, Color color) {
         lblStatus.setText(message);
         lblStatus.setForeground(color);
@@ -514,7 +542,11 @@ public class AdminPanel extends javax.swing.JFrame {
         };
     }
 
-
+    /**
+     * Handles the action when the add/update button is clicked.
+     * Adds a new film or updates an existing one based on edit mode.
+     * @param evt The action event
+     */
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // Clear previous status
         lblStatus.setText("Operation Status");
@@ -569,12 +601,18 @@ public class AdminPanel extends javax.swing.JFrame {
             setStatus("Error: " + e.getMessage(), Color.RED);
         }
     }
-
+    /**
+     * Exits edit mode and resets related variables.
+     */
     private void exitEditMode() {
         isEditMode = false;
         currentFilm = null;
         btnAdd.setText("Add");
     }//GEN-LAST:event_btnAddActionPerformed
+    /**
+     * Refreshes the movie table with current data from the database.
+     * Retrieves all films and populates the table.
+     */
     private void refreshMovieTable() {
         FilmDAO filmDAO = new FilmDAO();
         List<Film> films = filmDAO.getFilms(null);
@@ -594,10 +632,17 @@ public class AdminPanel extends javax.swing.JFrame {
             });
         }
     }
+    /**
+     * Handles the action when the clear button is clicked.
+     * Clears all form fields.
+     * @param evt The action event
+     */
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         clearForm();
     }//GEN-LAST:event_btnClearActionPerformed
-
+    /**
+     * Clears all form fields and resets the form state.
+     */
     private void clearForm() {
         txtTitle.setText("");
         cbGenre.setSelectedIndex(0);
@@ -610,7 +655,11 @@ public class AdminPanel extends javax.swing.JFrame {
         setStatus("Operation Status", Color.GRAY);
     }
 
-
+    /**
+     * Handles the action when the edit button is clicked.
+     * Loads the selected film data into the form for editing.
+     * @param evt The action event
+     */
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         int selectedRow = tblMovies.getSelectedRow();
         if (selectedRow == -1) {
@@ -640,7 +689,11 @@ public class AdminPanel extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnEditActionPerformed
-
+    /**
+     * Handles the action when the delete button is clicked.
+     * Confirms deletion with the user and deletes the selected film if confirmed.
+     * @param evt The action event
+     */
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         if (isEditMode) {
             setStatus("Finish or cancel editing first", Color.ORANGE);
@@ -672,16 +725,27 @@ public class AdminPanel extends javax.swing.JFrame {
             setStatus("Delete canceled", Color.GRAY);
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
-
+    /**
+     * Handles the key typed event in the search field.
+     * Filters the movie table based on the search keyword.
+     * @param evt The key event
+     */
     private void searchfieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyTyped
         String keyword = searchfield.getText().trim().toLowerCase();
         searchMovie(keyword);
     }//GEN-LAST:event_searchfieldKeyTyped
-
+    /**
+     * Handles the action when the date field is used.
+     * @param evt The action event
+     */
     private void date_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_date_fieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_date_fieldActionPerformed
-
+    /**
+     * Handles the action when the fetch movies button is clicked.
+     * Fetches movie data from TMDB based on the provided links.
+     * @param evt The action event
+     */
     private void fetchmoviesbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fetchmoviesbuttonActionPerformed
         // TODO add your handling code here:
            String input = fetchlinkfield.getText().trim();

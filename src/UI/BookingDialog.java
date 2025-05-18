@@ -7,7 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
+    /**
+    * BookingDialog class provides a confirmation dialog for finalizing movie bookings.
+    * It displays booking details including movie information, selected seats, pricing, and payment options before confirming the booking.
+    */
 public class BookingDialog extends JDialog {
     private final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private final Color TEXT_COLOR = new Color(220, 220, 220);
@@ -15,13 +18,27 @@ public class BookingDialog extends JDialog {
     private final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 20);
     private final Font TEXT_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private final Font BOLD_FONT = new Font("Segoe UI", Font.BOLD, 14);
-
+    /**
+     * Constructs a BookingDialog with the specified parameters.
+     * @param parent The parent frame
+     * @param screening The screening schedule being booked
+     * @param film The film being booked
+     * @param selectedSeats List of seats selected by the user
+     * @param totalPrice Total price for the booking
+     */
     public BookingDialog(JFrame parent, ScreeningSchedule screening, Film film, 
                                    List<ScreeningSeat> selectedSeats, double totalPrice) {
         super(parent, "Confirm Booking", true);
         initializeUI(screening, film, selectedSeats, totalPrice);
     }
-
+    /**
+     * Initializes the user interface components.
+     * Sets up the layout and populates the dialog with booking information.
+     * @param screening The screening schedule being booked
+     * @param film The film being booked
+     * @param selectedSeats List of seats selected by the user
+     * @param totalPrice Total price for the booking
+     */
     private void initializeUI(ScreeningSchedule screening, Film film, 
                             List<ScreeningSeat> selectedSeats, double totalPrice) {
         setSize(500, 500);
@@ -121,7 +138,13 @@ public class BookingDialog extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Adds an information row to the specified panel.
+     * Creates a row with a label and value in a horizontal layout.
+     * @param panel The panel to add the row to
+     * @param label The label text
+     * @param value The value text
+     */
     private void addInfoRow(JPanel panel, String label, String value) {
         JPanel rowPanel = new JPanel(new BorderLayout());
         rowPanel.setBackground(BACKGROUND_COLOR);
@@ -140,7 +163,13 @@ public class BookingDialog extends JDialog {
         rowPanel.add(valueComp, BorderLayout.EAST);
         panel.add(rowPanel);
     }
-
+    /**
+     * Creates a styled button with consistent appearance.
+     * @param text The text to display on the button
+     * @param bgColor The background color for the button
+     * @param action The action listener to attach to the button
+     * @return A styled JButton
+     */
     private JButton createButton(String text, Color bgColor, java.awt.event.ActionListener action) {
         JButton button = new JButton(text);
         button.setFont(TEXT_FONT);
@@ -154,11 +183,19 @@ public class BookingDialog extends JDialog {
         button.addActionListener(action);
         return button;
     }
-
+    /**
+     * Formats the screening date in a user-friendly format.
+     * @param screening The screening schedule containing the date
+     * @return A formatted date string
+     */
     private String formatScreeningDate(ScreeningSchedule screening) {
         return new SimpleDateFormat("EEE, dd MMM yyyy").format(screening.getScreeningDate());
     }
-
+    /**
+     * Formats the screening time in a user-friendly format.
+     * @param screening The screening schedule containing the time
+     * @return A formatted time string
+     */
     private String formatScreeningTime(ScreeningSchedule screening) {
         return new SimpleDateFormat("HH:mm").format(screening.getScreeningTime());
     }
