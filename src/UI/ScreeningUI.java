@@ -12,7 +12,12 @@ import model.Film;
 import admin.Screening.FilmScreeningAdminPanel;
 import dao.ScreeningScheduleDAO;
 import dao.SeatDAO;
-
+/**
+ * ScreeningUI class displays available screening schedules for a selected film.
+ * It provides a user interface for viewing and selecting screening times,
+ * and allows users to proceed to seat selection for booking.
+ * @author hp
+ */
 public class ScreeningUI extends JDialog {
 
     private final JFrame parent;
@@ -29,7 +34,11 @@ public class ScreeningUI extends JDialog {
 
     private final JTable screeningsTable;
     private final JButton bookButton;
-
+    /**
+     * Constructs a ScreeningUI dialog for displaying available screenings of a film.
+     * @param parent The parent frame
+     * @param film The film for which to display screenings
+     */
     public ScreeningUI(JFrame parent, Film film) {
         super(parent, "ScreeningSchedule - " + film.getTitle(), true);
         this.parent = parent;
@@ -141,7 +150,10 @@ public class ScreeningUI extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Customizes the appearance of the screenings table.
+     * Sets colors, fonts, and rendering properties for the table.
+     */
     private void customizeTable() {
         screeningsTable.setBackground(SECONDARY_COLOR);
         screeningsTable.setForeground(TEXT_COLOR);
@@ -167,7 +179,11 @@ public class ScreeningUI extends JDialog {
 
         screeningsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
-
+    /**
+     * Applies consistent styling to buttons in the UI.
+     * @param button The button to style
+     * @param bgColor The background color for the button
+     */
     private void styleButton(JButton button, Color bgColor) {
         button.setFont(DETAIL_FONT);
         button.setBackground(bgColor);
@@ -178,7 +194,10 @@ public class ScreeningUI extends JDialog {
         ));
         button.setFocusPainted(false);
     }
-
+    /**
+     * Handles the booking action when a screening is selected.
+     * Opens the seat selection UI for the selected screening.
+     */
     private void bookSelectedScreening() {
         int selectedRow = screeningsTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -191,7 +210,11 @@ public class ScreeningUI extends JDialog {
         dispose();
         new SeatUI(parent, selectedScreening, film, new SeatDAO()).setVisible(true);
     }
-
+    /**
+     * Main method for testing the ScreeningUI dialog.
+     * Creates a sample film and displays the screening UI.
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
         UserSession.setRole("admin");
 

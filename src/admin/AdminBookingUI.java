@@ -8,7 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-
+/**
+ * AdminBookingUI class provides an administrative interface for managing all bookings.
+ * It displays a table of all bookings in the system with detailed information and
+ * allows administrators to view and manage booking data.
+ * @author hp
+ */
 public class AdminBookingUI extends JDialog {
     private static final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
@@ -17,12 +22,18 @@ public class AdminBookingUI extends JDialog {
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private static final Font TABLE_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 16);
-
+    /**
+     * Constructs an AdminBookingUI dialog with the specified parent frame.
+     * @param parent The parent frame for this dialog
+     */
     public AdminBookingUI(JFrame parent) {
         super(parent, "All Bookings Management", true);
         initializeUI();
     }
-
+    /**
+     * Initializes the user interface components.
+     * Sets up the layout, creates the booking table, and adds control buttons.
+     */
     private void initializeUI() {
         setSize(1200, 700);
         setLocationRelativeTo(getParent());
@@ -106,7 +117,11 @@ public class AdminBookingUI extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Customizes the appearance of the booking table.
+     * Sets fonts, colors, alignment, and other visual properties.
+     * @param table The JTable to customize
+     */
     private void customizeTable(JTable table) {
         table.setFont(TABLE_FONT);
         table.setForeground(TEXT_COLOR);
@@ -133,7 +148,13 @@ public class AdminBookingUI extends JDialog {
         table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer); // Total
         table.getColumnModel().getColumn(10).setCellRenderer(centerRenderer); // Booked On
     }
-
+    /**
+     * Creates a styled button with consistent appearance.
+     * @param text The text to display on the button
+     * @param bgColor The background color for the button
+     * @param action The action listener to attach to the button
+     * @return A styled JButton
+     */
     private JButton createButton(String text, Color bgColor, java.awt.event.ActionListener action) {
         JButton button = new JButton(text);
         button.setFont(TABLE_FONT);
@@ -147,7 +168,11 @@ public class AdminBookingUI extends JDialog {
         button.addActionListener(action);
         return button;
     }
-
+    /**
+     * Formats the payment status with an appropriate icon prefix.
+     * @param status The payment status string
+     * @return A formatted status string with an icon prefix
+     */
     private String getStatusLabel(String status) {
         switch(status.toLowerCase()) {
             case "completed": return "✓ " + status;
@@ -156,7 +181,10 @@ public class AdminBookingUI extends JDialog {
             default: return status;
         }
     }
-
+    /**
+     * Refreshes the booking data by re initializing the UI.
+     * This reloads all booking data from the database.
+     */
     private void refreshBookings() {
         // Reinitialize the UI to refresh data
         initializeUI();

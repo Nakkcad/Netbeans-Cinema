@@ -5,14 +5,25 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
-
+/**
+ * Data Access Object for managing movie poster images.
+ * This class provides methods to load, cache, and scale movie poster images
+ * from URLs or local paths. It handles the downloading, caching, and resizing
+ * of poster images to ensure they are displayed correctly in the application.
+ * @author hp
+ */
 public class PosterDAO {
-
+    /**
+     * The local directory where downloaded poster images are cached.
+     */
     private static final String LOCAL_POSTERS_DIR = "src/resources/posters/";
 
     /**
      * Loads and scales the poster image from a URL or local path.
-     *
+     *This method attempts to load a poster image from the provided path, which can
+     * be either a URL or a local file path. If the path is a URL, the image is
+     * downloaded and cached locally to avoid repeated downloads. The image is then
+     * scaled to the specified dimensions while maintaining its aspect ratio.
      * @param imagePath The image URL or local path.
      * @param title     The film title (used for naming the cached file).
      * @param targetWidth Desired width of the final image.
@@ -63,6 +74,14 @@ public class PosterDAO {
 
     /**
      * Scales the given image while maintaining aspect ratio.
+     * This private helper method resizes an image to the target dimensions while
+     * preserving its aspect ratio. It uses high-quality interpolation and anti-aliasing
+     * to ensure the scaled image looks good. The method adjusts either the width or
+     * height as needed to maintain the original aspect ratio.
+     * @param originalImage the original image to scale
+     * @param targetWidth the desired width of the scaled image
+     * @param targetHeight the desired height of the scaled image
+     * @return a new BufferedImage containing the scaled version of the original image
      */
     private BufferedImage scaleImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
         double aspectRatio = (double) originalImage.getWidth() / originalImage.getHeight();

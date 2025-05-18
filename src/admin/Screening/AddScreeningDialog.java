@@ -11,11 +11,31 @@ import java.sql.Time;
 import javax.swing.JOptionPane;
 import model.Film;
 import model.ScreeningSchedule;
-
+    /**
+    * A dialog for adding new film screening schedules.
+    * This class provides a user interface for cinema administrators to add new screening
+    * schedules for a specific film. It includes form fields for entering screen ID,
+    * date, and time information, along with functionality to save this information to the database through the ScreeningScheduleDAO.
+    * @author hp
+    */
 public class AddScreeningDialog extends javax.swing.JDialog {
+    /**
+     * Data Access Object for screening schedule operations.
+     * Used to add new screening schedules to the database.
+     */
     private ScreeningScheduleDAO screeningScheduleDAO;
+    /**
+     * The film for which the screening schedule is being added.
+     */
     private Film film;
-
+    /**
+     * Creates a new AddScreeningDialog.
+     * Initializes the dialog with UI components and sets up the ScreeningScheduleDAO.
+     * The dialog title is set to include the film title.
+     * @param parent the parent frame
+     * @param modal whether the dialog should be modal
+     * @param film the film for which to add a screening schedule
+     */
     public AddScreeningDialog(java.awt.Frame parent, boolean modal, Film film) {
         super(parent, modal);
         this.film = film;
@@ -23,7 +43,11 @@ public class AddScreeningDialog extends javax.swing.JDialog {
         screeningScheduleDAO = new ScreeningScheduleDAO();
         setTitle("Add Screening for " + film.getTitle());
     }
-
+    /**
+     * Initializes the UI components of the dialog.
+     * Sets up labels, text fields, buttons, and their layout. Also configures
+     * action listeners for the buttons.
+     */
     private void initComponents() {
         jLabel2 = new javax.swing.JLabel();
         screenIdField = new javax.swing.JTextField();
@@ -104,7 +128,13 @@ public class AddScreeningDialog extends javax.swing.JDialog {
         pack();
         setLocationRelativeTo(getParent());
     }
-
+    /**
+     * Handles the action when the Add button is clicked.
+     * Validates the input data, creates a new ScreeningSchedule object, and attempts
+     * to add it to the database. Shows appropriate success or error messages and
+     * closes the dialog on success.
+     * @param evt the action event
+     */
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             int screenId = Integer.parseInt(screenIdField.getText());
@@ -123,7 +153,11 @@ public class AddScreeningDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Invalid input: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Handles the action when the Cancel button is clicked.
+     * Closes the dialog without saving any changes.
+     * @param evt the action event
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
     }

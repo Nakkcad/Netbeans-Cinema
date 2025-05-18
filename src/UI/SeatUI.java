@@ -13,7 +13,12 @@ import Utils.UserSession;
 import dao.BookingDAO;
 import dao.SeatDAO;
 import java.util.Objects;
-
+/**
+ * SeatUI class provides a user interface for selecting seats for a movie screening.
+ * It displays a visual representation of the theater seating arrangement, allowing users
+ * to select available seats and proceed with booking.
+ * @author hp
+ */
 public class SeatUI extends JDialog {
 
     private final ScreeningSchedule screening;
@@ -27,7 +32,13 @@ public class SeatUI extends JDialog {
     private final SeatDAO seatDao;
     private final List<ScreeningSeat> selectedSeats;
     private final BookingDAO bookingDao;
-
+    /**
+     * Constructs a SeatUI dialog for selecting seats for a movie screening.
+     * @param parent The parent frame
+     * @param screening The screening schedule for which seats are being selected
+     * @param film The film being screened
+     * @param seatDao The data access object for seat operations
+     */
     public SeatUI(JFrame parent, ScreeningSchedule screening, Film film, SeatDAO seatDao) {
         super(parent, getWindowTitle(screening, film), true);
         this.seatDao = seatDao;
@@ -220,7 +231,12 @@ public class SeatUI extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Creates a seat button with appropriate styling and behavior.
+     * @param row The row identifier (A-J)
+     * @param col The column number (1-15)
+     * @return A configured JButton representing the seat
+     */
     private JButton createSeatButton(char row, int col) {
         JButton seatButton = new JButton(row + "" + col);
         seatButton.setFont(SEAT_FONT);
@@ -251,7 +267,12 @@ public class SeatUI extends JDialog {
         seatButton.setBorder(BorderFactory.createLineBorder(BACKGROUND_COLOR, 1));
         return seatButton;
     }
-
+    /**
+     * Creates a legend item with color indicator and label.
+     * @param text The text label for the legend item
+     * @param color The color to display for the legend item
+     * @return A panel containing the legend item
+     */
     private JPanel createLegendItem(String text, Color color) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         panel.setBackground(BACKGROUND_COLOR);
@@ -271,7 +292,11 @@ public class SeatUI extends JDialog {
 
         return panel;
     }
-
+    /**
+     * Applies consistent styling to buttons in the UI.
+     * @param button The button to style
+     * @param bgColor The background color for the button
+     */
     private void styleButton(JButton button, Color bgColor) {
         button.setFont(SEAT_FONT);
         button.setBackground(bgColor);
@@ -282,7 +307,12 @@ public class SeatUI extends JDialog {
         ));
         button.setFocusPainted(false);
     }
-
+    /**
+     * Generates a window title based on screening information and film.
+     * @param screening The screening schedule
+     * @param film The film being screened
+     * @return A formatted title string
+     */
     private static String getWindowTitle(ScreeningSchedule screening, Film film) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");

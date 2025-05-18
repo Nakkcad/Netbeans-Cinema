@@ -5,7 +5,8 @@
 package admin.Screening;
 
 /**
- *
+ * The FilmScreeningAdminPanel provides an interface for managing screenings of a specific film.
+ * Allows administrators to view, add, edit, and delete screening schedules for a selected film.
  * @author ACER
  */
 import dao.FilmDAO;
@@ -25,7 +26,11 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
     private final FilmDAO filmDAO;
     private final Film film;
     private final JFrame parent;
-
+    /**
+    * Constructs a new FilmScreeningAdminPanel for managing screenings of a specific film.
+    * @param parent The parent frame of this panel
+    * @param film The film whose screenings will be managed
+    */
     public FilmScreeningAdminPanel(JFrame parent, Film film) {
         super("Screening Admin - " + film.getTitle());
         this.parent = parent;
@@ -40,7 +45,12 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
         toFront();
 
     }
-
+    /**
+     * Refreshes the schedule table with current screening data from the database.
+     * Loads all screenings for the current film and displays them in the table.
+     * Clears any existing data in the table before populating it with the latest information.
+     * Each row in the table represents a screening schedule with its ID, screen number, date, and time.
+     */
     private void refreshScheduleTable() {
         List<ScreeningSchedule> schedules = screeningScheduleDAO.getScreeningSchedulesByFilmId(film.getFilmId());
         DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
@@ -55,7 +65,13 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
             });
         }
     }
-
+    /**
+     * Initializes all Swing components and their layout.
+     * Sets up the table, buttons, and their action listeners.
+     * Configures the table model with appropriate column types and editability settings.
+     * Sets up action listeners for all buttons to handle user interactions.
+     * Arranges components using GroupLayout for a responsive interface.
+     */
     private void initComponents() {
         // GUI components initialization
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -93,6 +109,11 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
 
         addButton.setText("Add New Screening");
         addButton.addActionListener(new ActionListener() {
+            /**
+             * Opens the AddScreeningDialog to add a new screening schedule.
+             * Refreshes the schedule table after the dialog is closed.
+             * @param evt the action event
+             */
             public void actionPerformed(ActionEvent evt) {
                 AddScreeningDialog dialog = new AddScreeningDialog(FilmScreeningAdminPanel.this, true, film);
                 dialog.setVisible(true);
@@ -102,6 +123,12 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
 
         editButton.setText("Edit Selected");
         editButton.addActionListener(new ActionListener() {
+            /**
+             * Opens the EditScreeningDialog to edit the selected screening schedule.
+             * Shows a warning message if no screening is selected.
+             * Refreshes the schedule table after the dialog is closed.
+             * @param evt the action event
+             */
             public void actionPerformed(ActionEvent evt) {
                 int selectedRow = scheduleTable.getSelectedRow();
                 if (selectedRow >= 0) {
@@ -120,6 +147,12 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
 
         deleteButton.setText("Delete Selected");
         deleteButton.addActionListener(new ActionListener() {
+            /**
+             * Deletes the selected screening schedule after confirmation.
+             * Shows a warning message if no screening is selected.
+             * Refreshes the schedule table after successful deletion.
+             * @param evt the action event
+             */
             public void actionPerformed(ActionEvent evt) {
                 int selectedRow = scheduleTable.getSelectedRow();
                 if (selectedRow >= 0) {
@@ -153,6 +186,10 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
 
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new ActionListener() {
+            /**
+             * Refreshes the schedule table with the latest data from the database.
+             * @param evt the action event
+             */
             public void actionPerformed(ActionEvent evt) {
                 refreshScheduleTable();
             }
@@ -160,6 +197,10 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
 
         backButton.setText("Back");
         backButton.addActionListener(new ActionListener() {
+            /**
+             * Navigates back to the ScreeningUI panel and disposes this panel.
+             * @param evt the action event
+             */
             public void actionPerformed(ActionEvent evt) {
                 new UI.ScreeningUI(parent, film).setVisible(true); // reopen screening
                 dispose();

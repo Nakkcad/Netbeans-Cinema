@@ -8,7 +8,11 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.JTableHeader;
-
+    /**
+    * BookingHistoryUI class provides a user interface for viewing a customer's booking history.
+    * It displays a table of all bookings made by the current user with detailed information about each booking.
+    * @author hp
+    */
 public class BookingHistoryUI extends JDialog {
     private static final Color BACKGROUND_COLOR = new Color(30, 32, 34);
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
@@ -17,12 +21,18 @@ public class BookingHistoryUI extends JDialog {
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 24);
     private static final Font TABLE_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 16);
-
+    /**
+     * Constructs a BookingHistoryUI dialog with the specified parent frame.
+     * @param parent The parent frame for this dialog
+     */
     public BookingHistoryUI(JFrame parent) {
         super(parent, "My Bookings", true);
         initializeUI();
     }
-
+    /**
+     * Initializes the user interface components.
+     * Sets up the layout, creates the booking history table, and adds control buttons.
+     */
     private void initializeUI() {
         setSize(1000, 700);
         setLocationRelativeTo(getParent());
@@ -113,7 +123,12 @@ public class BookingHistoryUI extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Formats seat numbers to be more readable.
+     * Converts format like "A1A2B3" to "A1, A2, B3".
+     * @param seatNumbers The raw seat numbers string
+     * @return A formatted seat numbers string
+     */
     private String formatSeatNumbers(String seatNumbers) {
         if (seatNumbers == null || seatNumbers.isEmpty()) {
             return "N/A";
@@ -121,7 +136,11 @@ public class BookingHistoryUI extends JDialog {
         // Format seat numbers to be more readable (e.g., "A1, A2, B3" instead of "A1A2B3")
         return seatNumbers.replaceAll("([A-Z])(\\d+)", "$1$2 ").trim().replace(" ", ", ");
     }
-
+    /**
+     * Applies consistent styling to buttons in the UI.
+     * @param button The button to style
+     * @param bgColor The background color for the button
+     */
     private void styleButton(JButton button, Color bgColor) {
         button.setFont(TABLE_FONT);
         button.setBackground(bgColor);

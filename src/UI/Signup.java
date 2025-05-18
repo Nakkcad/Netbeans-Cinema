@@ -10,13 +10,15 @@ import Utils.PasswordUtils;
 import dao.UserDAO;
 
 /**
- *
+ * Signup class provides a user interface for new user registration.
+ * It allows users to create an account by entering username, email, phone number, and password.
  * @author ACER
  */
 public class Signup extends javax.swing.JFrame {
 
     /**
      * Creates new form Signup
+     * Initializes components and centers the form on screen.
      */
     public Signup() {
         initComponents();
@@ -337,7 +339,11 @@ public class Signup extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Handles the show password checkbox action.
+     * This method toggles the visibility of the password in the password field based on the state of the show password checkbox.
+     * @param evt The action event that triggered this method
+     */
     private void show_password_checkboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_show_password_checkboxActionPerformed
         if (show_password_checkbox.isSelected()) {
             passwordfield.setEchoChar((char) 0); // Show password
@@ -345,7 +351,13 @@ public class Signup extends javax.swing.JFrame {
             passwordfield.setEchoChar('*'); // Hide password (you can use '*' as well)
         }
     }//GEN-LAST:event_show_password_checkboxActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the password field.
+     * This method validates the password against security requirements and
+     * triggers the signup button action if the password is valid. If the password
+     * does not meet the requirements, an error message is displayed.
+     * @param evt The action event that triggered this method
+     */
     private void passwordfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordfieldActionPerformed
         String password = new String(passwordfield.getPassword());
 
@@ -357,23 +369,52 @@ public class Signup extends javax.swing.JFrame {
         signup_buttonActionPerformed(new java.awt.event.ActionEvent(signup_button, ActionEvent.ACTION_PERFORMED, "Enter"));
 
     }//GEN-LAST:event_passwordfieldActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the phone number field.
+     * This method moves the focus to the password field when the Enter key is pressed
+     * in the phone number field, allowing for quick navigation between fields.
+     * @param evt The action event that triggered this method
+     */
     private void phone_number_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phone_number_fieldActionPerformed
         passwordfield.requestFocus();
     }//GEN-LAST:event_phone_number_fieldActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the email field.
+     * This method moves the focus to the phone number field when the Enter key is pressed
+     in the email field, allowing for quick navigation between fields.
+     * @param evt The action event that triggered this method
+     */
     private void email_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_email_fieldActionPerformed
         phone_number_field.requestFocus();
     }//GEN-LAST:event_email_fieldActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the username field.
+     * This method moves the focus to the email field when the Enter key is pressed
+     in the username field, allowing for quick navigation between fields.
+     * @param evt The action event that triggered this method
+     */
     private void usernameboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameboxActionPerformed
         email_field.requestFocus();
     }//GEN-LAST:event_usernameboxActionPerformed
-
+    /**
+     * Handles the window closing event.
+     * This method opens the Login form when the Signup window is closing,
+     * ensuring users can still access the login screen if they decide not to sign up.
+     * @param evt The window event that triggered this method
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         new Login().setVisible(true);        // TODO add your handling code here:
     }//GEN-LAST:event_formWindowClosing
-
+     /**
+     * Handles the signup button action.
+     * This method validates all input fields, checks for duplicate usernames,and creates a new user if all validations pass. It displays appropriate
+     * messages for success or failure and opens the Login form on successful signup.
+     * The method performs the following validations:
+     - Checks that no fields are empty
+     - Validates password strength requirements
+     - Verifies the username is not already taken
+     * @param evt The action event that triggered this method
+     */
     private void signup_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signup_buttonActionPerformed
         String username = usernamebox.getText();
         String email = email_field.getText();
@@ -413,13 +454,20 @@ public class Signup extends javax.swing.JFrame {
             userDAO.closeConnection();
         }
     }//GEN-LAST:event_signup_buttonActionPerformed
-
+    /**
+     * Handles the login form button action.
+     * This method closes the Signup form and opens the Login form,
+     * allowing users to navigate to the login screen if they already have an account.
+     * @param evt The action event that triggered this method
+     */
     private void loginformbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginformbuttonActionPerformed
         this.dispose();
         new Login().setVisible(true);
     }//GEN-LAST:event_loginformbuttonActionPerformed
 
     /**
+     * The main entry point for the application.
+     * This method sets up the look and feel, and creates and displays the Signup form.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
