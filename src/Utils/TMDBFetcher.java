@@ -13,39 +13,78 @@ import java.util.List;
 import java.util.ArrayList;
 
 // Then in your code, use List normally:
+/**
+ * Utility class for fetching movie data from The Movie Database (TMDB) API.
+ * This class provides functionality to retrieve movie information from the TMDB API,
+ * including now playing, top rated, and popular movies. It can fetch multiple movies
+ * at once or retrieve detailed information about a specific movie by its ID.
+ * The fetched data is converted into Film objects that can be stored in the database.
+ * @author hp
+ */
 public class TMDBFetcher {
     
 List<Film> films = new ArrayList<>();
-
+    /**
+     * The API key used for authenticating requests to the TMDB API.
+     */
     private static final String API_KEY = "76104b3bc3dd38c735f7a2347034a853";
+    /**
+     * The API key used for authenticating requests to the TMDB API.
+     */
     private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    /**
+     * The URL for fetching detailed information about a specific movie.
+     */
     private static final String DETAIL_URL = "https://api.themoviedb.org/3/movie/";
-
+    /**
+     * Enumeration of different movie categories that can be fetched from TMDB.
+     * This enum defines the different types of movie lists available from the TMDB API,
+     * including now playing (currently in theaters), top rated (highest rated movies),
+     * and popular (most popular movies).
+     */
     public enum FetchType {
         NOW_PLAYING("now_playing"),
         TOP_RATED("top_rated"),
         POPULAR("popular");
         
         private final String path;
-        
+        /**
+         * Constructs a FetchType with the specified API path.
+         * @param path the API path segment for this fetch type
+         */
         FetchType(String path) {
             this.path = path;
         }
-        
+        /**
+         * Gets the API path segment for this fetch type.
+         * @return the path segment used in API requests
+         */
         public String getPath() {
             return path;
         }
     }
-
+    /**
+     * Main method to launch the TMDB Fetcher GUI.
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
-    
+    /**
+     * Launches the TMDB Fetcher GUI.
+     * This method provides a convenient way to start the GUI from other classes.
+     */
     public static void gui() {
         createAndShowGUI();
     }
     
-
+    /**
+     * Creates and displays the TMDB Fetcher GUI.
+     * This method sets up a graphical user interface that allows users to specify
+     * the number and types of movies to fetch from TMDB. It includes options for
+     * fetching now playing, top rated, and popular movies, with customizable counts
+     * for each category.
+     */
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("TMDB Movie Fetcher");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -164,7 +203,15 @@ List<Film> films = new ArrayList<>();
         frame.setVisible(true);
     }
 
-
+    /**
+     * Fetches a specified number of movies of a given type from TMDB.
+     * This method retrieves movies from the TMDB API based on the specified category(now playing, top rated, or popular) and count. It filters out adult content
+     * and movies that already exist in the database to avoid duplicates. For each movie, it fetches additional details such as genre and duration.
+     * @param type the category of movies to fetch (NOW_PLAYING, TOP_RATED, or POPULAR)
+     * @param totalMovies the number of movies to fetch
+     * @return a list of Film objects containing the fetched movie data
+     * @throws IOException if an error occurs during the API request
+     */
     public List<Film> fetchMovies(FetchType type, int totalMovies) throws IOException {
         List<Film> films = new ArrayList<>();
         FilmDAO dao = new FilmDAO();
@@ -242,7 +289,13 @@ List<Film> films = new ArrayList<>();
         System.out.println("[DEBUG] Total movies fetched: " + moviesFetched);
         return films;
     }
-
+    /**
+     * Fetches detailed information about a specific movie from TMDB.
+     * This private method retrieves additional details about a movie, such as its duration and genre, which are not available in the basic movie list API.
+     * @param movieId the TMDB ID of the movie to fetch details for
+     * @return a MovieDetail object containing the movie's duration and genre
+     * @throws IOException if an error occurs during the API request
+     */
     private MovieDetail fetchMovieDetail(int movieId) throws IOException {
         String url = DETAIL_URL + movieId + "?api_key=" + API_KEY;
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
@@ -262,7 +315,15 @@ List<Film> films = new ArrayList<>();
 
         return new MovieDetail(duration, genre);
     }
-
+    /**
+     * Fetches a single movie by its TMDB ID.
+     * This method retrieves detailed information about a specific movie from the TMDB API
+     * using its unique ID. It includes all available details such as title, overview,
+     * poster path, release date, duration, rating, and genre.
+     * @param movieId the TMDB ID of the movie to fetch
+     * @return a Film object containing the movie data, or null if the movie is adult content
+     * @throws IOException if an error occurs during the API request
+     */
     public Film fetchMovieById(int movieId) throws IOException {
         String url = DETAIL_URL + movieId + "?api_key=" + API_KEY;
         System.out.println("[DEBUG] Fetching single movie by ID: " + movieId);
@@ -297,7 +358,9 @@ List<Film> films = new ArrayList<>();
                 releaseDate,
                 rating);
     }
-
+    /**
+     * Inner class to hold detailed movie information about genre and duration.
+     */
     private class MovieDetail {
         int duration;
         String genre;

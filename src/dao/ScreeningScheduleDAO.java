@@ -5,11 +5,27 @@ import model.ScreeningSchedule;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Data Access Object for managing screening schedule operations in the database.
+ * This class provides methods to interact with the screening schedule data in the database,
+ * including adding, retrieving, updating, and deleting screening schedules. It serves as
+ * an intermediary between the application and the database for all screening schedule-related
+ * operations, handling database connections and query executions.
+ * @author hp
+ */
 public class ScreeningScheduleDAO {
 
     // Add a new screening schedule
-public boolean addScreeningSchedule(ScreeningSchedule schedule) {
+    /**
+     * Adds a new screening schedule to the database.
+     * This method creates a new screening schedule record in the database and generates
+     * the associated seats for the screening. It uses a transaction to ensure that both
+     * the schedule creation and seat generation succeed or fail together, maintaining
+     * database integrity.
+     * @param schedule the ScreeningSchedule object containing the schedule information
+     * @return true if the schedule was successfully added, false otherwise
+     */
+    public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     Connection conn = null;
     try {
         conn = DatabaseConnection.connectDB();
@@ -79,6 +95,12 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 }
     // Get all screening schedules
+    /**
+     * Retrieves all screening schedules from the database.
+     * This method fetches all screening schedules from the database, ordered by
+     * screening date and time. It returns a complete list of all scheduled screenings.
+     * @return a list of all ScreeningSchedule objects
+     */
     public List<ScreeningSchedule> getAllScreeningSchedules() {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule ORDER BY screening_date, screening_time";
@@ -97,6 +119,14 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Get screening schedules by film ID
+    /**
+     * Retrieves screening schedules for a specific film.
+     * This method fetches all future screening schedules for a particular film,
+     * identified by its film ID. The results are ordered by screening date and time,
+     * and only include screenings that have not yet occurred.
+     * @param filmId the ID of the film to get schedules for
+     * @return a list of ScreeningSchedule objects for the specified film
+     */
     public List<ScreeningSchedule> getScreeningSchedulesByFilmId(int filmId) {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule "
@@ -119,6 +149,13 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Get screening schedules by screen ID
+   /**
+    * Retrieves screening schedules for a specific screen.
+     * This method fetches all screening schedules for a particular screen,
+     * identified by its screen ID. The results are ordered by screening date and time.
+     * @param screenId the ID of the screen to get schedules for
+     * @return a list of ScreeningSchedule objects for the specified screen
+    */
     public List<ScreeningSchedule> getScreeningSchedulesByScreenId(int screenId) {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule WHERE screen_id = ? ORDER BY screening_date, screening_time";
@@ -140,6 +177,13 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Get screening schedules by date
+    /**
+     * Retrieves screening schedules for a specific date.
+     * This method fetches all screening schedules for a particular date.
+     * The results are ordered by screening time.
+     * @param date the date to get schedules for
+     * @return a list of ScreeningSchedule objects for the specified date
+     */
     public List<ScreeningSchedule> getScreeningSchedulesByDate(Date date) {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule WHERE screening_date = ? ORDER BY screening_time";
@@ -161,6 +205,13 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Get a screening schedule by ID
+    /**
+     * Retrieves a specific screening schedule by its ID.
+     * This method fetches a single screening schedule from the database based on
+     * its unique schedule ID. If no schedule with the specified ID is found, null is returned.
+     * @param scheduleId the ID of the screening schedule to retrieve
+     * @return the ScreeningSchedule object if found, null otherwise
+     */
     public ScreeningSchedule getScreeningScheduleById(int scheduleId) {
         String sql = "SELECT * FROM screening_schedule WHERE schedule_id = ?";
 
@@ -178,7 +229,13 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
 
         return null;
     }
-
+    /**
+     * Retrieves all screening schedules with an option to include past screenings.
+     * This method fetches screening schedules from the database with the ability to
+     * filter out past screenings. The results are ordered by screening date and time.
+     * @param includePast whether to include screenings that have already occurred
+     * @return a list of ScreeningSchedule objects
+     */
     public List<ScreeningSchedule> getAllScreeningSchedules(boolean includePast) {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule";
@@ -199,7 +256,15 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
         }
         return schedules;
     }
-
+    /**
+     * Retrieves screening schedules within a specified date range.
+     * This method fetches screening schedules that fall within the given start and end dates,
+     * with an option to exclude past screenings. The results are ordered by screening date and time.
+     * @param startDate the beginning of the date range
+     * @param endDate the end of the date range
+     * @param includePast whether to include screenings that have already occurred
+     * @return a list of ScreeningSchedule objects within the specified date range
+     */
     public List<ScreeningSchedule> getScreeningsByDateRange(Date startDate, Date endDate, boolean includePast) {
         List<ScreeningSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM screening_schedule "
@@ -228,6 +293,13 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Update a screening schedule
+    /**
+     * Updates an existing screening schedule in the database.
+     * This method modifies a screening schedule record in the database with the
+     * provided information, identified by the schedule ID.
+     * @param schedule the ScreeningSchedule object containing the updated information
+     * @return true if the schedule was successfully updated, false otherwise
+     */
     public boolean updateScreeningSchedule(ScreeningSchedule schedule) {
         String sql = "UPDATE screening_schedule SET film_id = ?, screen_id = ?, screening_date = ?, screening_time = ? WHERE schedule_id = ?";
 
@@ -247,6 +319,14 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Delete a screening schedule
+    /**
+     * Deletes a screening schedule from the database.
+     * This method removes a screening schedule record from the database based on
+     * its schedule ID. This operation may cascade to related records depending on
+     * the database constraints.
+     * @param scheduleId the ID of the screening schedule to delete
+     * @return true if the schedule was successfully deleted, false otherwise
+     */
     public boolean deleteScreeningSchedule(int scheduleId) {
         String sql = "DELETE FROM screening_schedule WHERE schedule_id = ?";
 
@@ -261,6 +341,14 @@ public boolean addScreeningSchedule(ScreeningSchedule schedule) {
     }
 
     // Helper method to map ResultSet to ScreeningSchedule object
+    /**
+     * Helper method to map a ResultSet to a ScreeningSchedule object.
+     * This private method converts a database result row into a ScreeningSchedule object,
+     * mapping each column to the corresponding property of the ScreeningSchedule class.
+     * @param rs the ResultSet containing screening schedule data
+     * @return a populated ScreeningSchedule object
+     * @throws SQLException if a database error occurs
+     */
     private ScreeningSchedule mapResultSetToScreeningSchedule(ResultSet rs) throws SQLException {
         ScreeningSchedule schedule = new ScreeningSchedule();
         schedule.setScheduleId(rs.getInt("schedule_id"));
