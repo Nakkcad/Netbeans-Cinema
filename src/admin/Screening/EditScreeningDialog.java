@@ -10,12 +10,22 @@ import java.sql.Time;
 import javax.swing.JOptionPane;
 import model.Film;
 import model.ScreeningSchedule;
-
+/**
+ * A dialog for editing screening schedule information.
+ * Provides fields to modify screen ID, date, and time for a film screening.
+ * @author hp
+ */
 public class EditScreeningDialog extends javax.swing.JDialog {
     private ScreeningScheduleDAO screeningScheduleDAO;
     private int scheduleId;
     private Film film;
-
+    /**
+    * Creates new EditScreeningDialog.
+    * @param parent The parent frame of this dialog
+    * @param modal Whether the dialog should be modal
+    * @param scheduleId The ID of the screening schedule to edit
+    * @param film The film associated with this screening
+    */
     public EditScreeningDialog(java.awt.Frame parent, boolean modal, int scheduleId, Film film) {
         super(parent, modal);
         this.scheduleId = scheduleId;
@@ -25,7 +35,10 @@ public class EditScreeningDialog extends javax.swing.JDialog {
         loadData();
         setTitle("Edit Screening for " + film.getTitle());
     }
-
+    /**
+     * Loads screening data from database and populates form fields.
+     * Displays error message and closes dialog if screening not found.
+     */
     private void loadData() {
         ScreeningSchedule schedule = screeningScheduleDAO.getScreeningScheduleById(scheduleId);
         if (schedule == null) {
@@ -38,7 +51,10 @@ public class EditScreeningDialog extends javax.swing.JDialog {
         dateField.setText(schedule.getScreeningDate().toString());
         timeField.setText(schedule.getScreeningTime().toString());
     }
-
+    /**
+     * Initializes all Swing components and their layout.
+     * Sets up text fields, labels, and buttons with their action listeners.
+     */
     private void initComponents() {
         jLabel2 = new javax.swing.JLabel();
         screenIdField = new javax.swing.JTextField();
@@ -119,7 +135,12 @@ public class EditScreeningDialog extends javax.swing.JDialog {
         pack();
         setLocationRelativeTo(getParent());
     }
-
+    /**
+     * Handles Update button click event.
+     * Validates input fields and updates screening schedule in database.
+     * Shows success/error messages and closes dialog on successful update.
+     * @param evt The ActionEvent object containing event details
+     */
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             int screenId = Integer.parseInt(screenIdField.getText());
@@ -144,7 +165,11 @@ public class EditScreeningDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Invalid input: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Handles Cancel button click event.
+     * Closes the dialog without saving changes.
+     * @param evt The ActionEvent object containing event details
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
     }

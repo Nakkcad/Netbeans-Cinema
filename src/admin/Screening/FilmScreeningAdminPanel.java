@@ -5,7 +5,8 @@
 package admin.Screening;
 
 /**
- *
+ * The FilmScreeningAdminPanel provides an interface for managing screenings of a specific film.
+ * Allows administrators to view, add, edit, and delete screening schedules for a selected film.
  * @author ACER
  */
 import dao.FilmDAO;
@@ -25,7 +26,11 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
     private final FilmDAO filmDAO;
     private final Film film;
     private final JFrame parent;
-
+    /**
+    * Constructs a new FilmScreeningAdminPanel for managing screenings of a specific film.
+    * @param parent The parent frame of this panel
+    * @param film The film whose screenings will be managed
+    */
     public FilmScreeningAdminPanel(JFrame parent, Film film) {
         super("Screening Admin - " + film.getTitle());
         this.parent = parent;
@@ -40,7 +45,10 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
         toFront();
 
     }
-
+    /**
+     * Refreshes the schedule table with current screening data from the database.
+     * Loads all screenings for the current film and displays them in the table.
+     */
     private void refreshScheduleTable() {
         List<ScreeningSchedule> schedules = screeningScheduleDAO.getScreeningSchedulesByFilmId(film.getFilmId());
         DefaultTableModel model = (DefaultTableModel) scheduleTable.getModel();
@@ -55,7 +63,10 @@ public class FilmScreeningAdminPanel extends javax.swing.JFrame {
             });
         }
     }
-
+    /**
+     * Initializes all Swing components and their layout.
+     * Sets up the table, buttons, and their action listeners.
+     */
     private void initComponents() {
         // GUI components initialization
         jScrollPane1 = new javax.swing.JScrollPane();
