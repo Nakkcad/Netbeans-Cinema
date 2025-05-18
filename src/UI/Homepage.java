@@ -21,15 +21,20 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import model.Film;
-import model.MovieDetailsDialog;
+import UI.MovieDetailsDialog;
 
 /**
- *
+ *Homepage is the main application window that displays movie listings and categories.
+ * This class provides the user interface for browsing movies, searching for specific
+ * titles or genres, and viewing movie details. It displays movies in categorized
+ * horizontal scrolling panels and supports search functionality.
  * @author ACER
  */
 public class Homepage extends javax.swing.JFrame {
 
     /**
+     * Creates a new Homepage instance.
+     * Initializes components, sets up the user interface, and loads movie categories.
      * Creates new form MainApp
      */
     public Homepage() {
@@ -128,10 +133,23 @@ public class Homepage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    /**
+     * Timer used to delay search execution while typing.
+     * This prevents excessive database queries while the user is still typing.
+     */
     private Timer searchTimer;
-
+    /**
+     * Flag indicating whether the UI is in search mode.
+     * When true, movies are displayed in a grid layout.
+     * When false, movies are displayed in categorized horizontal scrolling panels.
+     */
     private boolean isSearchMode = false;
-
+    /**
+     * Handles key typing events in the search bar.
+     * This method implements a delayed search feature using a timer to prevent
+     * excessive database queries while the user is typing. The search is executed 300ms after the user stops typing.
+     * @param evt The key event that triggered this method
+     */
     private void film_searchbarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_film_searchbarKeyTyped
         // Cancel previous timer if still running
         if (searchTimer != null && searchTimer.isRunning()) {
@@ -145,7 +163,12 @@ public class Homepage extends javax.swing.JFrame {
         searchTimer.setRepeats(false);
         searchTimer.start();
     }//GEN-LAST:event_film_searchbarKeyTyped
-
+    /**
+     * Configures the scrolling speed and behavior for the movies scroll pane.
+     * 
+     * This method enhances the scrolling experience by customizing the scroll speed
+     * and handling both vertical and horizontal scrolling with mouse wheel events.
+     */
     private void setupScrollingSpeed() {
         // Get the scroll pane's viewport
         JScrollPane scrollPane = moviesScrollPane;
@@ -182,6 +205,11 @@ public class Homepage extends javax.swing.JFrame {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);  // Default is usually 1
         scrollPane.getVerticalScrollBar().setBlockIncrement(256); // Default is usually 10
     }
+    /**
+     * Handles the window closed event
+     * This method is called when the Homepage window is closed. It disposes all open windows and opens the Login screen
+     * @param evt The window event that triggered this method
+     */
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // close all window too
         for (Window window : Window.getWindows()) {
@@ -189,12 +217,21 @@ public class Homepage extends javax.swing.JFrame {
         }
         new Login().setVisible(true);
     }//GEN-LAST:event_formWindowClosed
-
+    /**
+     * Handles key press events in the search bar.
+     * This method specifically handles the Escape key press to clear the search and return to the category view.
+     * @param evt The key event that triggered this method
+     */
     private void film_searchbarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_film_searchbarKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
             clearSearch();
         }    }//GEN-LAST:event_film_searchbarKeyPressed
-
+    /**
+     * Performs the search operation based on the text in the search bar.
+     * This method handles the transition between search mode and category mode, 
+     displays a loading indicator during search, and filters movies based on the search text. 
+     It uses a SwingWorker to perform the database query in a background thread to keep the UI responsive.
+     */
     private void performSearch() {
         String searchText = film_searchbar.getText().toLowerCase().trim();
 
@@ -263,7 +300,13 @@ public class Homepage extends javax.swing.JFrame {
             }
         }.execute();
     }
-
+    /**
+     * Adds a movie card to the container.
+     * This method creates and adds a MovieCard instance to the movies container.
+     * The behavior differs based on whether the UI is in search mode or category mode.
+     * @param film The Film object to display in the card
+     * @throws IllegalStateException if called directly in category mode
+     */
     private void addMovieCard(Film film) {
         MovieCard card = new MovieCard(film, () -> {
             openMovieDetails(film);
@@ -277,7 +320,11 @@ public class Homepage extends javax.swing.JFrame {
             throw new IllegalStateException("addMovieCard should not be called directly in category mode");
         }
     }
-
+    /**
+     * Displays a message when no search results are found.
+     * This method creates and displays a panel with a message indicating that no movies match the search criteria, along with a suggestion to try different keywords.
+     * @param searchText The search text that yielded no results
+     */
     private void showNoResultsMessage(String searchText) {
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setBackground(new Color(102, 0, 0));
@@ -296,14 +343,24 @@ public class Homepage extends javax.swing.JFrame {
 
         moviesContainer.add(messagePanel);
     }
-
+    /**
+     * Displays an error message in the UI.
+     * This method creates and adds a label with the error message to the
+     * movies container, styled to be clearly visible as an error.
+     * @param message The error message to display
+     */
     private void showErrorMessage(String message) {
         JLabel errorLabel = new JLabel(message, SwingConstants.CENTER);
         errorLabel.setForeground(Color.RED);
         errorLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         moviesContainer.add(errorLabel);
     }
-
+    /**
+     * Sets up the movies container based on the current mode.
+     * This method configures the layout and appearance of the movies container 
+     * differently depending on whether the UI is in search mode or category mode.
+     * In search mode, it uses a FlowLayout for a grid of results, while in category mode, it uses a BoxLayout for vertical stacking of categories.
+     */
     private void setupMoviesContainer() {
         moviesContainer.removeAll();
 
@@ -340,7 +397,11 @@ public class Homepage extends javax.swing.JFrame {
         // Update container size after adding all categories
         updateContainerSize();
     } // </editor-fold>
-
+    /**
+     * Loads movie categories in the background.
+     * This method uses a SwingWorker to load movie categories asynchronously,
+     preventing UI freezing during database operations. It loads scheduled movies, top-rated movies, newest movies, and movies by popular genres.
+     */
     private void loadMovieCategoriesInBackground() {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
@@ -369,7 +430,13 @@ public class Homepage extends javax.swing.JFrame {
         };
         worker.execute();
     }
-
+    /**
+     * Adds a category of movies to the container.
+     * This method creates a panel for a category of movies with a title and a horizontal scrolling panel containing movie cards. 
+     If the films list is empty, the category is not added.
+     * @param categoryTitle The title of the category
+     * @param films The list of films to display in this category
+     */
     private void addMovieCategory(String categoryTitle, List<Film> films) {
         if (films.isEmpty()) {
             return;
@@ -427,7 +494,11 @@ public class Homepage extends javax.swing.JFrame {
         // Add some space between categories
         moviesContainer.add(Box.createRigidArea(new Dimension(0, 10)));
     }
-
+    /**
+     * Updates the container size based on its content.
+     * This method adjusts the preferred size of the movies container
+     * to ensure proper scrolling behavior.
+     */
     private void updateContainerSize() {
         if (isSearchMode) {
             // Calculate size for search mode (grid layout)
@@ -473,12 +544,19 @@ public class Homepage extends javax.swing.JFrame {
         // Update container width when window is resized
         updateContainerSize();
     }
-
+    /**
+     * Opens the detailed view for a selected movie.
+     * This method creates and displays a MovieDetailsDialog for the selected film.
+     * @param film The Film object to display details for
+     */
     private void openMovieDetails(Film film) {
         MovieDetailsDialog detailsDialog = new MovieDetailsDialog(this, film);
         detailsDialog.setVisible(true);
     }
-
+    /**
+     * Clears the search and returns to category view.
+     * This method resets the search bar, switches to category mode, and reloads the movie categories.
+     */
     private void clearSearch() {
         film_searchbar.setText("");
         isSearchMode = false;
@@ -772,6 +850,8 @@ public class Homepage extends javax.swing.JFrame {
 // </editor-fold> 
 
     /**
+     * The main entry point for the application.
+     * This method sets up the look and feel, and creates and displays the Homepage.
      * @param args the command line arguments
      */
     public static void main(String args[]) {

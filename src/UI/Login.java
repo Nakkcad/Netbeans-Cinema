@@ -14,13 +14,15 @@ import Utils.UserSession;
 import dao.UserDAO;
 
 /**
- *
+ * Login class represents the authentication screen of the application.
+ * It provides a user interface for user authentication with username and password fields, and handles the login functionality.
  * @author ACER
  */
 public class Login extends javax.swing.JFrame {
 
     /**
      * Creates new form Login
+     * Initializes components and centers the form on screen.
      */
     public Login() {
         initComponents();
@@ -36,11 +38,9 @@ public class Login extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel2 = new javax.swing.JPanel();
         left = new javax.swing.JPanel();
-        cinemaicon = new Utils.SVGIconLabel();
         right = new javax.swing.JPanel();
         top = new javax.swing.JLayeredPane();
         LOGIN_title = new javax.swing.JLabel();
@@ -73,19 +73,12 @@ public class Login extends javax.swing.JFrame {
         left.setForeground(java.awt.Color.white);
         left.setPreferredSize(new java.awt.Dimension(400, 500));
         left.setLayout(new java.awt.BorderLayout());
-
-        cinemaicon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        cinemaicon.setPreferredSize(new java.awt.Dimension(200, 200));
-        left.add(cinemaicon, java.awt.BorderLayout.CENTER);
-        cinemaicon.setSVGIcon("theater.svg",200,200);
-
         jPanel2.add(left, java.awt.BorderLayout.CENTER);
 
         right.setBackground(new java.awt.Color(30, 32, 34));
         right.setMinimumSize(new java.awt.Dimension(0, 0));
         right.setPreferredSize(new java.awt.Dimension(400, 500));
 
-        top.setMinimumSize(new java.awt.Dimension(0, 0));
         top.setPreferredSize(new java.awt.Dimension(400, 100));
         top.setLayout(new java.awt.BorderLayout());
 
@@ -100,7 +93,6 @@ public class Login extends javax.swing.JFrame {
         right.add(top);
 
         middle.setForeground(new java.awt.Color(255, 0, 0));
-        middle.setMinimumSize(new java.awt.Dimension(0, 0));
         middle.setPreferredSize(new java.awt.Dimension(400, 300));
         middle.setLayout(new java.awt.FlowLayout());
 
@@ -292,7 +284,11 @@ public class Login extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Handles the action when the show password checkbox is clicked.
+     * Shows or hides the password based on checkbox state.
+     * @param evt The action event
+     */
     private void show_password_checkboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_show_password_checkboxActionPerformed
         if (show_password_checkbox.isSelected()) {
             passwordfield.setEchoChar((char) 0); // Show password
@@ -300,7 +296,12 @@ public class Login extends javax.swing.JFrame {
             passwordfield.setEchoChar('*'); // Hide password (you can use '*' as well)
         }
     }//GEN-LAST:event_show_password_checkboxActionPerformed
-
+    /**
+     * Handles the action when the login button is clicked.
+     * Retrieves username and password inputs, authenticates the user,
+     stores user session information if authentication is successful, and opens the appropriate panel based on user role.
+     * @param evt The action event
+     */
     private void login_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_login_buttonActionPerformed
         String username = usernamebox.getText();
         String passwordInput = new String(passwordfield.getPassword());
@@ -337,15 +338,27 @@ public class Login extends javax.swing.JFrame {
             userDAO.closeConnection();
         }
     }//GEN-LAST:event_login_buttonActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the password field.
+     * Triggers the login button action.
+     * @param evt The action event
+     */
     private void passwordfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordfieldActionPerformed
         login_buttonActionPerformed(new java.awt.event.ActionEvent(login_button, ActionEvent.ACTION_PERFORMED, "Enter"));
 
     }//GEN-LAST:event_passwordfieldActionPerformed
-
+    /**
+     * Handles the action when Enter key is pressed in the username field.
+     * Moves focus to the password field.
+     * @param evt The action event
+     */
     private void usernameboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameboxActionPerformed
         passwordfield.requestFocus();    }//GEN-LAST:event_usernameboxActionPerformed
-
+    /**
+     * Handles the action when the signup button is clicked.
+     * Closes the login form and open the signup form.
+     * @param evt The action event
+     */
     private void signupformbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupformbuttonActionPerformed
         // Open the Signup form
         this.dispose();
@@ -353,8 +366,10 @@ public class Login extends javax.swing.JFrame {
         signupForm.setVisible(true);
 
     }//GEN-LAST:event_signupformbuttonActionPerformed
-
+    
     /**
+     * The main entry point for the application.
+     * Sets up the look and feel and creates the login form.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -395,7 +410,6 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LOGIN_title;
     private javax.swing.JLayeredPane bottom;
-    private Utils.SVGIconLabel cinemaicon;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel left;

@@ -7,7 +7,12 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Random;
 import model.Film;
-
+/**
+ * MovieDetailsDialog class displays detailed information about a selected film.
+ * It provides a modal dialog with the film's poster, title, metadata, synopsis,
+ * and booking options.
+ * @author hp
+ */
 public class MovieDetailsDialog extends JDialog {
 
     private final Film film;
@@ -18,7 +23,11 @@ public class MovieDetailsDialog extends JDialog {
     private final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
     private final Font DETAIL_FONT = new Font("Segoe UI", Font.PLAIN, 14);
     private final Font SYNOPSIS_FONT = new Font("Segoe UI", Font.PLAIN, 15);
-
+    /**
+     * Constructs a MovieDetailsDialog to display information about a film.
+     * @param parent The parent frame
+     * @param film The film to display details for
+     */
     public MovieDetailsDialog(JFrame parent, Film film) {
         super(parent, film.getTitle(), true);
         this.film = film;
@@ -148,7 +157,11 @@ public class MovieDetailsDialog extends JDialog {
 
         add(mainPanel);
     }
-
+    /**
+     * Creates a detail label with consistent styling.
+     * @param text The text for the label
+     * @return A styled JLabel
+     */
     private JLabel createDetailLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(DETAIL_FONT);
@@ -156,7 +169,11 @@ public class MovieDetailsDialog extends JDialog {
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
     }
-
+    /**
+     * Creates a panel displaying the film's rating with a star icon.
+     * @param rating The film's rating value
+     * @return A panel containing the rating display
+     */
     private JPanel createRatingPanel(double rating) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         panel.setBackground(SECONDARY_COLOR);
@@ -182,7 +199,10 @@ public class MovieDetailsDialog extends JDialog {
 
         return panel;
     }
-
+    /**
+     * Creates a star icon image when the resource is not available.
+     * @return A generated star icon image
+     */
     private Image createStarIcon() {
         BufferedImage image = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
@@ -193,7 +213,12 @@ public class MovieDetailsDialog extends JDialog {
         g2.dispose();
         return image;
     }
-
+    /**
+     * Loads and displays the film's poster image asynchronously.
+     * Falls back to placeholder if image cannot be loaded.
+     * @param imagePath The path to the poster image
+     * @param container The container to display the image in
+     */
     private void loadPosterImage(String imagePath, JPanel container) {
         new SwingWorker<JComponent, Void>() {
             @Override
@@ -240,7 +265,11 @@ public class MovieDetailsDialog extends JDialog {
             }
         }.execute();
     }
-
+    /**
+     * Creates a text-based placeholder when the poster image is not available.
+     * @param title The film title to derive the placeholder from
+     * @return A panel with a letter placeholder
+     */
     private JPanel createTextPlaceholder(String title) {
         JPanel placeholder = new JPanel(new GridBagLayout());
         placeholder.setBackground(getRandomDarkColor());
@@ -257,7 +286,10 @@ public class MovieDetailsDialog extends JDialog {
 
         return placeholder;
     }
-
+    /**
+     * Creates an error placeholder when image loading fails.
+     * @return A panel with an error indicator
+     */
     private JPanel createErrorPlaceholder() {
         JPanel placeholder = new JPanel(new GridBagLayout());
         placeholder.setBackground(new Color(50, 50, 50));
@@ -270,7 +302,10 @@ public class MovieDetailsDialog extends JDialog {
 
         return placeholder;
     }
-
+    /**
+     * Generates a random dark color for placeholders.
+     * @return A random color from a predefined set of movie-themed colors
+     */
     private Color getRandomDarkColor() {
         Color[] colors = {
             new Color(41, 128, 185), // Blue
@@ -282,7 +317,11 @@ public class MovieDetailsDialog extends JDialog {
         };
         return colors[new Random().nextInt(colors.length)];
     }
-
+    /**
+     * Main method for testing the MovieDetailsDialog.
+     * Creates a sample film and displays the dialog.
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Sample film for demonstration

@@ -10,7 +10,8 @@ import Utils.PasswordUtils;
 import dao.UserDAO;
 
 /**
- *
+ * Signup class provides a user interface for new user registration.
+ * It allows users to create an account by entering username, email, phone number, and password.
  * @author ACER
  */
 public class Signup extends javax.swing.JFrame {

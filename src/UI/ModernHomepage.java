@@ -13,33 +13,83 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import model.Film;
-
+/**
+ * ModernHomepage class represents the main application screen with a modern UI design.
+ * It displays movie categories, allows searching for movies, and provides navigation
+ * to other parts of the application like booking history and admin panel.
+ * @author hp
+ */
 public class ModernHomepage extends javax.swing.JFrame {
 
+    /**
+     * Background color for UI components
+     */
     private static final Color BACKGROUND_COLOR = new Color(30, 32, 34);
+    /**
+     * Secondary color for UI components
+     */
     private static final Color SECONDARY_COLOR = new Color(60, 63, 65);
+    /**
+     * Accent color for UI components
+     */
     private static final Color ACCENT_COLOR = new Color(255, 204, 0);
+    /**
+     * Text color for UI components
+     */
     private static final Color TEXT_COLOR = new Color(220, 220, 220);
+    /**
+     * Font for title elements
+     */
     private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
+    /**
+     * Font for category headings
+     */
     private static final Font CATEGORY_FONT = new Font("Segoe UI", Font.BOLD, 18);
-
+    /**
+     * Flag indicating whether the view is in search mode
+     */
     private boolean isSearchMode = false;
+    /**
+     * Timer for delayed search execution
+     */
     private Timer searchTimer;
 
     // Components
+    /**
+     * Main panel containing all UI elements
+     */
     private JPanel mainPanel;
+    /**
+     * Scroll pane for movie content
+     */
     private JScrollPane moviesScrollPane;
+    /**
+     * Container for movie categories and cards
+     */
     private JPanel moviesContainer;
+    /**
+     * Search input field 
+     */
     private JTextField film_searchbar;
+    /**
+     * Welcome message label
+     */
     private JLabel welcomeLabel;
-
+    /**
+    * Constructs a ModernHomepage instance.
+    * Initializes components, sets up the UI, and loads movie categories.
+    */
+    
     public ModernHomepage() {
         initComponents();
         setLocationRelativeTo(null);
         setupUI();
         loadMovieCategoriesInBackground();
     }
-
+    /**
+     * Initializes the UI components.
+     * Sets up the main layout, panels, and event listeners.
+     */
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Homepage");
@@ -80,7 +130,10 @@ public class ModernHomepage extends javax.swing.JFrame {
         getContentPane().add(mainPanel);
         pack();
     }
-
+    /**
+     * Creates the menu bar with welcome message, search functionality, and navigation buttons.
+     * @return A panel containing the menu bar components
+     */
     private JPanel createMenuBar() {
         JPanel menuBar = new JPanel(new BorderLayout());
         menuBar.setBackground(SECONDARY_COLOR);
@@ -169,7 +222,10 @@ public class ModernHomepage extends javax.swing.JFrame {
 
         return menuBar;
     }
-
+    /**
+     * Sets up the UI look and feel.
+     * Applies FlatDarkLaf theme to the application.
+     */
     private void setupUI() {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -179,7 +235,10 @@ public class ModernHomepage extends javax.swing.JFrame {
 
         SwingUtilities.updateComponentTreeUI(this);
     }
-
+        /**
+     * Sets up custom scrolling speed for the movies scroll pane.
+     * Enhances user experience by providing smoother scrolling behavior.
+     */
     private void setupScrollingSpeed() {
         moviesScrollPane.addMouseWheelListener(e -> {
             if (!e.isShiftDown()) {
@@ -195,7 +254,10 @@ public class ModernHomepage extends javax.swing.JFrame {
             }
         });
     }
-
+    /**
+     * Loads movie categories in a background thread.
+     * Creates a SwingWorker to load categories without blocking UI.
+     */
     private void loadMovieCategoriesInBackground() {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
@@ -225,7 +287,12 @@ public class ModernHomepage extends javax.swing.JFrame {
         };
         worker.execute();
     }
-
+    /**
+     * Adds a category of movies to the container.
+     * Creates a category panel with title and a horizontal scrolling panel for movies.
+     * @param categoryTitle The title of the category
+     * @param films The list of films in this category
+     */
     private void addMovieCategory(String categoryTitle, List<Film> films) {
         if (films.isEmpty()) {
             return;
@@ -285,7 +352,10 @@ public class ModernHomepage extends javax.swing.JFrame {
             updateContainerSize();
         });
     }
-
+    /**
+     * Performs search based on the text in the search bar.
+     * Handles the transition between search mode and category mode, displays loading indicators, and filters movies based on search text.
+     */
     private void performSearch() {
         String searchText = film_searchbar.getText().toLowerCase().trim();
         boolean shouldBeInSearchMode = !searchText.isEmpty();
@@ -344,12 +414,20 @@ public class ModernHomepage extends javax.swing.JFrame {
             }
         }.execute();
     }
-
+    /**
+     * Adds a movie card to the container.
+     * Creates a new MovieCard with the film and click handler.
+     * @param film The film to add as a card
+     */
     private void addMovieCard(Film film) {
         MovieCard card = new MovieCard(film, () -> openMovieDetails(film));
         moviesContainer.add(card);
     }
-
+    /**
+     * Shows a message when no search results are found.
+     * Creates a panel with "No results found" message and suggestion to try different keywords.
+     * @param searchText The search text that yielded no results
+     */
     private void showNoResultsMessage(String searchText) {
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setBackground(BACKGROUND_COLOR);
@@ -368,14 +446,22 @@ public class ModernHomepage extends javax.swing.JFrame {
 
         moviesContainer.add(messagePanel);
     }
-
+    /**
+     * Shows an error message in the movies container.
+     * Creates a label with the error message in red.
+     * @param message The error message to display
+     */
     private void showErrorMessage(String message) {
         JLabel errorLabel = new JLabel(message, SwingConstants.CENTER);
         errorLabel.setForeground(Color.RED);
         errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         moviesContainer.add(errorLabel);
     }
-
+    /**
+     * Sets up the movies container layout based on current mode.
+     * Uses FlowLayout for search mode (grid of results) and
+     * BoxLayout for category mode (vertical categories).
+     */
     private void setupMoviesContainer() {
         moviesContainer.removeAll();
 
@@ -388,7 +474,10 @@ public class ModernHomepage extends javax.swing.JFrame {
         moviesContainer.setBackground(BACKGROUND_COLOR);
         moviesContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
-
+    /**
+     * Updates the container size based on its content.
+     * Calculates size differently for search mode (grid layout) and category mode (vertical layout).
+     */
     private void updateContainerSize() {
         if (isSearchMode) {
             int width = moviesScrollPane.getViewport().getWidth() - 20;
@@ -411,31 +500,64 @@ public class ModernHomepage extends javax.swing.JFrame {
 
         moviesContainer.revalidate();
     }
-
+    /**
+     * Opens the movie details dialog for a film.
+     * @param film The film to display details for
+     */
     private void openMovieDetails(Film film) {
         MovieDetailsDialog detailsDialog = new MovieDetailsDialog(this, film);
         detailsDialog.setVisible(true);
     }
-
+    /**
+     * Clears the search and returns to category view.
+     * Resets the search bar text, sets search mode to false, and reloads movie categories.
+     */
     private void clearSearch() {
         film_searchbar.setText("");
         isSearchMode = false;
         setupMoviesContainer();
         loadMovieCategoriesInBackground();
     }
-
+    /**
+     * Inner class representing a movie card in the UI.
+     * Displays movie poster, title, and handles user interactions.
+     */
     // Modern MovieCard implementation
     class MovieCard extends JPanel {
-
+        /**
+         * Width of the card
+         */
         private static final int CARD_WIDTH = 220;
+        /**
+         * Height of the card
+         */
         private static final int CARD_HEIGHT = 330;
+        /**
+         * Background color of the card
+         */
         private static final Color CARD_BG = SECONDARY_COLOR;
+        /**
+         * Hover effect color
+         */
         private static final Color HOVER_COLOR = ACCENT_COLOR;
-
+        /**
+         * The film associated with this card
+         */
         private final Film film;
+        /**
+         * Progress of hover animation
+         */
         private float hoverProgress = 0f;
+        /**
+         * Timer for hover animation
+         */
         private Timer hoverTimer;
-
+        /**
+         * Creates a new movie card with the specified film and click handler.
+         * @param film The film to display
+         * @param onClick The action to perform when the card is clicked
+         */
+        
         public MovieCard(Film film, Runnable onClick) {
             this.film = film;
 
@@ -466,7 +588,11 @@ public class ModernHomepage extends javax.swing.JFrame {
                 }
             });
         }
-
+        /**
+         * Creates the panel for displaying the movie poster.
+         * @return The poster panel
+         */
+        
         private JPanel createPosterPanel() {
             JPanel panel = new JPanel(new BorderLayout()) {
                 @Override
@@ -494,7 +620,10 @@ public class ModernHomepage extends javax.swing.JFrame {
 
             return panel;
         }
-
+        /**
+         * Creates the panel for displaying the movie title.
+         * @return The title panel
+         */
         private JPanel createTitlePanel() {
             JPanel panel = new JPanel(new BorderLayout());
             panel.setBackground(CARD_BG);
@@ -509,7 +638,11 @@ public class ModernHomepage extends javax.swing.JFrame {
 
             return panel;
         }
-
+        /**
+         * Loads the poster image asynchronously.
+         * @param imagePath The path to the image
+         * @param container The container to add the image to
+         */
         private void loadPosterImage(String imagePath, JPanel container) {
             new SwingWorker<JComponent, Void>() {
                 @Override
@@ -549,7 +682,12 @@ public class ModernHomepage extends javax.swing.JFrame {
                 }
             }.execute();
         }
-
+        /**
+         * Creates a placeholder when image is not available.
+         * @param title The movie title
+         * @return A placeholder panel with the first letter of the title
+         */
+        
         private JPanel createTextPlaceholder(String title) {
             JPanel panel = new JPanel(new GridBagLayout());
             panel.setBackground(getRandomDarkColor());
@@ -564,7 +702,10 @@ public class ModernHomepage extends javax.swing.JFrame {
 
             return panel;
         }
-
+        /**
+         * Creates a placeholder for error cases.
+         * @return An error placeholder panel
+         */
         private JPanel createErrorPlaceholder() {
             JPanel panel = new JPanel(new GridBagLayout());
             panel.setBackground(new Color(50, 50, 50));
@@ -576,7 +717,10 @@ public class ModernHomepage extends javax.swing.JFrame {
 
             return panel;
         }
-
+        /**
+         * Generates a random dark color for placeholders.
+         * @return A random color from a predefined set of movie-themed colors
+         */
         private Color getRandomDarkColor() {
             Color[] colors = {
                 new Color(41, 128, 185), // Blue
@@ -588,11 +732,19 @@ public class ModernHomepage extends javax.swing.JFrame {
             };
             return colors[new Random().nextInt(colors.length)];
         }
-
+        /**
+         * Truncates text if it exceeds maximum length.
+         * @param text The text to truncate
+         * @param maxLength The maximum length
+         * @return The truncated text with ellipsis if needed
+         */
         private String truncateText(String text, int maxLength) {
             return text.length() > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
         }
-
+        /**
+         * Sets up hover animation effects.
+         * Creates a timer for smooth transitions between normal and hover states.
+         */
         private void setupHoverEffects() {
             hoverTimer = new Timer(10, e -> {
                 if (isHovered()) {
@@ -630,17 +782,30 @@ public class ModernHomepage extends javax.swing.JFrame {
                 }
             });
         }
-
+        /**
+         * Checks if the mouse is currently hovering over the card.
+         * @return true if the card is being hovered over, false otherwise
+         */
         private boolean isHovered() {
             Point p = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(p, this);
             return contains(p);
         }
-
+        /**
+         * Cubic ease in-out function for smooth animation.
+         * @param t The input value between 0 and 1
+         * @return The eased value between 0 and 1
+         */
         private float easeInOut(float t) {
             return t < 0.5f ? 4 * t * t * t : 1 - (float) Math.pow(-2 * t + 2, 3) / 2;
         }
-
+        /**
+         * Interpolates between two colors.
+         * @param c1 The first color
+         * @param c2 The second color
+         * @param ratio The interpolation ratio (0 to 1)
+         * @return The interpolated color
+         */
         private Color interpolateColor(Color c1, Color c2, float ratio) {
             int r = (int) (c1.getRed() + (c2.getRed() - c1.getRed()) * ratio);
             int g = (int) (c1.getGreen() + (c2.getGreen() - c1.getGreen()) * ratio);
@@ -648,7 +813,11 @@ public class ModernHomepage extends javax.swing.JFrame {
             return new Color(r, g, b);
         }
     }
-
+    /**
+     * The main entry point for the application.
+     * Sets up the look and feel and creates the homepage.
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
