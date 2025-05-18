@@ -51,8 +51,8 @@ public class Signup extends javax.swing.JFrame {
         show_password_checkbox = new javax.swing.JCheckBox();
         signup_button = new javax.swing.JButton();
         bottom = new javax.swing.JLayeredPane();
-        loginform_button = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        loginformbutton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CinemaApp - Signup");
@@ -64,7 +64,7 @@ public class Signup extends javax.swing.JFrame {
             }
         });
 
-        background.setBackground(new java.awt.Color(51, 51, 51));
+        background.setBackground(new java.awt.Color(30, 32, 34));
         background.setMinimumSize(new java.awt.Dimension(400, 500));
         background.setPreferredSize(new java.awt.Dimension(400, 600));
 
@@ -77,6 +77,7 @@ public class Signup extends javax.swing.JFrame {
         signup_title.setForeground(new java.awt.Color(204, 0, 51));
         signup_title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         signup_title.setText("SIGNUP");
+        signup_title.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 0, 0, 0));
         signup_title.setPreferredSize(new java.awt.Dimension(140, 60));
         title.add(signup_title, java.awt.BorderLayout.CENTER);
 
@@ -231,12 +232,12 @@ public class Signup extends javax.swing.JFrame {
             }
         });
 
-        signup_button.setFont(new java.awt.Font("Segoe UI Black", 0, 14)); // NOI18N
+        signup_button.setBackground(new java.awt.Color(255, 204, 0));
+        signup_button.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        signup_button.setForeground(new java.awt.Color(0, 0, 0));
         signup_button.setText("SIGNUP");
-        signup_button.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        signup_button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        signup_button.setPreferredSize(new java.awt.Dimension(100, 40));
-        signup_button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        signup_button.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        signup_button.setPreferredSize(new java.awt.Dimension(100, 30));
         signup_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 signup_buttonActionPerformed(evt);
@@ -272,9 +273,9 @@ public class Signup extends javax.swing.JFrame {
                 .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(show_password_checkbox)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(signup_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         middle.add(password);
@@ -283,44 +284,43 @@ public class Signup extends javax.swing.JFrame {
 
         bottom.setPreferredSize(new java.awt.Dimension(400, 75));
 
-        loginform_button.setBackground(new java.awt.Color(51, 51, 51));
-        loginform_button.setFont(new java.awt.Font("Segoe UI Black", 0, 12)); // NOI18N
-        loginform_button.setText("LOGIN");
-        loginform_button.setPreferredSize(new java.awt.Dimension(100, 30));
-        loginform_button.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loginform_buttonActionPerformed(evt);
-            }
-        });
-
         jLabel5.setText("Already have an account?");
         jLabel5.setToolTipText("");
 
-        bottom.setLayer(loginform_button, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        loginformbutton.setBackground(new java.awt.Color(30, 32, 34));
+        loginformbutton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        loginformbutton.setForeground(new java.awt.Color(255, 204, 0));
+        loginformbutton.setText("LOGIN");
+        loginformbutton.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 0))));
+        loginformbutton.setPreferredSize(new java.awt.Dimension(100, 30));
+        loginformbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loginformbuttonActionPerformed(evt);
+            }
+        });
+
         bottom.setLayer(jLabel5, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        bottom.setLayer(loginformbutton, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout bottomLayout = new javax.swing.GroupLayout(bottom);
         bottom.setLayout(bottomLayout);
         bottomLayout.setHorizontalGroup(
             bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bottomLayout.createSequentialGroup()
-                .addGap(70, 70, 70)
+                .addGap(72, 72, 72)
                 .addComponent(jLabel5)
-                .addGap(18, 18, 18)
-                .addComponent(loginform_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(loginformbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(81, Short.MAX_VALUE))
         );
         bottomLayout.setVerticalGroup(
             bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bottomLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
                 .addGroup(bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(loginform_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(34, Short.MAX_VALUE))
+                    .addComponent(loginformbutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 45, Short.MAX_VALUE))
         );
-
-        bottomLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel5, loginform_button});
 
         background.add(bottom);
 
@@ -337,15 +337,6 @@ public class Signup extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void loginform_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginform_buttonActionPerformed
-        // Open the Signup form
-        Login loginForm = new Login();
-        loginForm.setVisible(true);
-
-        // Optionally, close the current login form
-        this.dispose(); // Closes the current form
-    }//GEN-LAST:event_loginform_buttonActionPerformed
 
     private void show_password_checkboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_show_password_checkboxActionPerformed
         if (show_password_checkbox.isSelected()) {
@@ -379,6 +370,10 @@ public class Signup extends javax.swing.JFrame {
         email_field.requestFocus();
     }//GEN-LAST:event_usernameboxActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        new Login().setVisible(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosing
+
     private void signup_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signup_buttonActionPerformed
         String username = usernamebox.getText();
         String email = email_field.getText();
@@ -392,8 +387,8 @@ public class Signup extends javax.swing.JFrame {
 
         if (!PasswordUtils.isValidPassword(password)) {
             JOptionPane.showMessageDialog(this,
-                    "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.",
-                    "Invalid Password", JOptionPane.ERROR_MESSAGE);
+                "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.",
+                "Invalid Password", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -401,8 +396,8 @@ public class Signup extends javax.swing.JFrame {
         try {
             if (userDAO.usernameExists(username)) {
                 JOptionPane.showMessageDialog(this,
-                        "Username already exists. Please choose another one.",
-                        "Duplicate Username", JOptionPane.ERROR_MESSAGE);
+                    "Username already exists. Please choose another one.",
+                    "Duplicate Username", JOptionPane.ERROR_MESSAGE);
                 usernamebox.setText("");
                 return;
             }
@@ -419,9 +414,10 @@ public class Signup extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_signup_buttonActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        new Login().setVisible(true);        // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowClosing
+    private void loginformbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginformbuttonActionPerformed
+        this.dispose();
+        new Login().setVisible(true);
+    }//GEN-LAST:event_loginformbuttonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -465,7 +461,7 @@ public class Signup extends javax.swing.JFrame {
     private javax.swing.JTextField email_field;
     private javax.swing.JLabel email_text;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JButton loginform_button;
+    private javax.swing.JButton loginformbutton;
     private javax.swing.JLayeredPane middle;
     private javax.swing.JLayeredPane name;
     private javax.swing.JLayeredPane nomortelepon;

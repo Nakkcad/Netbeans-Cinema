@@ -36,6 +36,7 @@ public class Login extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel2 = new javax.swing.JPanel();
         left = new javax.swing.JPanel();
@@ -64,36 +65,27 @@ public class Login extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(800, 500));
 
         jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setMinimumSize(new java.awt.Dimension(0, 0));
         jPanel2.setPreferredSize(new java.awt.Dimension(800, 500));
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
         left.setBackground(new java.awt.Color(153, 0, 0));
+        left.setForeground(java.awt.Color.white);
         left.setPreferredSize(new java.awt.Dimension(400, 500));
+        left.setLayout(new java.awt.BorderLayout());
 
+        cinemaicon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         cinemaicon.setPreferredSize(new java.awt.Dimension(200, 200));
-
-        javax.swing.GroupLayout leftLayout = new javax.swing.GroupLayout(left);
-        left.setLayout(leftLayout);
-        leftLayout.setHorizontalGroup(
-            leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, leftLayout.createSequentialGroup()
-                .addContainerGap(105, Short.MAX_VALUE)
-                .addComponent(cinemaicon, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(95, 95, 95))
-        );
-        leftLayout.setVerticalGroup(
-            leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(leftLayout.createSequentialGroup()
-                .addGap(85, 85, 85)
-                .addComponent(cinemaicon, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(215, Short.MAX_VALUE))
-        );
-
+        left.add(cinemaicon, java.awt.BorderLayout.CENTER);
         cinemaicon.setSVGIcon("theater.svg",200,200);
 
-        right.setBackground(new java.awt.Color(51, 51, 51));
-        right.setMinimumSize(new java.awt.Dimension(400, 500));
+        jPanel2.add(left, java.awt.BorderLayout.CENTER);
+
+        right.setBackground(new java.awt.Color(30, 32, 34));
+        right.setMinimumSize(new java.awt.Dimension(0, 0));
         right.setPreferredSize(new java.awt.Dimension(400, 500));
 
+        top.setMinimumSize(new java.awt.Dimension(0, 0));
         top.setPreferredSize(new java.awt.Dimension(400, 100));
         top.setLayout(new java.awt.BorderLayout());
 
@@ -108,8 +100,11 @@ public class Login extends javax.swing.JFrame {
         right.add(top);
 
         middle.setForeground(new java.awt.Color(255, 0, 0));
+        middle.setMinimumSize(new java.awt.Dimension(0, 0));
         middle.setPreferredSize(new java.awt.Dimension(400, 300));
         middle.setLayout(new java.awt.FlowLayout());
+
+        usernameframe.setPreferredSize(new java.awt.Dimension(400, 100));
 
         username_text.setBackground(right.getBackground());
         username_text.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -136,7 +131,7 @@ public class Login extends javax.swing.JFrame {
         usernameframeLayout.setHorizontalGroup(
             usernameframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(usernameframeLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(80, 80, 80)
                 .addGroup(usernameframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(username_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(usernamebox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -154,6 +149,8 @@ public class Login extends javax.swing.JFrame {
 
         middle.add(usernameframe);
 
+        passwordframe.setPreferredSize(new java.awt.Dimension(400, 130));
+
         password_text.setBackground(right.getBackground());
         password_text.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         password_text.setForeground(new java.awt.Color(255, 255, 255));
@@ -162,6 +159,7 @@ public class Login extends javax.swing.JFrame {
         password_text.setPreferredSize(new java.awt.Dimension(250, 40));
 
         passwordfield.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        passwordfield.setCaretColor(new java.awt.Color(102, 102, 102));
         passwordfield.setPreferredSize(new java.awt.Dimension(250, 40));
         passwordfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -187,17 +185,18 @@ public class Login extends javax.swing.JFrame {
         passwordframeLayout.setHorizontalGroup(
             passwordframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(passwordframeLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(passwordframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(show_password_checkbox)
-                    .addGroup(passwordframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(password_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(80, 80, 80)
+                .addGroup(passwordframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(show_password_checkbox, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(password_text, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, passwordframeLayout.createSequentialGroup()
+                        .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         passwordframeLayout.setVerticalGroup(
             passwordframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(passwordframeLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addComponent(password_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -208,10 +207,13 @@ public class Login extends javax.swing.JFrame {
 
         middle.add(passwordframe);
 
-        loginframe.setPreferredSize(new java.awt.Dimension(250, 100));
+        loginframe.setPreferredSize(new java.awt.Dimension(400, 100));
 
-        login_button.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        login_button.setBackground(new java.awt.Color(255, 204, 0));
+        login_button.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        login_button.setForeground(new java.awt.Color(0, 0, 0));
         login_button.setText("LOGIN");
+        login_button.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 0, 10, 0));
         login_button.setPreferredSize(new java.awt.Dimension(100, 30));
         login_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -226,15 +228,15 @@ public class Login extends javax.swing.JFrame {
         loginframeLayout.setHorizontalGroup(
             loginframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loginframeLayout.createSequentialGroup()
+                .addGap(80, 80, 80)
                 .addComponent(login_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 150, Short.MAX_VALUE))
+                .addContainerGap(220, Short.MAX_VALUE))
         );
         loginframeLayout.setVerticalGroup(
             loginframeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loginframeLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
                 .addComponent(login_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addGap(0, 70, Short.MAX_VALUE))
         );
 
         middle.add(loginframe);
@@ -246,9 +248,11 @@ public class Login extends javax.swing.JFrame {
         jLabel5.setText("I don't have an account");
         jLabel5.setToolTipText("");
 
-        signupformbutton.setBackground(new java.awt.Color(51, 51, 51));
-        signupformbutton.setFont(new java.awt.Font("Segoe UI Black", 0, 12)); // NOI18N
+        signupformbutton.setBackground(new java.awt.Color(30, 32, 34));
+        signupformbutton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        signupformbutton.setForeground(new java.awt.Color(255, 204, 0));
         signupformbutton.setText("SIGNUP");
+        signupformbutton.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 0))));
         signupformbutton.setPreferredSize(new java.awt.Dimension(100, 30));
         signupformbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -282,31 +286,9 @@ public class Login extends javax.swing.JFrame {
 
         right.add(bottom);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(right, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(right, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        jPanel2.add(right, java.awt.BorderLayout.EAST);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

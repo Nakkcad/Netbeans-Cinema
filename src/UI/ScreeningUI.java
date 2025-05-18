@@ -1,6 +1,5 @@
 package UI;
 
-import dao.ScreeningScheduleDAO;
 import model.ScreeningSchedule;
 import Utils.UserSession;
 import javax.swing.*;
@@ -12,6 +11,7 @@ import javax.swing.table.JTableHeader;
 import model.Film;
 import admin.Screening.FilmScreeningAdminPanel;
 import dao.ScreeningScheduleDAO;
+import dao.SeatDAO;
 
 public class ScreeningUI extends JDialog {
 
@@ -120,7 +120,7 @@ public class ScreeningUI extends JDialog {
             centerPanel.setBackground(BACKGROUND_COLOR);
             centerPanel.add(adminButton);
             buttonPanel.add(centerPanel, BorderLayout.CENTER);
-            
+
         } else {
             JPanel centerPanel = new JPanel();
             centerPanel.setBackground(BACKGROUND_COLOR);
@@ -189,7 +189,7 @@ public class ScreeningUI extends JDialog {
 
         ScreeningSchedule selectedScreening = screenings.get(selectedRow);
         dispose();
-        new SeatUI(parent, selectedScreening, film).setVisible(true);
+        new SeatUI(parent, selectedScreening, film, new SeatDAO()).setVisible(true);
     }
 
     public static void main(String[] args) {
