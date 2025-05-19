@@ -19,7 +19,7 @@ Before running the application, ensure your system meets the following requireme
 ## 🔽 Which Option Should You Use?
 
 ### ✅ Just Want to Run the App?
-You can simply download the `dist.zip` in [here](https://github.com/Nakkcad/Netbeans-Cinema/releases/tag/App) (which contains the `.jar` file) if:
+You can simply download the `dist.zip` in [here](https://github.com/Nakkcad/Netbeans-Cinema/releases/download/v1.0.0-beta/dist.zip) (which contains the `.jar` file) if:
 - You **don’t need to edit the source code**
 - You **already have Java installed**
 - You want a **faster setup**  
